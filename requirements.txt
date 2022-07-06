@@ -59,6 +59,7 @@ nbclient @ file:///C:/ci/nbclient_1650290387259/work
 nbconvert @ file:///C:/ci/nbconvert_1649741016669/work
 nbformat @ file:///C:/ci/nbformat_1649845125000/work
 nest-asyncio @ file:///C:/ci/nest-asyncio_1649829929390/work
+numpy==1.23.0
 numpydoc @ file:///opt/conda/conda-bld/numpydoc_1643788541039/work
 packaging @ file:///tmp/build/80754af9/packaging_1637314298585/work
 pandocfilters @ file:///opt/conda/conda-bld/pandocfilters_1643405455980/work
