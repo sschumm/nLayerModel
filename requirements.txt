@@ -23,6 +23,7 @@ cloudpickle @ file:///tmp/build/80754af9/cloudpickle_1632508026186/work
 colorama @ file:///tmp/build/80754af9/colorama_1607707115595/work
 cookiecutter @ file:///opt/conda/conda-bld/cookiecutter_1649151442564/work
 cryptography @ file:///C:/ci/cryptography_1652083563162/work
+cycler==0.11.0
 debugpy @ file:///C:/ci/debugpy_1637091961445/work
 decorator @ file:///opt/conda/conda-bld/decorator_1643638310831/work
 defusedxml @ file:///tmp/build/80754af9/defusedxml_1615228127516/work
@@ -32,6 +33,7 @@ entrypoints @ file:///C:/ci/entrypoints_1649926621128/work
 executing @ file:///opt/conda/conda-bld/executing_1646925071911/work
 fastjsonschema @ file:///tmp/build/80754af9/python-fastjsonschema_1620414857593/work/dist
 flake8 @ file:///tmp/build/80754af9/flake8_1620776156532/work
+fonttools==4.34.0
 idna @ file:///tmp/build/80754af9/idna_1637925883363/work
 imagesize @ file:///tmp/build/80754af9/imagesize_1637939814114/work
 importlib-metadata @ file:///C:/ci/importlib-metadata_1648562621412/work
@@ -49,8 +51,10 @@ jupyter-client @ file:///tmp/build/80754af9/jupyter_client_1616770841739/work
 jupyter-core @ file:///C:/ci/jupyter_core_1651656286743/work
 jupyterlab-pygments @ file:///tmp/build/80754af9/jupyterlab_pygments_1601490720602/work
 keyring @ file:///C:/ci/keyring_1638531673471/work
+kiwisolver==1.4.3
 lazy-object-proxy @ file:///C:/ci/lazy-object-proxy_1616529288960/work
 MarkupSafe @ file:///C:/ci/markupsafe_1654508077284/work
+matplotlib==3.5.2
 matplotlib-inline @ file:///tmp/build/80754af9/matplotlib-inline_1628242447089/work
 mccabe==0.6.1
 mistune @ file:///C:/ci/mistune_1607359457024/work
@@ -68,6 +72,7 @@ parso @ file:///opt/conda/conda-bld/parso_1641458642106/work
 pathspec==0.7.0
 pexpect @ file:///tmp/build/80754af9/pexpect_1605563209008/work
 pickleshare @ file:///tmp/build/80754af9/pickleshare_1606932040724/work
+Pillow==9.2.0
 pluggy @ file:///C:/ci/pluggy_1648024580010/work
 poyo @ file:///tmp/build/80754af9/poyo_1617751526755/work
 prompt-toolkit @ file:///tmp/build/80754af9/prompt-toolkit_1633440160888/work
