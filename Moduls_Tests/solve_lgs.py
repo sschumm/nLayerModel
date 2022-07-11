@@ -19,8 +19,8 @@ b = np.array([0., 0.])
 
 #%%
 
-no_of_layers = 3
-no_of_variables = (no_of_layers + 1) 
+no_of_layers = 1
+no_of_variables = (no_of_layers * 2 + 2) 
 
 M = np.zeros((no_of_variables, no_of_variables))
 N = np.zeros(no_of_variables)
@@ -32,8 +32,8 @@ M[-1, -2] = 1
 i = 1
 r = 3
 p = 2
-inv_mu1 = 3
-inv_mu2 = 4
+inv_mu1 = 1 / (4 * np.pi * 10**(-7))
+inv_mu2 = 1 / (4 * np.pi * 10**(-7))
 
 # current loading
 # B_r
