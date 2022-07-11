@@ -23,7 +23,7 @@ class Layer():
     
     mu_0 = 4 * np.pi * 10**(-7) # [N / A**2]
     
-    def __init__(self, radius: float = None, mu: float = 1.0):
+    def __init__(self, r: float, mu: float = 1.0):
         
         if mu is None:
             mu = 1.0
@@ -31,12 +31,17 @@ class Layer():
         if isinstance(mu, int):
             mu = float(mu)
             
-        if isinstance(radius, int):
-            radius = float(radius)
+        if isinstance(r, int):
+            r = float(r)
             
-        self.radius = radius
+        self.r = r
         self.mu = mu
-            
+        # self.index = None
+        
+        
+    def add_index(self, index: int):
+        
+        self.index = index
     
     
     
