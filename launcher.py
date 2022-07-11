@@ -10,7 +10,7 @@ from Moduls_Tests.model import Model
 
 
 l1 = Layer(r = 4)
-l2 = Layer(r = 3, mu = 2)
+l2 = Layer(r = 3, mu_r = 2)
 
 m1 = Model()
 
