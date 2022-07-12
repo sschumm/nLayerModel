@@ -71,7 +71,13 @@ class Model():
             i += len(layer.bounds)
             
             
+    def solve(self, allclose_check: bool= False):
+        x = np.linalg.solve(a = self.M, b = self.y)
         
+        if allclose_check:
+            return x, np.allclose(np.dot(self.M, x), self.y)    
+        else:
+            return x
 
         
             
