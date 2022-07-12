@@ -43,7 +43,7 @@ class Layer():
         self.mu_r = mu_r
         self.mu = mu_0 * self.mu_r
         self.mu_inv = 1 / self.mu
-        self.mu_inv_outer = self.mu_inv
+        self.mu_inv_out = self.mu_inv
         self.p = p
         
         self.bounds = []
@@ -78,7 +78,7 @@ class Layer():
             
             
     def sync_layer_info(self, mu_inv_out: float):
-        self.mu_inv_outer = mu_inv_out
+        self.mu_inv_out = mu_inv_out
         for bound in self.bounds:
             if bound is H_0:
                 bound.set_outer_mu_inv(mu_inv_out)
@@ -90,7 +90,7 @@ class Layer():
 class CurrentLoading(Layer):
 
     
-    def __init__(self, K: float, r: float, mu_r: float = 1.0, p: int = 1):
+    def __init__(self, r: float, K: float, mu_r: float = 1.0, p: int = 1):
         super().__init__(r, mu_r, p)
         
         if isinstance(K, int):
@@ -119,8 +119,20 @@ class MagneticLayer(Layer):
         self.mu_r = mu_r
         super().__init__(r, mu_r, p)
         
+       
+    def _init_boundaries(self):
+        self.add_boundary(B_r(r = self.r, p = self.p))
+        self.add_boundary(H_0(r = self.r, p = self.p, mu_inv = self.mu_inv))
+        
+        
+class AirLayer(Layer):
+
     
-    
+    def __init__(self, r: float, p: int = 1):
+        mu_r = 1.0
+        super().__init__(r, mu_r, p)
+        
+        
     def _init_boundaries(self):
         self.add_boundary(B_r(r = self.r, p = self.p))
         self.add_boundary(H_0(r = self.r, p = self.p, mu_inv = self.mu_inv))
