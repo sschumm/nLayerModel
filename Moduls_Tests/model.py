@@ -36,10 +36,10 @@ class Model():
     
     def add_layer(self, layer: Layer):
         
-        self.n_layers += 1
-        
         layer.add_index(self.n_layers)
         self.layers[layer.index] = layer
+        
+        self.n_layers += 1
                 
         
     def build(self):
@@ -53,22 +53,23 @@ class Model():
         self.M[-1, -2] = 1
         
         
-        for i, lay in self.layers.items():
-        
-            r = lay.r
-            mu_inv1 = lay.mu_inv
+        for i in range(self.n_layers):
             
-            if i == self.n_layers:
+            j = i+1
+            r = self.layers[i].r
+            mu_inv1 = self.layers[i].mu_inv
+            
+            if j == self.n_layers:
                 mu_inv2 = 1 / mu_0
             else:
-                mu_inv2 = self.layers[i + 1].mu_inv
+                mu_inv2 = self.layers[j].mu_inv
         
             # B_r = const.
-            self.M[  i, i-1:i+3] = np.array([-r**self.p, -r**-self.p, 
-                                              r**self.p,  r**-self.p])
+            self.M[i+1, i:i+4] = np.array([-r**self.p, -r**-self.p, 
+                                            r**self.p,  r**-self.p])
             # H_0 = const.
-            self.M[i+1, i-1:i+3] = np.array([-mu_inv1 * r**(self.p-1),  mu_inv1 * r**-(self.p+1),
-                                              mu_inv2 * r**(self.p-1), -mu_inv2 * r**-(self.p+1)]) * self.p
+            self.M[i+2, i:i+4] = np.array([-mu_inv1 * r**(self.p-1),  mu_inv1 * r**-(self.p+1),
+                                            mu_inv2 * r**(self.p-1), -mu_inv2 * r**-(self.p+1)]) * self.p
             
         
             

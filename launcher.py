@@ -4,6 +4,7 @@ Created on Mon Jul 11 15:36:48 2022
 
 @author: svens
 """
+import numpy as np
 
 from Moduls_Tests.layer import Layer
 from Moduls_Tests.model import Model
@@ -22,4 +23,5 @@ m1.add_layer(l1)
 
 m1.build()
 
-print(m1.M)
+np.set_printoptions(suppress=True)
+print("M=\n", m1.M, "\n")
