@@ -110,7 +110,23 @@ class CurrentLoading(Layer):
             if isinstance(bound, H_0):
                 vector[index+a+1] = self.K
         return vector 
+
+
+class MagneticLayer(Layer):
+
     
+    def __init__(self, r: float, mu_r: float, p: int = 1):
+        self.mu_r = mu_r
+        super().__init__(r, mu_r, p)
+        
+    
+    
+    def _init_boundaries(self):
+        self.add_boundary(B_r(r = self.r, p = self.p))
+        self.add_boundary(H_0(r = self.r, p = self.p, mu_inv = self.mu_inv))
+        
+    
+
     
         
         
