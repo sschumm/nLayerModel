@@ -6,7 +6,7 @@ Created on Fri Jul  8 08:39:42 2022
 """
 
 import numpy as np
-
+np.set_printoptions(suppress=True, linewidth=180, precision=3)
 
 #%%
 
