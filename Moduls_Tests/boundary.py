@@ -28,7 +28,7 @@ class Boundary():
     
     
     def get_boundary(self):
-        return np.ones() * 999.0 # for tests
+        return np.ones(4) * 99.0 # for tests
          
     
     def sync_pole_pairs(self, n_pole_pairs: int):
