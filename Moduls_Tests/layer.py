@@ -46,12 +46,14 @@ class Layer():
         self.mu_inv_outer = self.mu_inv
         self.p = p
         
-        
         self.bounds = []
+        self._init_boundaries()
         
+
+    def _init_boundaries(self):
         self.add_boundary(Boundary(r = self.r, p = self.p))
         self.add_boundary(Boundary(r = self.r, p = self.p))
-        
+
         
     def add_index(self, index: int):
         
@@ -96,9 +98,11 @@ class CurrentLoading(Layer):
         
         self.K = K
     
+    
+    def _init_boundaries(self):
         self.add_boundary(B_r(r = self.r, p = self.p))
         self.add_boundary(H_0(r = self.r, p = self.p, mu_inv = self.mu_inv))
-    
+        
     
     def apply_solution(self, vector: np.ndarray, index: int):
         
