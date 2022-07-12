@@ -49,8 +49,8 @@ class Layer():
         
         self.bounds = []
         
-        self.add_boundary(B_r(r = self.r, p = self.p))
-        self.add_boundary(H_0(r = self.r, p = self.p, mu_inv = self.mu_inv))
+        self.add_boundary(Boundary(r = self.r, p = self.p))
+        self.add_boundary(Boundary(r = self.r, p = self.p))
         
         
     def add_index(self, index: int):
@@ -83,14 +83,29 @@ class Layer():
         
         
         
+
+
+class CurrentLoading(Layer):
+
+    
+    def __init__(self, K: float, r: float, mu_r: float = 1.0, p: int = 1):
+        super().__init__(r, mu_r, p)
+        
+        if isinstance(K, int):
+            r = float(K)
+        
+        self.K = K
+    
+        self.add_boundary(B_r(r = self.r, p = self.p))
+        self.add_boundary(H_0(r = self.r, p = self.p, mu_inv = self.mu_inv))
     
     
-    
-    
-    
-    
-    
-    
+    def apply_solution(self, vector: np.ndarray, index: int):
+        
+        for a, bound in enumerate(self.bounds):
+            if isinstance(bound, H_0):
+                vector[index+a+1] = self.K
+        return vector 
     
     
         

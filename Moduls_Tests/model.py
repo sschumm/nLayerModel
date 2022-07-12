@@ -6,7 +6,7 @@ Created on Mon Jul 11 16:12:38 2022
 """
 import numpy as np
 
-from .layer import Layer
+from .layer import Layer, CurrentLoading
 
 mu_0 = 4 * np.pi * 10**(-7) # [N / A**2]
 
@@ -63,9 +63,14 @@ class Model():
         
         i = 0
         for layer in self.layers.values():
-                      
+            
+            if isinstance(layer,CurrentLoading):
+                self.y = layer.apply_solution(self.y, i)
+            
             self.M = layer.apply_boundaries(self.M, i)
             i += len(layer.bounds)
+            
+            
         
 
         
