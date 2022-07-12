@@ -37,12 +37,19 @@ class Model():
     def add_layer(self, layer: Layer):
         
         layer.add_index(self.n_layers)
+        layer.sync_pole_pairs(self.p)
         self.layers[layer.index] = layer
         
         self.n_layers += 1
                 
         
     def build(self):
+        
+        if self.n_layers == 0:
+            raise ValueError("Model contains no layers. Can't build the model.")
+        
+        for i in range(self.n_layers-1):
+            self.layers[i].sync_layer_info(self.layers[i+1].mu_inv)
         
         n_vars = self.n_layers * 2 + 2
         
@@ -55,21 +62,29 @@ class Model():
         
         for i in range(self.n_layers):
             
-            j = i+1
-            r = self.layers[i].r
-            mu_inv1 = self.layers[i].mu_inv
+            # j = i+1
+            # r = self.layers[i].r
+            # mu_inv1 = self.layers[i].mu_inv
             
-            if j == self.n_layers:
-                mu_inv2 = 1 / mu_0
-            else:
-                mu_inv2 = self.layers[j].mu_inv
+# =============================================================================
+#             if j == self.n_layers:
+#                 mu_inv2 = 1 / mu_0
+#             else:
+#                 mu_inv2 = self.layers[j].mu_inv
+# =============================================================================
         
             # B_r = const.
-            self.M[i+1, i:i+4] = np.array([-r**self.p, -r**-self.p, 
-                                            r**self.p,  r**-self.p])
+            self.M = self.layers[i].apply_boundaries(self.M, i)
+# =============================================================================
+#             self.M[i+1, i:i+4] = np.array([-r**self.p, -r**-self.p, 
+#                                             r**self.p,  r**-self.p])
+# =============================================================================
             # H_0 = const.
-            self.M[i+2, i:i+4] = np.array([-mu_inv1 * r**(self.p-1),  mu_inv1 * r**-(self.p+1),
-                                            mu_inv2 * r**(self.p-1), -mu_inv2 * r**-(self.p+1)]) * self.p
+            
+# =============================================================================
+#             self.M[i+2, i:i+4] = np.array([-mu_inv1 * r**(self.p-1),  mu_inv1 * r**-(self.p+1),
+#                                             mu_inv2 * r**(self.p-1), -mu_inv2 * r**-(self.p+1)]) * self.p
+# =============================================================================
             
         
             
