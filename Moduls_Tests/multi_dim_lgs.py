@@ -56,11 +56,78 @@ x = np.linalg.solve(F, B)
 
 
 
-
-
-
 for iterate in range(i):
     print(np.allclose(np.dot(F[iterate], x[iterate]), b))
+
+
+
+#%%
+
+import numpy as np
+
+A = np.array([
+    [3., 1, 5],
+    [7., 8, 3],
+    [4., 1, 2]
+    ])
+
+b = np.array([0., 30, 5])#.reshape(3,1)
+# b = np.array([[0.], [30], [5]])
+
+print("sol: \n", np.linalg.solve(A, b), "\n")
+
+
+r = 5
+(rx, ry) = 0, 2
+
+R = np.ones((r, 3, 3))
+R[:, rx, ry] = np.linspace(1, 2, r)
+
+A1 = R * A
+B1 = np.stack([b for i in range(r)], axis=0)
+
+print("sol1: \n", np.linalg.solve(A1, B1), "\n")
+
+mu = 4
+(mur, mux, muy) = 3, 1, 1
+
+MU = np.ones((mu, r, 3, 3))
+MU[:, mur, mux, muy] = np.linspace(1,4,mu)
+
+A2 = MU * A1
+B2 = np.stack([B1 for i in range(mu)], axis=0)
+
+# =============================================================================
+# print(A.shape)
+# print(b.shape)
+# 
+# print(A1.shape)
+# print(B1.shape)
+# 
+# print(A2.shape)
+# print(B2.shape)
+# =============================================================================
+
+print("sol2: \n", np.linalg.solve(A2, B2), "\n")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
