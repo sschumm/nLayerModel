@@ -77,14 +77,14 @@ import time
 # b = np.array([0., 30, 5])
 # =============================================================================
 
-i = 10
+i = 2
 A = np.random.randn(i,i)
 b = np.random.randn(i)
 
 # print("sol: \n", np.linalg.solve(A, b), "\n")
 
-r = 1000
-(rx, ry) = 0, 2
+r = 4
+(rx, ry) = 0, 1
 
 R = np.ones((r, i, i))
 R[:, rx, ry] = np.linspace(1, 2, r)
@@ -94,7 +94,7 @@ B1 = np.stack([b for j in range(r)], axis=0)
 
 # print("sol1: \n", np.linalg.solve(A1, B1), "\n")
 
-mu = 1000
+mu = 3
 (mur, mux, muy) = 3, 1, 1
 
 MU = np.ones((mu, r, i, i))
@@ -115,6 +115,38 @@ runtime = end-start
 print("Runtime:", runtime/1000, "microseconds")
 
 
+#%%
+
+import numpy as np
+
+def dostuff(M, rnge, pos):
+    dims = M.shape
+    
+    P_shape = rnge + dims
+    P = np.ones(P_shape)
+    P[pos[0], pos]
+
+
+
+
+def r_matrix(M, r, x, y):
+    shp = M.shape
+    
+    b = np.ones((r,) + shp) * M
+    b[:, x, y] = np.linspace(1, 20, r)
+    return b
+
+
+
+
+def get_slice(y, x):
+    return (slice(y, y+1), slice(x, x+1))
+
+def add_slice(z, slc):
+    return (slice(z, z+1),) + slc
+
+def all_slice(slc):
+    return (slice(0, None),) + slc
 
 
 
@@ -124,16 +156,16 @@ print("Runtime:", runtime/1000, "microseconds")
 
 
 
-
-
-
-
-
-
-
-
-
-
+# =============================================================================
+# r = 4
+# (rx, ry) = 0, 1
+# 
+# R = np.ones((r, i, i))
+# R[:, rx, ry] = np.linspace(1, 2, r)
+# 
+# A1 = R * A
+# B1 = np.stack([b for j in range(r)], axis=0)
+# =============================================================================
 
 
 
