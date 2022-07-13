@@ -86,25 +86,7 @@ class Model():
             raise Exception("Model has not been built yet. Use build() before trying to solve the model.")
         
         
-    def vary_param(self, layer: Layer, param: str, val: float):
-        if self.built:    
-           if hasattr(layer, param):
-               exec(f"layer.{param} = {val}")
-               layer.update_boundaries()
-               if isinstance(layer,CurrentLoading):
-                   self.y = layer.apply_solution(self.y, layer.index)
-                   
-               self.M = layer.apply_boundaries(self.M, layer.index)
-               
-
-               print(self.M)
-               print(self.y)
-               print(self.solve())
-               # return self.solve()
-           else:
-               raise Exception(f"The layer '{layer}' has no parameter '{param}'.")
-        else:
-            raise Exception("Model has not been built yet. Use build() before trying to solve the model.")
+    
         
         
 
