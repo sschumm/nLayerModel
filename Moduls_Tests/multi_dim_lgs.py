@@ -119,20 +119,17 @@ print("Runtime:", runtime/1000, "microseconds")
 
 import numpy as np
 
-
 def find_matrices(R, A, B):
     A1 = R * A
     B1 = np.stack([B for j in range(R.shape[0])], axis=0)
     return A1, B1
 
-
-def r_matrix(arr, shp, coor):
+def r_matrix(arr, shp, lst_of_coors):
     R = np.ones(arr.shape + shp)
-    this_slc = all_slice(coor)
-    R[this_slc] = arr
+    for coor in lst_of_coors:
+        this_slc = all_slice(coor)
+        R[this_slc] = arr
     return R
-
-
 
 def get_slice(y, x):
     return (slice(y, y+1), slice(x, x+1))
@@ -146,23 +143,34 @@ def all_slice(slc):
 def get_coor(y, x):
     return (y, x)
 
+def add_coor(z, coor):
+    return (z,) + coor
 
 
+i = 3
+A = np.random.randn(i,i)
+B = np.random.randn(i)
+rng = np.linspace(2,5,4)
+coorlst = [get_coor(0, 1), get_coor(2, 2)]
 
-
-
-
+R = r_matrix(rng, A.shape, coorlst)
+C, D = find_matrices(R, A, B)
 
 # =============================================================================
-# r = 4
-# (rx, ry) = 0, 1
-# 
-# R = np.ones((r, i, i))
-# R[:, rx, ry] = np.linspace(1, 2, r)
-# 
-# A1 = R * A
-# B1 = np.stack([b for j in range(r)], axis=0)
+# for j in range(C.shape[0]):
+#     print(C[j] - A)
 # =============================================================================
+    
+    
+rng2 = np.ones(3) * 99 # np.linspace(3,5,3)
+coorlst2 = [add_coor(0, get_coor(2, 0))]
+R2 = r_matrix(rng2, C.shape, coorlst2)
+E, F = find_matrices(R2, C, D)
+
+
+for j in range(E.shape[0]):
+    print(E[j] - A)
+
 
 
 
