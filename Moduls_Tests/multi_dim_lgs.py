@@ -119,23 +119,12 @@ print("Runtime:", runtime/1000, "microseconds")
 
 import numpy as np
 
-def dostuff(M, rnge, pos):
-    dims = M.shape
-    
-    P_shape = rnge + dims
-    P = np.ones(P_shape)
-    P[pos[0], pos]
 
-
-
-
-def r_matrix(M, r, x, y):
-    shp = M.shape
-    
-    b = np.ones((r,) + shp) * M
-    b[:, x, y] = np.linspace(1, 20, r)
-    return b
-
+def r_matrix(arr, shp, coor):
+    R = np.ones(arr.shape + shp)
+    this_slc = all_slice(coor)
+    R[this_slc] = arr
+    return R
 
 
 
@@ -148,6 +137,8 @@ def add_slice(z, slc):
 def all_slice(slc):
     return (slice(0, None),) + slc
 
+def get_coor(y, x):
+    return (y, x)
 
 
 
