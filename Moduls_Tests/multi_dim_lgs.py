@@ -120,6 +120,12 @@ print("Runtime:", runtime/1000, "microseconds")
 import numpy as np
 
 
+def find_matrices(R, A, B):
+    A1 = R * A
+    B1 = np.stack([B for j in range(R.shape[0])], axis=0)
+    return A1, B1
+
+
 def r_matrix(arr, shp, coor):
     R = np.ones(arr.shape + shp)
     this_slc = all_slice(coor)
