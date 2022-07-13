@@ -32,6 +32,7 @@ class Model():
         self.p = p
         self.n_layers = 0
         self.layers = dict()
+        self.built = False
          
     
     def add_layer(self, layer: Layer):
@@ -46,7 +47,7 @@ class Model():
     def build(self):
         
         if self.n_layers == 0:
-            raise ValueError("Model contains no layers. Can't build the model.")
+            raise Exception("Model contains no layers. Use add_layer() before trying to build the model.")
         
         for i in range(self.n_layers-1):
             self.layers[i].sync_layer_info(self.layers[i+1].mu_inv)
@@ -70,14 +71,24 @@ class Model():
             self.M = layer.apply_boundaries(self.M, i)
             i += len(layer.bounds)
             
+        self.built = True
+            
             
     def solve(self, allclose_check: bool= False):
-        x = np.linalg.solve(a = self.M, b = self.y)
-        
-        if allclose_check:
-            return x, np.allclose(np.dot(self.M, x), self.y)    
+        if self.built:    
+            x = np.linalg.solve(a = self.M, b = self.y)
+            
+            if allclose_check:
+                return x, np.allclose(np.dot(self.M, x), self.y)    
+            else:
+                return x
         else:
-            return x
+            raise Exception("Model has not been built yet. Use build() before trying to solve the model.")
+        
+        
+    
+        
+        
 
         
             
