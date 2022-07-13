@@ -64,6 +64,11 @@ class Layer():
         self.bounds.append(boundary)
         
         
+    def update_boundaries(self):
+        self.bounds.clear()
+        self._init_boundaries()
+        
+        
     def apply_boundaries(self, matrix: np.ndarray, index: int):
                
         for a, bound in enumerate(self.bounds):

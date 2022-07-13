@@ -57,7 +57,9 @@ for i in range(0, 101):
         x = m1.solve()
         
 
-
+for j in range(0, 100):
+    for i in range(0, 100):
+        m1.vary_param(l2, "r", 0.4 + i * 0.001)
 
 
 
