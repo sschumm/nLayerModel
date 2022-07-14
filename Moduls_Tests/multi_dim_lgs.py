@@ -177,22 +177,27 @@ def find_matrices(R, A, B):
     return A1, B1
 
 
-def r_matrix(arr, shp_2, shp_1, lst_of_coors, idx):
+def r_matrix(var_arrays, shp_2, shp_1, idx):
+    arr = var_arrays[idx]["arr"]
+    
     R = np.ones(arr.shape + shp_2)
     
-    diff = len(shp_2) - len(shp_1)
-    if diff != 0:
-        ##
-        for j in range(3 + diff):
-            mult = R.shape[-j]
-            arr1 = np.stack([arr for i in range(mult)], axis=1)
+    if idx != 0:
+        
+        arr1 = None
+        for j in range(idx):
+            
+            
+            
+            mult = R.shape[-(j+4)]
+            arr1 = np.stack([var_arrays[j]["arr"] for i in range(mult)], axis=-1)
         ##
         # mult = R.shape[diff]
         # arr2 = np.stack([arr for i in range(mult)], axis=1)
     else:
         arr1 = arr
     
-    for coor in lst_of_coors:
+    for coor in var_arrays[idx]["loc"]:
         this_slc = all_slice(coor)
         R[this_slc] = arr1
     return R
@@ -204,25 +209,36 @@ def vary(A, B, var_arrays):
     A1 = A
     B1 = B
     
+    ##
     for idx, dic in enumerate(var_arrays):
-        rng = dic["arr"]
-        coorlst = dic["loc"]
-        ##
+        #coorlst = dic["loc"]
         for i in range(idx):
-            coorlst = all_slice(coorlst)
+            dic["loc"] = all_slice(dic["loc"])
+    ##
+    
+    
+    for idx, dic in enumerate(var_arrays):
+        #rng = dic["arr"]
+        #coorlst = dic["loc"]
+        
         ##
-        R = r_matrix(rng, A1.shape, dims, coorlst, idx)
+        # for i in range(idx):
+        #     coorlst = all_slice(coorlst)
+        ##
+        R = r_matrix(var_arrays, A1.shape, dims, idx)
+        # print(R)
+        # print(R.shape)
         A1, B1 = find_matrices(R, A1, B1)
     x = np.linalg.solve(A1, B1)
-    return x
+    return x, A1, B1
         
     
 i = 3
 A = np.random.randn(i,i)
 B = np.random.randn(i)
 
-var1, var2 = 2, 4
-rng1, rng2 = np.linspace(1,13,var1), np.linspace(1,21,var2)
+var1, var2, var3 = 2, 2, 3
+rng1, rng2, rng3 = np.linspace(1,13,var1), np.linspace(1,21,var2), np.ones(var3) * 999
 
 var_arrays = []
 var_arrays.append({
@@ -233,8 +249,12 @@ var_arrays.append({
     "arr": rng2,
     "loc": [get_coor(2, 0)]
     })
+# var_arrays.append({
+#     "arr": rng3,
+#     "loc": [get_coor(0, 0)]
+#     })
 
-x = vary(A, B, var_arrays)
+x, At, Bt = vary(A, B, var_arrays)
 
 
 
@@ -258,9 +278,9 @@ np.set_printoptions(suppress=True, linewidth=200, precision=4)
 
 ## Goal
 print("x: \n", x, "\n")
-print("x1: \n")
 
 ## Review
+print("x1: \n")
 print(x_test)
 print("")
 
@@ -269,7 +289,8 @@ print("Comparison:")
 print(np.round(x - x_test, 5))
 
     
-
+# print("At: \n", At, "\n")
+# print("Bt: \n", Bt, "\n")
 
 
 
