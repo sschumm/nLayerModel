@@ -240,11 +240,11 @@ def vary(A, B, var_arrays):
     return x, A1, B1
         
     
-i = 4
+i = 2
 A = np.random.randn(i,i)
 B = np.random.randn(i)
 
-var1, var2, var3 = 3, 3, 3
+var1, var2, var3 = 2, 2, 2
 rng1, rng2, rng3 = np.linspace(3,13,var1), np.linspace(2,21,var2), np.ones(var3) * 999
 
 var_arrays = []
