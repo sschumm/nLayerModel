@@ -123,7 +123,7 @@ print("Runtime:", runtime/1000, "microseconds")
 # B = np.random.randn(i)
 # var1 = 4
 # rng = np.linspace(1,13,var1)
-coorlst = [get_coor(0, 1), get_coor(2, 2)]
+# coorlst = [get_coor(0, 1), get_coor(2, 2)]
 # 
 # R = r_matrix(rng, A.shape, A.shape, coorlst)
 # C, D = find_matrices(R, A, B)
@@ -133,7 +133,7 @@ coorlst = [get_coor(0, 1), get_coor(2, 2)]
 #     
 # var2 = 3    
 # rng2 = np.linspace(1,21,var2)
-coorlst2 = [all_slice(get_coor(2, 0))] # [add_coor(0, get_coor(2, 0))] 
+# coorlst2 = [all_slice(get_coor(2, 0))] # [add_coor(0, get_coor(2, 0))] 
 # R2 = r_matrix(rng2, C.shape, A.shape, coorlst2)
 # E, F = find_matrices(R2, C, D)
 # 
@@ -154,26 +154,6 @@ coorlst2 = [all_slice(get_coor(2, 0))] # [add_coor(0, get_coor(2, 0))]
 
 import numpy as np
 
-def find_matrices(R, A, B):
-    A1 = R * A
-    B1 = np.stack([B for j in range(R.shape[0])], axis=0)
-    return A1, B1
-
-def r_matrix(arr, shp_2, shp_1, lst_of_coors):
-    R = np.ones(arr.shape + shp_2)
-    
-    diff = len(shp_2) - len(shp_1)
-    if diff != 0:
-        mult = R.shape[diff]
-        arr2 = np.stack([arr for i in range(mult)], axis=1)
-    else:
-        arr2 = arr
-    
-    for coor in lst_of_coors:
-        this_slc = all_slice(coor)
-        R[this_slc] = arr2
-    return R
-
 def get_slice(y, x):
     return (slice(y, y+1), slice(x, x+1))
 
@@ -181,6 +161,8 @@ def add_slice(z, slc):
     return (slice(z, z+1),) + slc
 
 def all_slice(slc):
+    if isinstance(slc, list):
+        return [(slice(0, None),) + j for j in slc]
     return (slice(0, None),) + slc
 
 def get_coor(y, x):
@@ -189,27 +171,57 @@ def get_coor(y, x):
 def add_coor(z, coor):
     return (z,) + coor
 
+def find_matrices(R, A, B):
+    A1 = R * A
+    B1 = np.stack([B for j in range(R.shape[0])], axis=0)
+    return A1, B1
+
+
+def r_matrix(arr, shp_2, shp_1, lst_of_coors, idx):
+    R = np.ones(arr.shape + shp_2)
+    
+    diff = len(shp_2) - len(shp_1)
+    if diff != 0:
+        ##
+        for j in range(3 + diff):
+            mult = R.shape[-j]
+            arr1 = np.stack([arr for i in range(mult)], axis=1)
+        ##
+        # mult = R.shape[diff]
+        # arr2 = np.stack([arr for i in range(mult)], axis=1)
+    else:
+        arr1 = arr
+    
+    for coor in lst_of_coors:
+        this_slc = all_slice(coor)
+        R[this_slc] = arr1
+    return R
+
+
 def vary(A, B, var_arrays):
     dims = A.shape
     # variations = len(var_arrays)
     A1 = A
     B1 = B
     
-    for dic in var_arrays:
+    for idx, dic in enumerate(var_arrays):
         rng = dic["arr"]
         coorlst = dic["loc"]
         ##
-        R = r_matrix(rng, A1.shape, dims, coorlst)
+        for i in range(idx):
+            coorlst = all_slice(coorlst)
+        ##
+        R = r_matrix(rng, A1.shape, dims, coorlst, idx)
         A1, B1 = find_matrices(R, A1, B1)
     x = np.linalg.solve(A1, B1)
     return x
         
     
-i = 6
+i = 3
 A = np.random.randn(i,i)
 B = np.random.randn(i)
 
-var1, var2 = 4, 3
+var1, var2 = 2, 4
 rng1, rng2 = np.linspace(1,13,var1), np.linspace(1,21,var2)
 
 var_arrays = []
@@ -219,17 +231,15 @@ var_arrays.append({
     })
 var_arrays.append({
     "arr": rng2,
-    "loc": [all_slice(get_coor(2, 0))]
+    "loc": [get_coor(2, 0)]
     })
 
 x = vary(A, B, var_arrays)
-np.set_printoptions(suppress=True, linewidth=200, precision=4)
-print("x: \n", x, "\n")
 
-print("x1: \n")
+
+
 AA = np.copy(A)
-
-x_test = np.empty((3,4,i))        
+x_test = np.empty((var2,var1,i))        
 for par2 in range(var2):
     AA = np.copy(A)
     AA[get_coor(2,0)] *= rng2[par2]
@@ -243,6 +253,14 @@ for par2 in range(var2):
         x_test[par2, par] = x1
         #print(x1)
     #print("")
+
+np.set_printoptions(suppress=True, linewidth=200, precision=4)
+
+## Goal
+print("x: \n", x, "\n")
+print("x1: \n")
+
+## Review
 print(x_test)
 print("")
 
