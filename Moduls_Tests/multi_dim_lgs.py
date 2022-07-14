@@ -116,6 +116,41 @@ print("Runtime:", runtime/1000, "microseconds")
 
 
 #%%
+# deprecated
+# =============================================================================
+# i = 5
+# A = np.random.randn(i,i)
+# B = np.random.randn(i)
+# var1 = 4
+# rng = np.linspace(1,13,var1)
+coorlst = [get_coor(0, 1), get_coor(2, 2)]
+# 
+# R = r_matrix(rng, A.shape, A.shape, coorlst)
+# C, D = find_matrices(R, A, B)
+# 
+# for j in range(C.shape[0]):
+#     print(C[j] - A)
+#     
+# var2 = 3    
+# rng2 = np.linspace(1,21,var2)
+coorlst2 = [all_slice(get_coor(2, 0))] # [add_coor(0, get_coor(2, 0))] 
+# R2 = r_matrix(rng2, C.shape, A.shape, coorlst2)
+# E, F = find_matrices(R2, C, D)
+# 
+# 
+# for j in range(E.shape[0]):
+#     print(E[j] - A)
+# 
+# np.set_printoptions(suppress=True, linewidth=200, precision=4)
+# x = np.linalg.solve(E, F)
+# print("x: \n", x, "\n")
+# print("x: \n", x[0], "\n")
+# print("x: \n", x[0, 0], "\n")
+# =============================================================================
+
+
+
+#%%
 
 import numpy as np
 
@@ -123,22 +158,6 @@ def find_matrices(R, A, B):
     A1 = R * A
     B1 = np.stack([B for j in range(R.shape[0])], axis=0)
     return A1, B1
-
-# =============================================================================
-# def r_matrix(arr, shp, lst_of_coors):
-#     R = np.ones(arr.shape + shp)
-#     for coor in lst_of_coors:
-#         this_slc = all_slice(coor)
-#         R[this_slc] = arr
-#     return R
-# =============================================================================
-
-
-
-''' Massive TODO 
-    code works (probably just) for this particular setup
-'''
-
 
 def r_matrix(arr, shp_2, shp_1, lst_of_coors):
     R = np.ones(arr.shape + shp_2)
@@ -170,51 +189,55 @@ def get_coor(y, x):
 def add_coor(z, coor):
     return (z,) + coor
 
-
-i = 3
+def vary(A, B, var_arrays):
+    dims = A.shape
+    # variations = len(var_arrays)
+    A1 = A
+    B1 = B
+    
+    for dic in var_arrays:
+        rng = dic["arr"]
+        coorlst = dic["loc"]
+        ##
+        R = r_matrix(rng, A1.shape, dims, coorlst)
+        A1, B1 = find_matrices(R, A1, B1)
+    x = np.linalg.solve(A1, B1)
+    return x
+        
+    
+i = 6
 A = np.random.randn(i,i)
 B = np.random.randn(i)
-var1 = 4
-rng = np.linspace(1,13,var1)
-coorlst = [get_coor(0, 1), get_coor(2, 2)]
 
-R = r_matrix(rng, A.shape, A.shape, coorlst)
-C, D = find_matrices(R, A, B)
+var1, var2 = 4, 3
+rng1, rng2 = np.linspace(1,13,var1), np.linspace(1,21,var2)
 
-# =============================================================================
-# for j in range(C.shape[0]):
-#     print(C[j] - A)
-# =============================================================================
-    
-var2 = 3    
-rng2 = np.linspace(1,21,var2)
-coorlst2 = [all_slice(get_coor(2, 0))] # [add_coor(0, get_coor(2, 0))] 
-R2 = r_matrix(rng2, C.shape, A.shape, coorlst2)
-E, F = find_matrices(R2, C, D)
+var_arrays = []
+var_arrays.append({
+    "arr": rng1, 
+    "loc": [get_coor(0,1), get_coor(2,2)]
+    })
+var_arrays.append({
+    "arr": rng2,
+    "loc": [all_slice(get_coor(2, 0))]
+    })
 
-
-# =============================================================================
-# for j in range(E.shape[0]):
-#     print(E[j] - A)
-# =============================================================================
-
-x = np.linalg.solve(E, F)
+x = vary(A, B, var_arrays)
+np.set_printoptions(suppress=True, linewidth=200, precision=4)
 print("x: \n", x, "\n")
-# print("x: \n", x[0], "\n")
-# print("x: \n", x[0, 0], "\n")
 
 print("x1: \n")
 AA = np.copy(A)
 
-x_test = np.empty((3,4,3))        
+x_test = np.empty((3,4,i))        
 for par2 in range(var2):
     AA = np.copy(A)
     AA[get_coor(2,0)] *= rng2[par2]
     
     for par in range(var1):
         AAA = np.copy(AA)
-        AAA[coorlst[0]] *= rng[par]
-        AAA[coorlst[1]] *= rng[par]
+        AAA[var_arrays[0]["loc"][0]] *= rng1[par]
+        AAA[var_arrays[0]["loc"][1]] *= rng1[par]
         
         x1 = np.linalg.solve(AAA, B)
         x_test[par2, par] = x1
@@ -225,7 +248,7 @@ print("")
 
 ## Compare
 print("Comparison:")
-print(np.round(x - x_test))
+print(np.round(x - x_test, 5))
 
     
 
