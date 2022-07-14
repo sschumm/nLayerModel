@@ -177,64 +177,91 @@ def find_matrices(R, A, B):
     return A1, B1
 
 
-def r_matrix(arr, shp_2, shp_1, lst_of_coors, idx):
-    R = np.ones(arr.shape + shp_2)
-    
-    diff = len(shp_2) - len(shp_1)
-    if diff != 0:
-        ##
-        for j in range(3 + diff):
-            mult = R.shape[-j]
-            arr1 = np.stack([arr for i in range(mult)], axis=1)
-        ##
-        # mult = R.shape[diff]
-        # arr2 = np.stack([arr for i in range(mult)], axis=1)
-    else:
-        arr1 = arr
-    
-    for coor in lst_of_coors:
-        this_slc = all_slice(coor)
-        R[this_slc] = arr1
-    return R
+# =============================================================================
+# def r_matrix(arr, shp_2, shp_1, lst_of_coors, idx):
+#     R = np.ones(arr.shape + shp_2)
+#     
+#     diff = len(shp_2) - len(shp_1)
+#     if diff != 0:
+#         ##
+#         for j in range(3 + diff):
+#             mult = R.shape[-j]
+#             arr1 = np.stack([arr for i in range(mult)], axis=1)
+#         ##
+#         # mult = R.shape[diff]
+#         # arr2 = np.stack([arr for i in range(mult)], axis=1)
+#     else:
+#         arr1 = arr
+#     
+#     for coor in lst_of_coors:
+#         this_slc = all_slice(coor)
+#         R[this_slc] = arr1
+#     return R
+# =============================================================================
 
 
 def vary(A, B, var_arrays):
-    dims = A.shape
-    # variations = len(var_arrays)
+    
     A1 = A
     B1 = B
     
     for idx, dic in enumerate(var_arrays):
         rng = dic["arr"]
-        coorlst = dic["loc"]
-        ##
+
         for i in range(idx):
-            coorlst = all_slice(coorlst)
-        ##
-        R = r_matrix(rng, A1.shape, dims, coorlst, idx)
+            dic["loc"] = all_slice(dic["loc"])
+        
+        
+        R = np.ones(rng.shape + A1.shape)
+        
+        if idx != 0:
+            
+            arr2 = rng
+            for j in range(3, 3 + idx):
+                arr1 = arr2
+                mult = R.shape[-j]
+                arr2 = np.stack([arr1 for i in range(mult)], axis=-1)
+        else:
+            arr2 = rng
+        
+        for coor in dic["loc"]:
+            slc = all_slice(coor)
+            R[slc] = arr2
+        
+        
+        #R = r_matrix(rng, A1.shape, dims, dic["loc"], idx)
         A1, B1 = find_matrices(R, A1, B1)
     x = np.linalg.solve(A1, B1)
-    return x
+
+
+
+
+
+    return x, A1, B1
         
     
-i = 3
+i = 4
 A = np.random.randn(i,i)
 B = np.random.randn(i)
 
-var1, var2 = 2, 4
-rng1, rng2 = np.linspace(1,13,var1), np.linspace(1,21,var2)
+var1, var2, var3 = 3, 3, 3
+rng1, rng2, rng3 = np.linspace(3,13,var1), np.linspace(2,21,var2), np.ones(var3) * 999
 
 var_arrays = []
 var_arrays.append({
     "arr": rng1, 
-    "loc": [get_coor(0,1), get_coor(2,2)]
+    "loc": [get_coor(0,1), get_coor(1,1)]
     })
 var_arrays.append({
     "arr": rng2,
-    "loc": [get_coor(2, 0)]
+    "loc": [get_coor(1, 0)]
     })
+# var_arrays.append({
+#     "arr": rng3,
+#     "loc": [get_coor(0, 0)]
+#     })
 
-x = vary(A, B, var_arrays)
+x, At, Bt = vary(A, B, var_arrays)
 
 
 
@@ -242,7 +269,7 @@ AA = np.copy(A)
 x_test = np.empty((var2,var1,i))        
 for par2 in range(var2):
     AA = np.copy(A)
-    AA[get_coor(2,0)] *= rng2[par2]
+    AA[get_coor(1,0)] *= rng2[par2]
     
     for par in range(var1):
         AAA = np.copy(AA)
@@ -268,7 +295,8 @@ print("")
 print("Comparison:")
 print(np.round(x - x_test, 5))
 
-    
+# print("At: \n", At, "\n")
+# print("Bt: \n", Bt, "\n")
 
 
 
