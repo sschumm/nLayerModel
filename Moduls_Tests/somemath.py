@@ -31,7 +31,10 @@ def fa(r, p):
 
 
 def fb(r, p):
-    return r**-p
+    if np.all(r):
+        return r**-p
+    else:
+        raise ZeroDivisionError(r)
     
 
 def dfa(r, p):
@@ -39,7 +42,10 @@ def dfa(r, p):
 
 
 def dfb(r, p):
-    return -p * r**-(p+1)
+    if np.all(r):
+        return -p * r**-(p+1)
+    else:
+        raise ZeroDivisionError(r)
 
 
 # -----------------------
@@ -49,22 +55,34 @@ def solution_for_A(r, p, aj, bj, fa, fb):
 
 
 def Ar_no_k(r, p, aj, bj):
-    return solution_for_A(r, p, aj, bj, fa(r, p), fb(r, p))
+    return solution_for_A(r, p, aj, bj, fa, fb)
 
 
 def dAr_no_k(r, p, aj, bj):
-    return solution_for_A(r, p, aj, bj, dfa(r, p), dfb(r, p))
+    return solution_for_A(r, p, aj, bj, dfa, dfb)
 
 
 # --- Testbench ------------------------------------------------------
 
 
-theta = np.arange(0, 2 * np.pi, np.pi/4)
-r = np.arange(theta.shape[0])
+theta = np.arange(0, 2 * np.pi, np.pi/4, dtype=np.longdouble)
+r = np.linspace(1, 8, theta.shape[0], dtype=np.longdouble)
 p = 2
+aj = 4
+bj = 3
 
 print("r0_to_xy(r, theta): \n", r0_to_xy(r, theta), "\n")
+#
 print("fa(r, p): \n", fa(r, p), "\n")
+print("fb(r, p): \n", fb(r, p), "\n")
+print("dfa(r, p): \n", dfa(r, p), "\n")
+print("dfb(r, p): \n", dfb(r, p), "\n")
+#
+print("solution_for_A(r, p, aj, bj, fa, fb): \n", solution_for_A(r, p, aj, bj, fa, fb), "\n")
+print("Ar_no_k(r, p, aj, bj): \n", Ar_no_k(r, p, aj, bj), "\n")
+print("dAr_no_k(r, p, aj, bj): \n", dAr_no_k(r, p, aj, bj), "\n")
+
+
 
 
 
