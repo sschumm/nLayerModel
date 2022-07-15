@@ -9,19 +9,16 @@ import numpy as np
 
 
 def r0_to_x(r, theta):
-    x = r * np.cos(theta)
-    return x
+    return r * np.cos(theta)
 
 
 def r0_to_y(r, theta):
-    y = r * np.sin(theta)
-    return y
+    return r * np.sin(theta)
 
 
 def r0_to_xy(r, theta):
-    x = r0_to_x(r, theta)
-    y = r0_to_y(r, theta)    
-    return x, y
+    return r0_to_x(r, theta), r0_to_y(r, theta)    
+    
 
 
 # -----------------------
@@ -67,6 +64,9 @@ def Ar_no_k(r, p, aj, bj):
 
 def dAr_no_k(r, p, aj, bj):
     return solution_for_A(r, p, aj, bj, dfa, dfb)
+
+
+
 
 
 # --- Testbench ------------------------------------------------------
