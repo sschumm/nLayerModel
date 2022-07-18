@@ -32,19 +32,17 @@ for i in range(3, -1, -1):
     
 """ Adding some streamplot stuff """
 # 1D arrays
-# =============================================================================
-# x = np.arange(-5,5,0.1)
-# y = np.arange(-5,5,0.1)
-#   
-# # Meshgrid
-# X,Y = np.meshgrid(x,y)
-#   
-# # Assign vector directions
-# Ex = (X + 1)/((X+1)**2 + Y**2) - (X - 1)/((X-1)**2 + Y**2)
-# Ey = Y/((X+1)**2 + Y**2) - Y/((X-1)**2 + Y**2)
-# 
-# ax.streamplot(X,Y,Ex,Ey, density=1.4, linewidth=None, color="black")
-# =============================================================================
+x = np.arange(-5,5,0.1)
+y = np.arange(-5,5,0.1)
+  
+# Meshgrid
+X,Y = np.meshgrid(x,y)
+  
+# Assign vector directions
+Ex = (X + 1)/((X+1)**2 + Y**2) - (X - 1)/((X-1)**2 + Y**2)
+Ey = Y/((X+1)**2 + Y**2) - Y/((X-1)**2 + Y**2)
+
+ax.streamplot(X,Y,Ex,Ey, density=1.4, linewidth=None, color="black")
 
 
 
