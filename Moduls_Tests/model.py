@@ -92,7 +92,7 @@ class Model():
     def test(self, r, theta):
         if not isinstance(r, np.ndarray):
             r = np.array([float(r)])
-            print(r)
+            
         Az = []
         for radius in r:
             Az.append(Az_no_k(self.p, 
@@ -102,6 +102,32 @@ class Model():
                               bj = self.solution[1]))
             
         return np.asarray(Az)
+    
+    
+    def get_Br_plot(self):
+        
+        for lay in self.layers.values():
+            if lay.index == 0:
+                r_i = 0
+            else:
+                r_i = self.layers[lay.index -1].r
+            radius = np.linspace(r_i, lay.r, 10)
+            print(lay.index, "  ", radius)
+        
+# =============================================================================
+#         if not isinstance(r, np.ndarray):
+#             r = np.array([float(r)])
+#             
+#         Az = []
+#         for radius in r:
+#             Az.append(Az_no_k(self.p, 
+#                               radius, 
+#                               theta,
+#                               aj = self.solution[0], 
+#                               bj = self.solution[1]))
+#             
+#         return np.asarray(Az)
+# =============================================================================
          
 
         
