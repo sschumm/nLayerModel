@@ -81,6 +81,22 @@ def Br_no_k(p, r, theta, aj, bj):
         raise ZeroDivisionError(r)
         
         
+def B0_no_k(p, r, theta, aj, bj):
+    if np.all(r):
+        return - np.sin(p * theta) * dAr_no_k(p, r, aj, bj)
+    else:
+        raise ZeroDivisionError(r)
+        
+        
+def Hr_no_k(p, r, theta, aj, bj, mu):
+    if type(mu) is np.ndarray and (type(r) or type(theta) or type(aj) or type(bj)) is np.ndarray:
+        raise Exception("(sschumm): this function is only designed to vary either aj/bj or r/theta or mu")
+    if np.all(mu):
+        return (p / (r * mu)) * np.cos(p * theta) * Ar_no_k(p, r, aj, bj)
+    else:
+        raise ZeroDivisionError(r)
+
+
 def H0_no_k(p, r, theta, aj, bj, mu):
     if type(mu) is np.ndarray and (type(r) or type(theta) or type(aj) or type(bj)) is np.ndarray:
         raise Exception("(sschumm): this function is only designed to vary either aj/bj or r/theta or mu")
@@ -96,7 +112,7 @@ def H0_no_k(p, r, theta, aj, bj, mu):
 
 # =============================================================================
 # p = 2
-# theta = 2 * np.arange(0, 2 * np.pi, np.pi/8, dtype=np.longdouble)
+# theta = 2 * np.arange(0, 2 * np.pi, np.pi/9, dtype=np.longdouble)
 # r     = 3 #* np.linspace(1, 8, theta.shape[0], dtype=np.longdouble)
 # aj    = 3 #* np.linspace(1,5, 5) # 4
 # bj    = 3 #* np.linspace(5,1, 5) # 4
@@ -114,6 +130,8 @@ def H0_no_k(p, r, theta, aj, bj, mu):
 # 
 # print("Az_no_k(p, r, theta, aj, bj): \n", Az_no_k(p, r, theta, aj, bj), "\n")
 # print("Br_no_k(p, r, theta, aj, bj): \n", Br_no_k(p, r, theta, aj, bj), "\n")
+# print("B0_no_k(p, r, theta, aj, bj): \n", B0_no_k(p, r, theta, aj, bj), "\n")
+# print("Hr_no_k(p, r, theta, aj, bj, mu): \n", Hr_no_k(p, r, theta, aj, bj, mu), "\n")
 # print("H0_no_k(p, r, theta, aj, bj, mu): \n", H0_no_k(p, r, theta, aj, bj, mu), "\n")
 # 
 # 
