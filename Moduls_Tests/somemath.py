@@ -17,7 +17,19 @@ def r0_to_y(r, theta):
 
 
 def r0_to_xy(r, theta):
-    return r0_to_x(r, theta), r0_to_y(r, theta)    
+    return r0_to_x(r, theta), r0_to_y(r, theta) 
+
+    
+def BrB0_to_U(Br, B0, theta):
+    return Br * np.cos(theta) - B0 * np.sin(theta)
+
+
+def BrB0_to_V(Br, B0, theta):
+    return Br * np.sin(theta) + B0 * np.cos(theta)
+
+
+def BrB0_to_UV(Br, B0, theta):
+    return BrB0_to_U(Br, B0, theta), BrB0_to_V(Br, B0, theta)
     
 
 # -----------------------
