@@ -90,12 +90,19 @@ class Model():
         
     
     def test(self, r, theta):
-        return Az_no_k(self.p, 
-                       r, 
-                       theta,
-                       aj = self.solution[0], 
-                       bj = self.solution[1])
-        
+        if not isinstance(r, np.ndarray):
+            r = np.array([float(r)])
+            print(r)
+        Az = []
+        for radius in r:
+            Az.append(Az_no_k(self.p, 
+                              radius, 
+                              theta,
+                              aj = self.solution[0], 
+                              bj = self.solution[1]))
+            
+        return np.asarray(Az)
+         
 
         
     
