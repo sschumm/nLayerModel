@@ -94,14 +94,14 @@ def H0_no_k(p, r, theta, aj, bj, mu):
 # --- Testbench ------------------------------------------------------
 
 
-p = 2
-theta = 2 #* np.arange(0, 2 * np.pi, np.pi/8, dtype=np.longdouble)
-r     = 3 #* np.linspace(1, 8, theta.shape[0], dtype=np.longdouble)
-aj    = 3 * np.linspace(1,5, 5) # 4
-bj    = 3 * np.linspace(5,1, 5) # 4
-mu    = 4 * np.pi * 10e-6  #* np.linspace(1,10,10)
-
 # =============================================================================
+# p = 2
+# theta = 2 * np.arange(0, 2 * np.pi, np.pi/8, dtype=np.longdouble)
+# r     = 3 #* np.linspace(1, 8, theta.shape[0], dtype=np.longdouble)
+# aj    = 3 #* np.linspace(1,5, 5) # 4
+# bj    = 3 #* np.linspace(5,1, 5) # 4
+# mu    = 4 * np.pi * 10e-6  #* np.linspace(1,10,10)
+# 
 # print("r0_to_xy(r, theta): \n", r0_to_xy(r, theta), "\n")
 # 
 # print("fa(p, r): \n", fa(p, r), "\n")
@@ -115,9 +115,9 @@ mu    = 4 * np.pi * 10e-6  #* np.linspace(1,10,10)
 # print("Az_no_k(p, r, theta, aj, bj): \n", Az_no_k(p, r, theta, aj, bj), "\n")
 # print("Br_no_k(p, r, theta, aj, bj): \n", Br_no_k(p, r, theta, aj, bj), "\n")
 # print("H0_no_k(p, r, theta, aj, bj, mu): \n", H0_no_k(p, r, theta, aj, bj, mu), "\n")
+# 
+# 
 # =============================================================================
-
-
 
 
 

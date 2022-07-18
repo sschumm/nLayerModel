@@ -6,6 +6,7 @@ Created on Mon Jul 11 16:12:38 2022
 """
 import numpy as np
 
+from .somemath import Az_no_k
 from .layer import Layer, CurrentLoading
 
 mu_0 = 4 * np.pi * 10**(-7) # [N / A**2]
@@ -33,6 +34,7 @@ class Model():
         self.n_layers = 0
         self.layers = dict()
         self.built = False
+        self.solution = None
          
     
     def add_layer(self, layer: Layer):
@@ -77,7 +79,7 @@ class Model():
     def solve(self, allclose_check: bool= False):
         if self.built:    
             x = np.linalg.solve(a = self.M, b = self.y)
-            
+            self.solution = x
             if allclose_check:
                 return x, np.allclose(np.dot(self.M, x), self.y)    
             else:
@@ -87,11 +89,16 @@ class Model():
         
         
     
-        
+    def test(self, r, theta):
+        return Az_no_k(self.p, 
+                       r, 
+                       theta,
+                       aj = self.solution[0], 
+                       bj = self.solution[1])
         
 
         
-            
+    
         
         
         
