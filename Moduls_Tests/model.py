@@ -106,13 +106,25 @@ class Model():
     
     def get_Br_plot(self):
         
+        spacing = self.layers[list(self.layers)[-1]].r / 100.
+        
         for lay in self.layers.values():
             if lay.index == 0:
-                r_i = 0
+                r_i = 0.01
             else:
                 r_i = self.layers[lay.index -1].r
-            radius = np.linspace(r_i, lay.r, 10)
-            print(lay.index, "  ", radius)
+            radius = np.arange(r_i, lay.r, spacing)
+            print(lay.index, "   ", radius)
+        
+# =============================================================================
+#         for lay in self.layers.values():
+#             if lay.index == 0:
+#                 r_i = 0
+#             else:
+#                 r_i = self.layers[lay.index -1].r
+#             radius = np.linspace(r_i, lay.r, 10)
+#             print(lay.index, "  ", radius)
+# =============================================================================
         
 # =============================================================================
 #         if not isinstance(r, np.ndarray):
