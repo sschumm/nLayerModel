@@ -7,8 +7,6 @@ Created on Mon Jul 11 16:12:38 2022
 import numpy as np
 import Moduls_Tests.somemath as sm
 
-from .somemath import Az_no_k, Br_no_k, B0_no_k
-#from .somemath import *
 from .layer import Layer, CurrentLoading
 
 mu_0 = 4 * np.pi * 10**(-7) # [N / A**2]
@@ -97,7 +95,7 @@ class Model():
             
         Az = []
         for radius in r:
-            Az.append(Az_no_k(self.p, 
+            Az.append(sm.Az_no_k(self.p, 
                               radius, 
                               theta,
                               aj = self.solution[0], 
@@ -108,35 +106,63 @@ class Model():
     
     def get_Br_plot(self, theta):
         
-        # Br = []
+        radi = 1.9
+        detail = 200                                     # has to be even
+        x = np.linspace(-radi, radi, detail)
+        y = np.linspace(-radi, radi, detail)
+        # x = np.arange(-5,5,0.1)
+        # y = np.arange(-5,5,0.1)
+        X, Y = np.meshgrid(x,y)
+        R, THETA = sm.xy_to_r0(X, Y)
+        Br, B0 = np.zeros(X.shape), np.zeros(X.shape)
+        cd = R.shape[0]
 
-        spacing = self.layers[list(self.layers)[-1]].r / 20.
+        # spacing = self.layers[list(self.layers)[-1]].r / 20.
                 
         for lay in self.layers.values():
             if lay.index == 0:
                 r_i = 0.01
             else:
                 r_i = self.layers[lay.index -1].r
-            radius = np.arange(r_i, lay.r, spacing)
+            # radius = np.arange(r_i, lay.r, spacing)
+            r_o = lay.r
             
-        # x = np.linspace(0.01, 4.01, 100)
-        # y = np.linspace(0.01, 4.01, 100)
-        x = np.arange(-5,5,0.1)
-        y = np.arange(-5,5,0.1)
-        X, Y = np.meshgrid(x,y)
-        R, THETA = sm.xy_to_r0(X, Y)
-        
-        Br = Br_no_k(self.p, 
-                     R, 
-                     THETA, 
-                     self.solution[lay.index * 2], 
-                     self.solution[lay.index * 2 + 1])
-        
-        B0 = B0_no_k(self.p, 
-                     R, 
-                     THETA, 
-                     self.solution[lay.index * 2], 
-                     self.solution[lay.index * 2 + 1])
+            lower = np.round(R[0], 2) >= r_i
+            upper = np.round(R[0], 2) <   r_o
+            
+            
+            idxs = np.argwhere(lower & upper)
+            cd2 = int(cd / 2)
+                        
+            # i_i = np.argmax(R[0] >= r_i)
+            # i_o = np.argmin(R[0] <  r_o)
+            
+            op = np.zeros(X.shape) # this will prob only work for symetric linspace
+            for j in idxs[:, 0]:
+                op[: cd2, j] = 1
+                op[-cd2:, j] = 1
+                op[j, : cd2] = 1
+                op[j, -cd2:] = 1
+            cd -= len(idxs)
+            
+            Br_loop = sm.Br_no_k(self.p, 
+                                 R, 
+                                 THETA, 
+                                 self.solution[lay.index * 2], 
+                                 self.solution[lay.index * 2 + 1])
+            
+            B0_loop = sm.B0_no_k(self.p, 
+                                 R, 
+                                 THETA, 
+                                 self.solution[lay.index * 2], 
+                                 self.solution[lay.index * 2 + 1])
+            a = Br_loop * op
+            b = B0_loop * op
+            
+            Br += a
+            B0 += b
+        #Br = Br_loop
+        #B0 = B0_loop
         
         # X, Y = sm.r0_to_xy(R, THETA)
         
