@@ -104,10 +104,17 @@ class Model():
         return np.asarray(Az)
     
     
+    def get_radii_data(self):
+        radii = []
+        for lay in self.layers.values():
+            radii.append(lay.r)
+        return radii
+    
+    
     def get_Br_plot(self, theta):
         
         radi = 1.9
-        detail = 200                                     # has to be even
+        detail = 20                                     # has to be even
         x = np.linspace(-radi, radi, detail)
         y = np.linspace(-radi, radi, detail)
         # x = np.arange(-5,5,0.1)
@@ -156,8 +163,8 @@ class Model():
                                  THETA, 
                                  self.solution[lay.index * 2], 
                                  self.solution[lay.index * 2 + 1])
-            a = Br_loop * op
-            b = B0_loop * op
+            a = Br_loop #* op
+            b = B0_loop #* op
             
             Br += a
             B0 += b
@@ -171,11 +178,7 @@ class Model():
         return X, Y, U, V
     
     
-    def get_radii_data(self):
-        radii = []
-        for lay in self.layers.values():
-            radii.append(lay.r)
-        return radii
+
             
 # =============================================================================
 #             X, Y = [], []

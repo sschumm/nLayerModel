@@ -15,7 +15,7 @@ def plot(X, Y, U, V, radii):
     # r = np.array([1, 2, 3, 4])
     # c = ["black", "blue", "red", "green"]
     # lim = np.max(r) * 1.2
-    lim = max(radii)*1.1
+    lim = 2.2 # max(radii)*1.1
     
     plt.figure(figsize=(10, 10))
     ax = plt.subplot()
@@ -48,5 +48,5 @@ def plot(X, Y, U, V, radii):
     
     
     
-    ax.streamplot(X, Y, U, V, density=1.4, linewidth=None, color="black")
-    # ax.quiver(X, Y, U, V, color="b")
+    # ax.streamplot(X, Y, U, V, density=1.4, linewidth=None, color="black")
+    ax.quiver(X, Y, U, V, color="b")

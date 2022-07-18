@@ -21,12 +21,12 @@ l4 = MagneticLayer(r = 2.0, mu_r = 5000)        # mu_r: 300 - 10.000 [-]
 
 #%%
 
-m1 = Model(p = 3)
+m1 = Model(p = 2)
 
-m1.add_layer(l1)
+# m1.add_layer(l1)
 m1.add_layer(l2)
-m1.add_layer(l3)
-m1.add_layer(l4)
+# m1.add_layer(l3)
+# m1.add_layer(l4)
 
 
 #%%
