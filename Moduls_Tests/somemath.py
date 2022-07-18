@@ -8,6 +8,18 @@ import numpy as np
 
 
 
+def xy_to_r(x, y):
+    return np.sqrt(x, y)
+
+
+def xy_to_0(x, y):
+    return np.arctan(y / x)
+
+
+def xy_to_r0(x, y):
+    return xy_to_r(x,y), xy_to_0(x,y)
+
+
 def r0_to_x(r, theta):
     return r * np.cos(theta)
 
