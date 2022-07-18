@@ -67,6 +67,13 @@ def dAr_no_k(p, r, aj, bj):
 
 # --------------------------------------------------
 
+def Az_no_k(p, r, theta, aj, bj):
+    if np.all(r):
+        return np.sin(p * theta) * Ar_no_k(p, r, aj, bj)
+    else:
+        raise ZeroDivisionError(r)    
+    
+
 def Br_no_k(p, r, theta, aj, bj):
     if np.all(r):
         return (p / r) * np.cos(p * theta) * Ar_no_k(p, r, aj, bj)
@@ -88,7 +95,7 @@ def H0_no_k(p, r, theta, aj, bj, mu):
 
 
 p = 2
-theta = 2 #* np.arange(0, 2 * np.pi, np.pi/4, dtype=np.longdouble)
+theta = 2 #* np.arange(0, 2 * np.pi, np.pi/8, dtype=np.longdouble)
 r     = 3 #* np.linspace(1, 8, theta.shape[0], dtype=np.longdouble)
 aj    = 3 * np.linspace(1,5, 5) # 4
 bj    = 3 * np.linspace(5,1, 5) # 4
@@ -105,10 +112,10 @@ mu    = 4 * np.pi * 10e-6  #* np.linspace(1,10,10)
 # print("Ar_no_k(p, r, aj, bj): \n", Ar_no_k(p, r, aj, bj), "\n")
 # print("dAr_no_k(p, r, aj, bj): \n", dAr_no_k(p, r, aj, bj), "\n")
 # 
+# print("Az_no_k(p, r, theta, aj, bj): \n", Az_no_k(p, r, theta, aj, bj), "\n")
 # print("Br_no_k(p, r, theta, aj, bj): \n", Br_no_k(p, r, theta, aj, bj), "\n")
 # print("H0_no_k(p, r, theta, aj, bj, mu): \n", H0_no_k(p, r, theta, aj, bj, mu), "\n")
 # =============================================================================
-
 
 
 
