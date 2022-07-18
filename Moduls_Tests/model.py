@@ -5,8 +5,10 @@ Created on Mon Jul 11 16:12:38 2022
 @author: svens
 """
 import numpy as np
+import Moduls_Tests.somemath as sm
 
-from .somemath import Az_no_k
+from .somemath import Az_no_k, Br_no_k, B0_no_k
+#from .somemath import *
 from .layer import Layer, CurrentLoading
 
 mu_0 = 4 * np.pi * 10**(-7) # [N / A**2]
@@ -104,18 +106,55 @@ class Model():
         return np.asarray(Az)
     
     
-    def get_Br_plot(self):
+    def get_Br_plot(self, theta):
         
-        spacing = self.layers[list(self.layers)[-1]].r / 100.
-        
+        # Br = []
+
+        spacing = self.layers[list(self.layers)[-1]].r / 20.
+                
         for lay in self.layers.values():
             if lay.index == 0:
                 r_i = 0.01
             else:
                 r_i = self.layers[lay.index -1].r
             radius = np.arange(r_i, lay.r, spacing)
-            print(lay.index, "   ", radius)
+            
+            X, Y = [], []
+            U, V = [], []
+            Br, B0 = [], []
+            for r in radius:
+                X.append(sm.r0_to_x(r, theta))
+                Y.append(sm.r0_to_y(r, theta))
+                # Br.append(f"Radius = {r}, Br = ")
+                Br.append(Br_no_k(self.p,
+                                  r, 
+                                  theta,
+                                  aj = self.solution[lay.index * 2],
+                                  bj = self.solution[lay.index * 2 + 1]
+                                  )
+                          )
+                B0.append(B0_no_k(self.p,
+                                  r, 
+                                  theta,
+                                  aj = self.solution[lay.index * 2],
+                                  bj = self.solution[lay.index * 2 + 1]
+                                  )
+                          )
+                
+            lay.X = np.asarray(X)
+            lay.Y = np.asarray(Y)
+            U, V = sm.BrB0_to_UV(Br, B0, theta)
+            lay.U = U
+            lay.V = V
+            lay.Br = Br
+            lay.B0 = B0
+        return"Job finished"
+            # np.set_printoptions(suppress=True, linewidth=200, precision=4)
+            # print(Br, "\n")
         
+
+
+
 # =============================================================================
 #         for lay in self.layers.values():
 #             if lay.index == 0:

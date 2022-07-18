@@ -49,6 +49,14 @@ class Layer():
         self.bounds = []
         self._init_boundaries()
         
+        self.Br = None
+        self.B0 = None
+        
+        self.X = None
+        self.Y = None
+        self.U = None
+        self.V = None
+        
 
     def _init_boundaries(self):
         self.add_boundary(Boundary(r = self.r, p = self.p))
