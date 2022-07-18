@@ -5,6 +5,8 @@ Created on Mon Jul 11 15:36:48 2022
 @author: svens
 """
 import numpy as np
+import Moduls_Tests.somemath as sm
+from Moduls_Tests import plotting
 
 from Moduls_Tests.layer import CurrentLoading, MagneticLayer, AirLayer
 from Moduls_Tests.model import Model
@@ -32,12 +34,40 @@ m1.add_layer(l4)
 m1.build()
 
 
-np.set_printoptions(suppress=True, linewidth=200, precision=5)
-print("M=\n", m1.M, "\n")
-np.set_printoptions(suppress=True, linewidth=200, precision=8)
-print("y=\n", m1.y, "\n")
+# np.set_printoptions(suppress=True, linewidth=200, precision=5)
+# print("M=\n", m1.M, "\n")
+# np.set_printoptions(suppress=True, linewidth=200, precision=8)
+# print("y=\n", m1.y, "\n")
 
 #%%
 
 x = m1.solve()
-print("x=\n", x, "\n")
+# print("x=\n", x, "\n")
+
+#%%
+# Az = m1.test(r = np.linspace(1, 4, 500) , theta = np.linspace(0, 4, 1000))
+# print("Az=\n", Az.shape, "\n")
+
+
+#%%
+X, Y, U, V = m1.get_Br_plot(theta = np.linspace(0, 2 * np.pi, 7))
+# np.set_printoptions(suppress=True, linewidth=200, precision=2)
+# =============================================================================
+# print("R=\n", R, "\n")
+# print("THETA=\n", THETA, "\n")
+# print("Br=\n", Br, "\n")
+# print("B0=\n", B0, "\n")
+# print("X=\n", X, "\n")
+# print("Y=\n", Y, "\n")
+# print("U=\n", U, "\n")
+# print("V=\n", V, "\n")
+# =============================================================================
+
+#%%
+
+plotting.plot(X, Y, U, V)
+
+#%%
+# sm.r0_to_xy(3, 2)
+
+
