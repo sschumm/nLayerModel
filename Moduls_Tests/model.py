@@ -119,36 +119,63 @@ class Model():
                 r_i = self.layers[lay.index -1].r
             radius = np.arange(r_i, lay.r, spacing)
             
-            X, Y = [], []
-            U, V = [], []
-            Br, B0 = [], []
-            for r in radius:
-                X.append(sm.r0_to_x(r, theta))
-                Y.append(sm.r0_to_y(r, theta))
-                # Br.append(f"Radius = {r}, Br = ")
-                Br.append(Br_no_k(self.p,
-                                  r, 
-                                  theta,
-                                  aj = self.solution[lay.index * 2],
-                                  bj = self.solution[lay.index * 2 + 1]
-                                  )
-                          )
-                B0.append(B0_no_k(self.p,
-                                  r, 
-                                  theta,
-                                  aj = self.solution[lay.index * 2],
-                                  bj = self.solution[lay.index * 2 + 1]
-                                  )
-                          )
-                
-            lay.X = np.asarray(X)
-            lay.Y = np.asarray(Y)
-            U, V = sm.BrB0_to_UV(Br, B0, theta)
-            lay.U = U
-            lay.V = V
-            lay.Br = Br
-            lay.B0 = B0
-        return"Job finished"
+        # x = np.linspace(0.01, 4.01, 100)
+        # y = np.linspace(0.01, 4.01, 100)
+        x = np.arange(-5,5,0.1)
+        y = np.arange(-5,5,0.1)
+        X, Y = np.meshgrid(x,y)
+        R, THETA = sm.xy_to_r0(X, Y)
+        
+        Br = Br_no_k(self.p, 
+                     R, 
+                     THETA, 
+                     self.solution[lay.index * 2], 
+                     self.solution[lay.index * 2 + 1])
+        
+        B0 = B0_no_k(self.p, 
+                     R, 
+                     THETA, 
+                     self.solution[lay.index * 2], 
+                     self.solution[lay.index * 2 + 1])
+        
+        # X, Y = sm.r0_to_xy(R, THETA)
+        
+        U, V = sm.BrB0_to_UV(Br, B0, THETA)
+            
+        return X, Y, U, V
+            
+# =============================================================================
+#             X, Y = [], []
+#             U, V = [], []
+#             Br, B0 = [], []
+#             for r in radius:
+#                 X.append(sm.r0_to_x(r, theta))
+#                 Y.append(sm.r0_to_y(r, theta))
+#                 # Br.append(f"Radius = {r}, Br = ")
+#                 Br.append(Br_no_k(self.p,
+#                                   r, 
+#                                   theta,
+#                                   aj = self.solution[lay.index * 2],
+#                                   bj = self.solution[lay.index * 2 + 1]
+#                                   )
+#                           )
+#                 B0.append(B0_no_k(self.p,
+#                                   r, 
+#                                   theta,
+#                                   aj = self.solution[lay.index * 2],
+#                                   bj = self.solution[lay.index * 2 + 1]
+#                                   )
+#                           )
+#                 
+#             lay.X = np.asarray(X)
+#             lay.Y = np.asarray(Y)
+#             U, V = sm.BrB0_to_UV(Br, B0, theta)
+#             lay.U = U
+#             lay.V = V
+#             lay.Br = Br
+#             lay.B0 = B0
+#         return"Job finished"
+# =============================================================================
             # np.set_printoptions(suppress=True, linewidth=200, precision=4)
             # print(Br, "\n")
         

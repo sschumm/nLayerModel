@@ -9,11 +9,11 @@ import numpy as np
 
 
 def xy_to_r(x, y):
-    return np.sqrt(x, y)
+    return np.sqrt(x**2, y**2)
 
 
 def xy_to_0(x, y):
-    return np.arctan(y / x)
+    return np.arctan2(y, x)
 
 
 def xy_to_r0(x, y):
