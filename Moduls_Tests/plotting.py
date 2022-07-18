@@ -10,31 +10,28 @@ import matplotlib.pyplot as plt
 
 
 
-def plot(X, Y, U, V):
+def plot(X, Y, U, V, radii):
     
     # r = np.array([1, 2, 3, 4])
     # c = ["black", "blue", "red", "green"]
     # lim = np.max(r) * 1.2
-    # lim = 5
+    lim = max(radii)*1.1
     
     plt.figure(figsize=(10, 10))
     ax = plt.subplot()
     ax.set_aspect( 1 )
-    # ax.set_xlim(-lim, lim)
-    # ax.set_ylim(-lim, lim)
+    ax.set_xlim(-lim, lim)
+    ax.set_ylim(-lim, lim)
     
-    # =============================================================================
-    # for i in range(3, -1, -1):
-    #     ax.add_artist(plt.Circle((0, 0), 
-    #                              radius = r[i], 
-    #                              fill = True, 
-    #                              edgecolor = "r",
-    #                              facecolor = c[i], 
-    #                              linestyle = "-",
-    #                              linewidth = 3, 
-    #                              alpha=0.1))
-    #  
-    # =============================================================================
+    for r in radii:
+        ax.add_artist(plt.Circle((0, 0), 
+                                 r, 
+                                 fill = False, 
+                                 edgecolor = "r",
+                                 facecolor = "b", 
+                                 linestyle = "-",
+                                 linewidth = 3, 
+                                 alpha=1))
        
         
     """ Adding some streamplot stuff """
@@ -52,3 +49,4 @@ def plot(X, Y, U, V):
     
     
     ax.streamplot(X, Y, U, V, density=1.4, linewidth=None, color="black")
+    # ax.quiver(X, Y, U, V, color="b")

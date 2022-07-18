@@ -21,7 +21,7 @@ l4 = MagneticLayer(r = 2.0, mu_r = 5000)        # mu_r: 300 - 10.000 [-]
 
 #%%
 
-m1 = Model(p = 2)
+m1 = Model(p = 3)
 
 m1.add_layer(l1)
 m1.add_layer(l2)
@@ -64,8 +64,8 @@ X, Y, U, V = m1.get_Br_plot(theta = np.linspace(0, 2 * np.pi, 7))
 # =============================================================================
 
 #%%
-
-plotting.plot(X, Y, U, V)
+radii = m1.get_radii_data()
+plotting.plot(X, Y, U, V, radii)
 
 #%%
 # sm.r0_to_xy(3, 2)

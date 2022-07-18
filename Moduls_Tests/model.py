@@ -169,6 +169,13 @@ class Model():
         U, V = sm.BrB0_to_UV(Br, B0, THETA)
             
         return X, Y, U, V
+    
+    
+    def get_radii_data(self):
+        radii = []
+        for lay in self.layers.values():
+            radii.append(lay.r)
+        return radii
             
 # =============================================================================
 #             X, Y = [], []
