@@ -8,9 +8,10 @@ Created on Mon Jul 18 12:26:16 2022
 import numpy as np 
 import matplotlib.pyplot as plt 
 from scipy.interpolate import griddata
+from .layer import CurrentLoading, MagneticLayer, AirLayer
 
 
-def plot(X, Y, U, V, radii, style="quiver"):
+def plot(X, Y, U, V, radii, layers, style="quiver"):
     
     # r = np.array([1, 2, 3, 4])
     # c = ["black", "blue", "red", "green"]
@@ -23,15 +24,39 @@ def plot(X, Y, U, V, radii, style="quiver"):
     ax.set_xlim(-lim, lim)
     ax.set_ylim(-lim, lim)
     
-    for r in radii:
+    
+    for lay in reversed(layers.values()):
+        edgecolor = "black"
+        facecolor = "white"
+        alpha = 0.7
+        fill = True
+        if isinstance(lay, CurrentLoading):
+            edgecolor = "blue"
+        elif isinstance(lay, MagneticLayer):
+            facecolor = "#cccccc"
+        else: 
+            pass
         ax.add_artist(plt.Circle((0, 0), 
-                                 r, 
-                                 fill = False, 
-                                 edgecolor = "r",
-                                 facecolor = "b", 
+                                 lay.r, 
+                                 fill = fill, 
+                                 edgecolor = edgecolor,
+                                 facecolor = facecolor, 
                                  linestyle = "-",
                                  linewidth = 3, 
-                                 alpha=1))
+                                 alpha=alpha))
+                                
+    
+# =============================================================================
+#     for r in radii:
+#         ax.add_artist(plt.Circle((0, 0), 
+#                                  r, 
+#                                  fill = False, 
+#                                  edgecolor = "r",
+#                                  facecolor = "b", 
+#                                  linestyle = "-",
+#                                  linewidth = 3, 
+#                                  alpha=1))
+# =============================================================================
        
         
     """ Adding some streamplot stuff """
@@ -55,9 +80,9 @@ def plot(X, Y, U, V, radii, style="quiver"):
     if style == "quiver":
         ax.quiver(X, Y, U, V, color="b")
     elif style == "streamplot":
-        ax.streamplot(x,y,gu,gv, density=4, linewidth=1, color=gi, cmap=plt.cm.Reds)
+        ax.streamplot(x,y,gu,gv, density=3, linewidth=1, color=gi, cmap=plt.cm.Reds)
     elif style == "all":
         ax.quiver(X, Y, U, V, color="b")
-        ax.streamplot(x,y,gu,gv, density=4, linewidth=1, color="b", cmap=plt.cm.jet)
+        ax.streamplot(x,y,gu,gv, density=3, linewidth=1, color="b", cmap=plt.cm.jet)
     else:
         print("...")

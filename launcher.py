@@ -79,7 +79,8 @@ X, Y, U, V = m1.get_Br_plot2(theta = np.linspace(0, 2 * np.pi, 7))
 
 #%%
 radii = m1.get_radii_data()
-plotting.plot(X, Y, U, V, radii, style="streamplot")
+
+plotting.plot(X, Y, U, V, radii, layers=m1.layers, style="streamplot")
 
 #%%
 # sm.r0_to_xy(3, 2)
