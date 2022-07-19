@@ -178,6 +178,58 @@ class Model():
         return X, Y, U, V
     
     
+    def get_Br_plot2(self, theta):
+        
+        r_i, r_o = 0.01, 3
+        r = np.linspace(r_i, r_o, 30)
+        t = np.linspace(0, 2*np.pi, 40)
+        # R, T = np.meshgrid(r, t)
+        R_tuple, T_tuple = tuple(), tuple()
+        Br_tuple = tuple()
+        Bt_tuple = tuple()
+        
+        for lay in self.layers.values():
+            if lay.index == 0:
+                r_i = 0.01
+            else:
+                r_i = self.layers[lay.index -1].r
+            
+            r_o = lay.r
+            
+            lower = r >= r_i
+            upper = r <   r_o
+            idxs = np.argwhere(lower & upper).flatten()
+            r_lay = r[idxs]
+            
+            R_lay, T_lay = np.meshgrid(r_lay, t)
+            
+            Br_lay = sm.Br_no_k(self.p,
+                                R_lay, 
+                                T_lay,
+                                aj = self.solution[lay.index * 2],
+                                bj = self.solution[lay.index * 2 + 1]
+                                )
+            
+            Bt_lay = sm.B0_no_k(self.p,
+                                R_lay, 
+                                T_lay,
+                                aj = self.solution[lay.index * 2],
+                                bj = self.solution[lay.index * 2 + 1]
+                                )
+            
+            R_tuple += (R_lay, )
+            T_tuple += (T_lay, )
+            Br_tuple += (Br_lay, )
+            Bt_tuple += (Bt_lay, )
+            
+        R = np.hstack(R_tuple)
+        T = np.hstack(T_tuple)        
+        Br = np.hstack(Br_tuple)
+        Bt = np.hstack(Bt_tuple)
+        X, Y = sm.r0_to_xy(R, T)
+        U, V = sm.BrB0_to_UV(Br, Bt, T)
+            
+        return X, Y, U, V
 
             
 # =============================================================================
