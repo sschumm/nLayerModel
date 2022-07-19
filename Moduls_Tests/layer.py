@@ -88,7 +88,8 @@ class Layer():
     def sync_layer_info(self, mu_inv_out: float):
         self.mu_inv_out = mu_inv_out
         for bound in self.bounds:
-            if bound is H_0:
+            # if bound is H_0:
+            if isinstance(bound, H_0):
                 bound.set_outer_mu_inv(mu_inv_out)
         
         
