@@ -7,10 +7,10 @@ Created on Mon Jul 18 12:26:16 2022
 
 import numpy as np 
 import matplotlib.pyplot as plt 
+from scipy.interpolate import griddata
 
 
-
-def plot(X, Y, U, V, radii):
+def plot(X, Y, U, V, radii, style="quiver"):
     
     # r = np.array([1, 2, 3, 4])
     # c = ["black", "blue", "red", "green"]
@@ -35,18 +35,29 @@ def plot(X, Y, U, V, radii):
        
         
     """ Adding some streamplot stuff """
-    # 1D arrays
-    # x = np.arange(-5,5,0.1)
-    # y = np.arange(-5,5,0.1)
-      
-    # Meshgrid
-    # X,Y = np.meshgrid(x,y)
-      
-    # Assign vector directions
-    # Ex = (X + 1)/((X+1)**2 + Y**2) - (X - 1)/((X-1)**2 + Y**2)
-    # Ey = Y/((X+1)**2 + Y**2) - Y/((X-1)**2 + Y**2)
+    x = np.linspace(X.min(), X.max(), 500)
+    y = np.linspace(Y.min(), Y.max(), 500)
+    xi, yi = np.meshgrid(x,y)
+    intensity = np.sqrt(U**2, V**2)
+    
+    px = X.flatten()
+    py = Y.flatten()
+    pu = U.flatten()
+    pv = V.flatten()
+    pi = intensity.flatten()
+    gu = griddata((px,py), pu, (xi,yi))
+    gv = griddata((px,py), pv, (xi,yi))
+    gi = griddata((px,py), pi, (xi, yi))
     
     
     
     # ax.streamplot(X, Y, U, V, density=1.4, linewidth=None, color="black")
-    ax.quiver(X, Y, U, V, color="b")
+    if style == "quiver":
+        ax.quiver(X, Y, U, V, color="b")
+    elif style == "streamplot":
+        ax.streamplot(x,y,gu,gv, density=4, linewidth=1, color=gi, cmap=plt.cm.Reds)
+    elif style == "all":
+        ax.quiver(X, Y, U, V, color="b")
+        ax.streamplot(x,y,gu,gv, density=4, linewidth=1, color="b", cmap=plt.cm.jet)
+    else:
+        print("...")
