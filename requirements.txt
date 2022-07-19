@@ -1,6 +1,6 @@
 backcall @ file:///home/conda/feedstock_root/build_artifacts/backcall_1592338393461/work
 backports.functools-lru-cache @ file:///home/conda/feedstock_root/build_artifacts/backports.functools_lru_cache_1618230623929/work
-certifi==2022.6.15
+certifi @ file:///C:/Windows/TEMP/abs_e9b7158a-aa56-4a5b-87b6-c00d295b01fanefpc8_o/croots/recipe/certifi_1655968940823/work/certifi
 cloudpickle @ file:///home/conda/feedstock_root/build_artifacts/cloudpickle_1653061851209/work
 colorama @ file:///home/conda/feedstock_root/build_artifacts/colorama_1655412516417/work
 cycler==0.11.0
@@ -16,6 +16,9 @@ jupyter-core @ file:///D:/bld/jupyter_core_1652365569005/work
 kiwisolver==1.4.3
 matplotlib==3.5.2
 matplotlib-inline @ file:///home/conda/feedstock_root/build_artifacts/matplotlib-inline_1631080358261/work
+mkl-fft==1.3.1
+mkl-random @ file:///C:/ci/mkl_random_1626186184308/work
+mkl-service==2.4.0
 nest-asyncio @ file:///home/conda/feedstock_root/build_artifacts/nest-asyncio_1648959695634/work
 numpy==1.23.0
 packaging @ file:///home/conda/feedstock_root/build_artifacts/packaging_1637239678211/work
@@ -29,6 +32,7 @@ pyparsing @ file:///home/conda/feedstock_root/build_artifacts/pyparsing_16522354
 python-dateutil @ file:///home/conda/feedstock_root/build_artifacts/python-dateutil_1626286286081/work
 pywin32==303
 pyzmq @ file:///D:/bld/pyzmq_1656183664050/work
+scipy @ file:///C:/ci/scipy_1641555170412/work
 six @ file:///home/conda/feedstock_root/build_artifacts/six_1620240208055/work
 spyder-kernels @ file:///D:/bld/spyder-kernels_1657210502152/work
 tornado @ file:///D:/bld/tornado_1656937934674/work
