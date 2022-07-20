@@ -8,9 +8,9 @@ Created on Mon Jul 18 12:26:16 2022
 import numpy as np 
 import matplotlib.pyplot as plt 
 from scipy.interpolate import griddata
-from .layer import CurrentLoading, MagneticLayer, AirLayer
 from matplotlib import cm
 from matplotlib.colors import ListedColormap
+from .layer import CurrentLoading, MagneticLayer, AirLayer
 
 Reds = cm.get_cmap("Reds")
 sampled_Reds = Reds(np.linspace(0,1,320))
@@ -20,6 +20,114 @@ Winter = cm.get_cmap("winter_r")
 sampled_Winter = Winter(np.linspace(0,1,360))
 myWinter = ListedColormap(sampled_Winter[104:, :])
 
+fgsz = 10
+
+
+def streamplot_B(X, Y, U, V, radii, layers, axis=None):
+    if axis is None:
+        plt.figure(figsize=(fgsz, fgsz))
+        ax = plt.subplot()
+    else:
+        ax = axis
+        
+    lim = max(radii)*1.1
+
+    ax.set_aspect( 1 )
+    ax.set_xlim(-lim, lim)
+    ax.set_ylim(-lim, lim)
+    
+    
+    add_machine_dimensions(ax, layers)
+                                
+    
+    x = np.linspace(X.min(), X.max(), 500)
+    y = np.linspace(Y.min(), Y.max(), 500)
+    xi, yi = np.meshgrid(x,y)
+    intensity = np.sqrt(U**2, V**2)
+    
+    px = X.flatten()
+    py = Y.flatten()
+    pu = U.flatten()
+    pv = V.flatten()
+    pi = intensity.flatten()
+    gu = griddata((px,py), pu, (xi,yi))
+    gv = griddata((px,py), pv, (xi,yi))
+    gi = griddata((px,py), pi, (xi, yi))
+    lw = (3.5 / np.nanmax(gi)) * gi + 0.5
+    
+    ax.streamplot(x,y,gu,gv, density=2, linewidth=lw, color=gi, cmap=myWinter)
+
+
+def quiver_B(X, Y, U, V, radii, layers, axis=None):
+    if axis is None:
+        plt.figure(figsize=(fgsz, fgsz))
+        ax = plt.subplot()
+    else:
+        ax = axis
+        
+    lim = max(radii)*1.1
+
+    ax.set_aspect( 1 )
+    ax.set_xlim(-lim, lim)
+    ax.set_ylim(-lim, lim)
+    
+    
+    add_machine_dimensions(ax, layers)                           
+    
+    ax.quiver(X, Y, U, V, color="b")
+
+
+def contour_A(X, Y, Z, radii, layers, axis=None):
+    if axis is None:
+        plt.figure(figsize=(fgsz, fgsz))
+        ax = plt.subplot()
+    else:
+        ax = axis
+        
+    lim = max(radii)*1.1
+
+    ax.set_aspect( 1 )
+    ax.set_xlim(-lim, lim)
+    ax.set_ylim(-lim, lim)
+    
+    add_machine_dimensions(ax, layers)
+    
+    lvls = np.linspace(np.min(Z), np.max(Z), 10)
+    CS = ax.contour(X, Y, Z, levels=lvls, cmap=myWinter)
+    ax.clabel(CS, inline=True, fontsize=10)
+    print("")
+    
+
+
+def multi_figure(nx, ny, data):
+    # plt.figure(figsize=(fgsz, fgsz))
+    fig, axs = plt.subplots(ny, nx)
+    fig.set_figheight(ny * fgsz)
+    fig.set_figwidth(nx * fgsz)
+    
+    def ax_fct(ix, iy):
+        if nx == 1:
+            return axs[iy]
+        elif ny == 1:
+            return axs[ix]
+        else:
+            return axs[iy, ix]
+    
+    if nx*ny == len(data):
+        for iy in range(ny):
+            for ix in range(nx):
+                fct = list(data)[iy+ix]
+                if fct == "streamplot":
+                    streamplot_B(*data[fct], ax_fct(ix, iy))
+                elif fct == "quiver":
+                    quiver_B(*data[fct], ax_fct(ix, iy))
+                elif fct == "contour":
+                    contour_A(*data[fct], ax_fct(ix, iy))
+                else:
+                    raise Exception("fct not implemented")
+    else:
+        raise Exception("data does not fit the number of subplots")
+    
 
 
 def add_machine_dimensions(ax, layers):
@@ -45,81 +153,52 @@ def add_machine_dimensions(ax, layers):
 
 
 
-def plot_contour(X, Y, Z, radii, layers):
-    
-    lim = max(radii)*1.1
-    
-    plt.figure(figsize=(10, 10))
-    ax = plt.subplot()
-    ax.set_aspect( 1 )
-    ax.set_xlim(-lim, lim)
-    ax.set_ylim(-lim, lim)
-    
-    add_machine_dimensions(ax, layers)
-    
-    lvls = np.linspace(np.min(Z), np.max(Z), 10)
-    CS = ax.contour(X, Y, Z, levels=lvls, cmap=myWinter)
-    ax.clabel(CS, inline=True, fontsize=10)
-    # ax.set_title('Simplest default with labels')
-    
+ 
 
 
-
-def plot(X, Y, U, V, radii, layers, style="quiver"):
-    
-    # r = np.array([1, 2, 3, 4])
-    # c = ["black", "blue", "red", "green"]
-    # lim = np.max(r) * 1.2
-    lim = max(radii)*1.1
-    
-    plt.figure(figsize=(10, 10))
-    ax = plt.subplot()
-    ax.set_aspect( 1 )
-    ax.set_xlim(-lim, lim)
-    ax.set_ylim(-lim, lim)
-    
-    
-    add_machine_dimensions(ax, layers)
-                                
-    
+# deprecated
 # =============================================================================
-#     for r in radii:
-#         ax.add_artist(plt.Circle((0, 0), 
-#                                  r, 
-#                                  fill = False, 
-#                                  edgecolor = "r",
-#                                  facecolor = "b", 
-#                                  linestyle = "-",
-#                                  linewidth = 3, 
-#                                  alpha=1))
+# def plot(X, Y, U, V, radii, layers, style="quiver"):
+#     
+#     lim = max(radii)*1.1
+#     
+#     plt.figure(figsize=(fgsz, fgsz))
+#     ax = plt.subplot()
+# 
+#     ax.set_aspect( 1 )
+#     ax.set_xlim(-lim, lim)
+#     ax.set_ylim(-lim, lim)
+#     
+#     
+#     add_machine_dimensions(ax, layers)
+#                                 
+#     
+#     x = np.linspace(X.min(), X.max(), 500)
+#     y = np.linspace(Y.min(), Y.max(), 500)
+#     xi, yi = np.meshgrid(x,y)
+#     intensity = np.sqrt(U**2, V**2)
+#     
+#     px = X.flatten()
+#     py = Y.flatten()
+#     pu = U.flatten()
+#     pv = V.flatten()
+#     pi = intensity.flatten()
+#     gu = griddata((px,py), pu, (xi,yi))
+#     gv = griddata((px,py), pv, (xi,yi))
+#     gi = griddata((px,py), pi, (xi, yi))
+#     lw = (3.5 / np.nanmax(gi)) * gi + 0.5
+#     
+#     
+#     
+#     # ax.streamplot(X, Y, U, V, density=1.4, linewidth=None, color="black")
+#     if style == "quiver":
+#         ax.quiver(X, Y, U, V, color="b")
+#     elif style == "streamplot":
+#         ax.streamplot(x,y,gu,gv, density=2, linewidth=lw, color=gi, cmap=myWinter)
+#     elif style == "all":
+#         ax.quiver(X, Y, U, V, color="b")
+#         ax.streamplot(x,y,gu,gv, density=3, linewidth=1, color="b", cmap=plt.cm.jet)
+#     else:
+#         print("...")
+# 
 # =============================================================================
-       
-        
-    """ Adding some streamplot stuff """
-    x = np.linspace(X.min(), X.max(), 500)
-    y = np.linspace(Y.min(), Y.max(), 500)
-    xi, yi = np.meshgrid(x,y)
-    intensity = np.sqrt(U**2, V**2)
-    
-    px = X.flatten()
-    py = Y.flatten()
-    pu = U.flatten()
-    pv = V.flatten()
-    pi = intensity.flatten()
-    gu = griddata((px,py), pu, (xi,yi))
-    gv = griddata((px,py), pv, (xi,yi))
-    gi = griddata((px,py), pi, (xi, yi))
-    lw = (3.5 / np.nanmax(gi)) * gi + 0.5
-    
-    
-    
-    # ax.streamplot(X, Y, U, V, density=1.4, linewidth=None, color="black")
-    if style == "quiver":
-        ax.quiver(X, Y, U, V, color="b")
-    elif style == "streamplot":
-        ax.streamplot(x,y,gu,gv, density=2, linewidth=lw, color=gi, cmap=myWinter)
-    elif style == "all":
-        ax.quiver(X, Y, U, V, color="b")
-        ax.streamplot(x,y,gu,gv, density=3, linewidth=1, color="b", cmap=plt.cm.jet)
-    else:
-        print("...")

@@ -59,7 +59,7 @@ x = m1.solve()
 
 
 #%%
-X, Y, U, V = m1.get_Br_plot2(theta = np.linspace(0, 2 * np.pi, 7))
+X1, Y1, U1, V1 = m1.get_Br_plot2(theta = np.linspace(0, 2 * np.pi, 7))
 # np.set_printoptions(suppress=True, linewidth=200, precision=2)
 # =============================================================================
 # print("R=\n", R, "\n")
@@ -75,9 +75,56 @@ X, Y, U, V = m1.get_Br_plot2(theta = np.linspace(0, 2 * np.pi, 7))
 #%%
 radii = m1.get_radii_data()
 
-plotting.plot(X, Y, U, V, radii, layers=m1.layers, style="streamplot")
+# plotting.plot(X, Y, U, V, radii, layers=m1.layers, style="streamplot")
+# plotting.streamplot_B(X1, Y1, U1, V1, radii, m1.layers)
 
 #%%
-# sm.r0_to_xy(3, 2)
+# plotting.quiver_B(X1, Y1, U1, V1, radii, m1.layers)
+
+#%%
+
+X2, Y2, Z2 = m1.get_A_plot()
+# plotting.plot_contour(X, Y, Z, radii, layers=m1.layers)
+# plotting.contour_A(X2, Y2, Z2, radii, m1.layers)
+
+#%%
+
+data = {"streamplot": (X1, Y1, U1, V1, radii, m1.layers),
+        "contour": (X2, Y2, Z2, radii, m1.layers)
+        }
+
+plotting.multi_figure(2, 1, data=data)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
