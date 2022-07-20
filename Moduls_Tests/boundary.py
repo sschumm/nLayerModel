@@ -73,8 +73,8 @@ class H_0(Boundary):
         
     def get_boundary(self):
         
-        return np.array([-self.mu_inv     * self.r** (self.p-1), 
-                          self.mu_inv     * self.r**-(self.p+1),
-                          self.mu_inv_out * self.r** (self.p-1), 
-                         -self.mu_inv_out * self.r**-(self.p+1)]) * self.p
+        return np.array([ self.mu_inv     * self.r** (self.p-1), 
+                         -self.mu_inv     * self.r**-(self.p+1),
+                         -self.mu_inv_out * self.r** (self.p-1), 
+                          self.mu_inv_out * self.r**-(self.p+1)]) * self.p
         
