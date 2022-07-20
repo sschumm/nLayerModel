@@ -9,6 +9,13 @@ import numpy as np
 import matplotlib.pyplot as plt 
 from scipy.interpolate import griddata
 from .layer import CurrentLoading, MagneticLayer, AirLayer
+from matplotlib import cm
+from matplotlib.colors import ListedColormap
+
+Reds = cm.get_cmap("Reds")
+sampled_Reds = Reds(np.linspace(0,1,320))
+myReds = ListedColormap(sampled_Reds[64:, :])
+
 
 
 def plot(X, Y, U, V, radii, layers, style="quiver"):
@@ -31,9 +38,9 @@ def plot(X, Y, U, V, radii, layers, style="quiver"):
         alpha = 0.7
         fill = True
         if isinstance(lay, CurrentLoading):
-            edgecolor = "blue"
+            edgecolor = "red"
         elif isinstance(lay, MagneticLayer):
-            facecolor = "#cccccc"
+            facecolor = "#a6a6a6"
         else: 
             pass
         ax.add_artist(plt.Circle((0, 0), 
@@ -73,6 +80,7 @@ def plot(X, Y, U, V, radii, layers, style="quiver"):
     gu = griddata((px,py), pu, (xi,yi))
     gv = griddata((px,py), pv, (xi,yi))
     gi = griddata((px,py), pi, (xi, yi))
+    lw = (4 / np.nanmax(gi)) * gi
     
     
     
@@ -80,7 +88,7 @@ def plot(X, Y, U, V, radii, layers, style="quiver"):
     if style == "quiver":
         ax.quiver(X, Y, U, V, color="b")
     elif style == "streamplot":
-        ax.streamplot(x,y,gu,gv, density=3, linewidth=1, color=gi, cmap=plt.cm.Reds)
+        ax.streamplot(x,y,gu,gv, density=2, linewidth=lw, color=gi, cmap=plt.cm.winter_r)
     elif style == "all":
         ax.quiver(X, Y, U, V, color="b")
         ax.streamplot(x,y,gu,gv, density=3, linewidth=1, color="b", cmap=plt.cm.jet)
