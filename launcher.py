@@ -5,7 +5,6 @@ Created on Mon Jul 11 15:36:48 2022
 @author: svens
 """
 import numpy as np
-import Moduls_Tests.somemath as sm
 from Moduls_Tests import plotting
 
 from Moduls_Tests.layer import CurrentLoading, MagneticLayer, AirLayer
@@ -38,30 +37,30 @@ m1.add_layer(MagneticLayer(r = 2.0, mu_r=20000))
 
 
 #%%
-
 m1.build()
 
-
+# =============================================================================
 # np.set_printoptions(suppress=True, linewidth=200, precision=5)
 # print("M=\n", m1.M, "\n")
 # np.set_printoptions(suppress=True, linewidth=200, precision=8)
 # print("y=\n", m1.y, "\n")
+# =============================================================================
 
 #%%
-
 x = m1.solve()
+
+# =============================================================================
 # print("x=\n", x, "\n")
 # print("M=\n", m1.M, "\n")
-
-#%%
-# Az = m1.test(r = np.linspace(1, 4, 500) , theta = np.linspace(0, 4, 1000))
-# print("Az=\n", Az.shape, "\n")
-
-
-#%%
-X1, Y1, U1, V1 = m1.get_Br_plot2(theta = np.linspace(0, 2 * np.pi, 7))
-# np.set_printoptions(suppress=True, linewidth=200, precision=2)
 # =============================================================================
+
+#%%
+X1, Y1, U1, V1 = m1.get_B_plot(theta = np.linspace(0, 2 * np.pi, 7))
+X2, Y2, Z2 = m1.get_A_plot()
+radii = m1.get_radii_data()
+
+# =============================================================================
+# np.set_printoptions(suppress=True, linewidth=200, precision=2)
 # print("R=\n", R, "\n")
 # print("THETA=\n", THETA, "\n")
 # print("Br=\n", Br, "\n")
@@ -73,26 +72,14 @@ X1, Y1, U1, V1 = m1.get_Br_plot2(theta = np.linspace(0, 2 * np.pi, 7))
 # =============================================================================
 
 #%%
-radii = m1.get_radii_data()
-
-# plotting.plot(X, Y, U, V, radii, layers=m1.layers, style="streamplot")
 plotting.streamplot_B(X1, Y1, U1, V1, radii, m1.layers)
-
 #%%
 plotting.quiver_B(X1, Y1, U1, V1, radii, m1.layers)
-
 #%%
-
-X2, Y2, Z2 = m1.get_A_plot()
-# plotting.plot_contour(X, Y, Z, radii, layers=m1.layers)
 plotting.contour_A(X2, Y2, Z2, radii, m1.layers)
-
 #%%
-
 data = {"streamplot": (X1, Y1, U1, V1, radii, m1.layers),
-        "contour": (X2, Y2, Z2, radii, m1.layers)
-        }
-
+        "contour": (X2, Y2, Z2, radii, m1.layers)}
 # plotting.multi_figure(2, 1, data=data)
 
 

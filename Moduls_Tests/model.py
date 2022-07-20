@@ -86,23 +86,7 @@ class Model():
                 return x
         else:
             raise Exception("Model has not been built yet. Use build() before trying to solve the model.")
-        
-        
-    
-    def test(self, r, theta):
-        if not isinstance(r, np.ndarray):
-            r = np.array([float(r)])
-            
-        Az = []
-        for radius in r:
-            Az.append(sm.Az_no_k(self.p, 
-                              radius, 
-                              theta,
-                              aj = self.solution[0], 
-                              bj = self.solution[1]))
-            
-        return np.asarray(Az)
-    
+                    
     
     def get_radii_data(self):
         radii = []
@@ -111,74 +95,8 @@ class Model():
         return radii
     
     
-    def get_Br_plot(self, theta):
-        
-        radi = 1.9
-        detail = 20                                     # has to be even
-        x = np.linspace(-radi, radi, detail)
-        y = np.linspace(-radi, radi, detail)
-        # x = np.arange(-5,5,0.1)
-        # y = np.arange(-5,5,0.1)
-        X, Y = np.meshgrid(x,y)
-        R, THETA = sm.xy_to_r0(X, Y)
-        Br, B0 = np.zeros(X.shape), np.zeros(X.shape)
-        cd = R.shape[0]
-
-        # spacing = self.layers[list(self.layers)[-1]].r / 20.
-                
-        for lay in self.layers.values():
-            if lay.index == 0:
-                r_i = 0.01
-            else:
-                r_i = self.layers[lay.index -1].r
-            # radius = np.arange(r_i, lay.r, spacing)
-            r_o = lay.r
-            
-            lower = np.round(R[0], 2) >= r_i
-            upper = np.round(R[0], 2) <   r_o
-            
-            
-            idxs = np.argwhere(lower & upper)
-            cd2 = int(cd / 2)
-                        
-            # i_i = np.argmax(R[0] >= r_i)
-            # i_o = np.argmin(R[0] <  r_o)
-            
-            op = np.zeros(X.shape) # this will prob only work for symetric linspace
-            for j in idxs[:, 0]:
-                op[: cd2, j] = 1
-                op[-cd2:, j] = 1
-                op[j, : cd2] = 1
-                op[j, -cd2:] = 1
-            cd -= len(idxs)
-            
-            Br_loop = sm.Br_no_k(self.p, 
-                                 R, 
-                                 THETA, 
-                                 self.solution[lay.index * 2], 
-                                 self.solution[lay.index * 2 + 1])
-            
-            B0_loop = sm.B0_no_k(self.p, 
-                                 R, 
-                                 THETA, 
-                                 self.solution[lay.index * 2], 
-                                 self.solution[lay.index * 2 + 1])
-            a = Br_loop #* op
-            b = B0_loop #* op
-            
-            Br += a
-            B0 += b
-        #Br = Br_loop
-        #B0 = B0_loop
-        
-        # X, Y = sm.r0_to_xy(R, THETA)
-        
-        U, V = sm.BrB0_to_UV(Br, B0, THETA)
-            
-        return X, Y, U, V
     
-    
-    def get_Br_plot2(self, theta):
+    def get_B_plot(self, theta):
         
         r_i, r_o = 0.01, 3
         r = np.linspace(r_i, r_o, 30)
@@ -272,75 +190,6 @@ class Model():
         X, Y = sm.r0_to_xy(R, T)
         return X, Y, Az
 
-
-
-            
-# =============================================================================
-#             X, Y = [], []
-#             U, V = [], []
-#             Br, B0 = [], []
-#             for r in radius:
-#                 X.append(sm.r0_to_x(r, theta))
-#                 Y.append(sm.r0_to_y(r, theta))
-#                 # Br.append(f"Radius = {r}, Br = ")
-#                 Br.append(Br_no_k(self.p,
-#                                   r, 
-#                                   theta,
-#                                   aj = self.solution[lay.index * 2],
-#                                   bj = self.solution[lay.index * 2 + 1]
-#                                   )
-#                           )
-#                 B0.append(B0_no_k(self.p,
-#                                   r, 
-#                                   theta,
-#                                   aj = self.solution[lay.index * 2],
-#                                   bj = self.solution[lay.index * 2 + 1]
-#                                   )
-#                           )
-#                 
-#             lay.X = np.asarray(X)
-#             lay.Y = np.asarray(Y)
-#             U, V = sm.BrB0_to_UV(Br, B0, theta)
-#             lay.U = U
-#             lay.V = V
-#             lay.Br = Br
-#             lay.B0 = B0
-#         return"Job finished"
-# =============================================================================
-            # np.set_printoptions(suppress=True, linewidth=200, precision=4)
-            # print(Br, "\n")
-        
-
-
-
-# =============================================================================
-#         for lay in self.layers.values():
-#             if lay.index == 0:
-#                 r_i = 0
-#             else:
-#                 r_i = self.layers[lay.index -1].r
-#             radius = np.linspace(r_i, lay.r, 10)
-#             print(lay.index, "  ", radius)
-# =============================================================================
-        
-# =============================================================================
-#         if not isinstance(r, np.ndarray):
-#             r = np.array([float(r)])
-#             
-#         Az = []
-#         for radius in r:
-#             Az.append(Az_no_k(self.p, 
-#                               radius, 
-#                               theta,
-#                               aj = self.solution[0], 
-#                               bj = self.solution[1]))
-#             
-#         return np.asarray(Az)
-# =============================================================================
-         
-
-        
-    
         
         
         
