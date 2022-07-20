@@ -96,7 +96,7 @@ class Model():
     
     
     
-    def get_B_plot(self, theta):
+    def get_B_plot(self):
         
         r_i, r_o = 0.01, 3
         r = np.linspace(r_i, r_o, 30)

@@ -10,7 +10,7 @@ from Moduls_Tests import plotting
 from Moduls_Tests.layer import CurrentLoading, MagneticLayer, AirLayer
 from Moduls_Tests.model import Model
 
-m1 = Model(p = 5)
+m1 = Model(p = 4)
 
 
 # =============================================================================
@@ -55,7 +55,7 @@ x = m1.solve()
 # =============================================================================
 
 #%%
-X1, Y1, U1, V1 = m1.get_B_plot(theta = np.linspace(0, 2 * np.pi, 7))
+X1, Y1, U1, V1 = m1.get_B_plot()
 X2, Y2, Z2 = m1.get_A_plot()
 radii = m1.get_radii_data()
 
@@ -72,15 +72,15 @@ radii = m1.get_radii_data()
 # =============================================================================
 
 #%%
-plotting.streamplot_B(X1, Y1, U1, V1, radii, m1.layers)
+# plotting.streamplot_B(X1, Y1, U1, V1, radii, m1.layers)
 #%%
-plotting.quiver_B(X1, Y1, U1, V1, radii, m1.layers)
+# plotting.quiver_B(X1, Y1, U1, V1, radii, m1.layers)
 #%%
-plotting.contour_A(X2, Y2, Z2, radii, m1.layers)
+# plotting.contour_A(X2, Y2, Z2, radii, m1.layers)
 #%%
 data = {"streamplot": (X1, Y1, U1, V1, radii, m1.layers),
         "contour": (X2, Y2, Z2, radii, m1.layers)}
-# plotting.multi_figure(2, 1, data=data)
+plotting.multi_figure(2, 1, data=data)
 
 
 
