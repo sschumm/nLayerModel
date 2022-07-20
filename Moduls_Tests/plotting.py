@@ -20,7 +20,7 @@ Winter = cm.get_cmap("winter_r")
 sampled_Winter = Winter(np.linspace(0,1,360))
 myWinter = ListedColormap(sampled_Winter[104:, :])
 
-fgsz = 10
+fgsz = 20
 
 
 def streamplot_B(X, Y, U, V, radii, layers, axis=None):
@@ -30,12 +30,7 @@ def streamplot_B(X, Y, U, V, radii, layers, axis=None):
     else:
         ax = axis
         
-    lim = max(radii)*1.1
-
-    ax.set_aspect( 1 )
-    ax.set_xlim(-lim, lim)
-    ax.set_ylim(-lim, lim)
-    
+    add_plot_dimensions(ax, radii)
     
     add_machine_dimensions(ax, layers)
                                 
@@ -53,9 +48,11 @@ def streamplot_B(X, Y, U, V, radii, layers, axis=None):
     gu = griddata((px,py), pu, (xi,yi))
     gv = griddata((px,py), pv, (xi,yi))
     gi = griddata((px,py), pi, (xi, yi))
-    lw = (3.5 / np.nanmax(gi)) * gi + 0.5
+    lw = ( (0.35 * fgsz) / np.nanmax(gi) ) * gi + 0.5
     
-    ax.streamplot(x,y,gu,gv, density=2, linewidth=lw, color=gi, cmap=myWinter)
+    ax.streamplot(x,y,gu,gv, density=2, 
+                  linewidth=lw, arrowsize= 0.1*fgsz, 
+                  color=gi, cmap=myWinter)
 
 
 def quiver_B(X, Y, U, V, radii, layers, axis=None):
@@ -65,12 +62,7 @@ def quiver_B(X, Y, U, V, radii, layers, axis=None):
     else:
         ax = axis
         
-    lim = max(radii)*1.1
-
-    ax.set_aspect( 1 )
-    ax.set_xlim(-lim, lim)
-    ax.set_ylim(-lim, lim)
-    
+    add_plot_dimensions(ax, radii)
     
     add_machine_dimensions(ax, layers)                           
     
@@ -84,17 +76,13 @@ def contour_A(X, Y, Z, radii, layers, axis=None):
     else:
         ax = axis
         
-    lim = max(radii)*1.1
-
-    ax.set_aspect( 1 )
-    ax.set_xlim(-lim, lim)
-    ax.set_ylim(-lim, lim)
+    add_plot_dimensions(ax, radii)
     
     add_machine_dimensions(ax, layers)
     
     lvls = np.linspace(np.min(Z), np.max(Z), 10)
-    CS = ax.contour(X, Y, Z, levels=lvls, cmap=myWinter)
-    ax.clabel(CS, inline=True, fontsize=10)
+    CS = ax.contour(X, Y, Z, levels=lvls, linewidths=0.2*fgsz, cmap=myWinter)
+    ax.clabel(CS, inline=True, fontsize=fgsz)
     print("")
     
 
@@ -133,7 +121,7 @@ def multi_figure(nx, ny, data):
 def add_machine_dimensions(ax, layers):
     for lay in reversed(layers.values()):
         edgecolor = "black"
-        facecolor = "#d9d9d9" # "white"
+        facecolor = "#e6e6e6" # "white"
         alpha = 0.7
         fill = True
         if isinstance(lay, CurrentLoading):
@@ -148,10 +136,20 @@ def add_machine_dimensions(ax, layers):
                                  edgecolor = edgecolor,
                                  facecolor = facecolor, 
                                  linestyle = "-",
-                                 linewidth = 3, 
+                                 linewidth = 0.25 * fgsz, 
                                  alpha=alpha))
+        
 
+def add_plot_dimensions(ax, radii):
+    
+    lim = max(radii)*1.1
 
+    ax.set_aspect( 1 )
+    ax.set_xlim(-lim, lim)
+    ax.set_ylim(-lim, lim)
+
+    ax.tick_params(axis='both', which='major', labelsize=fgsz)
+    ax.tick_params(axis='both', which='minor', labelsize=int(0.8 * fgsz))
 
  
 
