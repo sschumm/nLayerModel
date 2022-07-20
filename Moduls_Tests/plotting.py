@@ -16,6 +16,10 @@ Reds = cm.get_cmap("Reds")
 sampled_Reds = Reds(np.linspace(0,1,320))
 myReds = ListedColormap(sampled_Reds[64:, :])
 
+Winter = cm.get_cmap("winter_r")
+sampled_Winter = Winter(np.linspace(0,1,360))
+myWinter = ListedColormap(sampled_Winter[104:, :])
+
 
 
 def plot(X, Y, U, V, radii, layers, style="quiver"):
@@ -34,7 +38,7 @@ def plot(X, Y, U, V, radii, layers, style="quiver"):
     
     for lay in reversed(layers.values()):
         edgecolor = "black"
-        facecolor = "white"
+        facecolor = "#d9d9d9" # "white"
         alpha = 0.7
         fill = True
         if isinstance(lay, CurrentLoading):
@@ -80,7 +84,7 @@ def plot(X, Y, U, V, radii, layers, style="quiver"):
     gu = griddata((px,py), pu, (xi,yi))
     gv = griddata((px,py), pv, (xi,yi))
     gi = griddata((px,py), pi, (xi, yi))
-    lw = (4 / np.nanmax(gi)) * gi
+    lw = (3.5 / np.nanmax(gi)) * gi + 0.5
     
     
     
@@ -88,7 +92,7 @@ def plot(X, Y, U, V, radii, layers, style="quiver"):
     if style == "quiver":
         ax.quiver(X, Y, U, V, color="b")
     elif style == "streamplot":
-        ax.streamplot(x,y,gu,gv, density=2, linewidth=lw, color=gi, cmap=plt.cm.winter_r)
+        ax.streamplot(x,y,gu,gv, density=2, linewidth=lw, color=gi, cmap=myWinter)
     elif style == "all":
         ax.quiver(X, Y, U, V, color="b")
         ax.streamplot(x,y,gu,gv, density=3, linewidth=1, color="b", cmap=plt.cm.jet)
