@@ -21,38 +21,8 @@ sampled_Winter = Winter(np.linspace(0,1,360))
 myWinter = ListedColormap(sampled_Winter[104:, :])
 
 
-def plot_contour(X, Y, Z, radii):
-    
-    lim = max(radii)*1.1
-    
-    plt.figure(figsize=(10, 10))
-    ax = plt.subplot()
-    ax.set_aspect( 1 )
-    ax.set_xlim(-lim, lim)
-    ax.set_ylim(-lim, lim)
-    
-    # ax = plt.subplots()
-    CS = ax.contour(X, Y, Z)
-    ax.clabel(CS, inline=True, fontsize=10)
-    ax.set_title('Simplest default with labels')
-    
 
-
-
-def plot(X, Y, U, V, radii, layers, style="quiver"):
-    
-    # r = np.array([1, 2, 3, 4])
-    # c = ["black", "blue", "red", "green"]
-    # lim = np.max(r) * 1.2
-    lim = max(radii)*1.1
-    
-    plt.figure(figsize=(10, 10))
-    ax = plt.subplot()
-    ax.set_aspect( 1 )
-    ax.set_xlim(-lim, lim)
-    ax.set_ylim(-lim, lim)
-    
-    
+def add_machine_dimensions(ax, layers):
     for lay in reversed(layers.values()):
         edgecolor = "black"
         facecolor = "#d9d9d9" # "white"
@@ -72,6 +42,44 @@ def plot(X, Y, U, V, radii, layers, style="quiver"):
                                  linestyle = "-",
                                  linewidth = 3, 
                                  alpha=alpha))
+
+
+
+def plot_contour(X, Y, Z, radii, layers):
+    
+    lim = max(radii)*1.1
+    
+    plt.figure(figsize=(10, 10))
+    ax = plt.subplot()
+    ax.set_aspect( 1 )
+    ax.set_xlim(-lim, lim)
+    ax.set_ylim(-lim, lim)
+    
+    add_machine_dimensions(ax, layers)
+    
+    lvls = np.linspace(np.min(Z), np.max(Z), 10)
+    CS = ax.contour(X, Y, Z, levels=lvls, cmap=myWinter)
+    ax.clabel(CS, inline=True, fontsize=10)
+    # ax.set_title('Simplest default with labels')
+    
+
+
+
+def plot(X, Y, U, V, radii, layers, style="quiver"):
+    
+    # r = np.array([1, 2, 3, 4])
+    # c = ["black", "blue", "red", "green"]
+    # lim = np.max(r) * 1.2
+    lim = max(radii)*1.1
+    
+    plt.figure(figsize=(10, 10))
+    ax = plt.subplot()
+    ax.set_aspect( 1 )
+    ax.set_xlim(-lim, lim)
+    ax.set_ylim(-lim, lim)
+    
+    
+    add_machine_dimensions(ax, layers)
                                 
     
 # =============================================================================
