@@ -98,7 +98,7 @@ class Model():
     
     def get_B_plot(self):
         
-        r_i, r_o = 0.01, 3
+        r_i, r_o = 0.01, 0.6
         r = np.linspace(r_i, r_o, 50)
         t = np.linspace(0, 2*np.pi, 40)
         # R, T = np.meshgrid(r, t)
