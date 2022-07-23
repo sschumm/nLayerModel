@@ -25,12 +25,18 @@ class Model():
         self.layers = list()
         
         self.radii = list()
-        self.mu_i = list()
-        self.mu_o = list()
+        self.mu_i_inv = list()
+        self.mu_o_inv = list()
         
         
     def add_layer(self, layer: Layer):
         self.layers.append(layer)
         
-    def build_model(self):
-        pass
+    def build(self):
+        # reorder the list of layers by radius
+        self.layers.sort(key= lambda lay: lay.r)
+        # extract and store the layer data 
+        self.radii = [i.r for i in self.layers]
+        self.mu_i_inv = [i.mu_inv for i in self.layers]
+        self.mu_o_inv = self.mu_i_inv[1:] + [1 / mu_0]
+        
