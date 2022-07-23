@@ -9,7 +9,7 @@ import numpy as np
 
 from scipy.constants import mu_0
 from .continuities import c_Br, c_Ht
-from .layer import Layer
+from .layer import Layer, CurrentLoading
 
 
 class Model():
@@ -47,6 +47,7 @@ class Model():
             layer.idx = idx
         
         self._build_sysA()
+        self._build_sysb()
         
         
     def _build_sysA(self):
@@ -58,7 +59,7 @@ class Model():
         sysA.append([0, 1, 0, 0] + [0]*4*n)
         
         # add continuity conditions
-        for i, lay in enumerate(self.layers):
+        for i, layer in enumerate(self.layers):
             Br = c_Br(r = self.radii[i], 
                       p = self.p)
             Ht = c_Ht(r = self.radii[i], 
@@ -74,6 +75,19 @@ class Model():
         
         self.sysA = np.asarray(sysA)
         
+    def _build_sysb(self):
         
+        sysb = []
+        
+        for layer in self.layers:
+            if isinstance(layer, CurrentLoading):
+                sysb.append(0.)
+                sysb.append(layer.K)
+            else:
+                sysb.append(0.)
+                sysb.append(0.)
+        
+        self.sysb = np.asarray(sysb)
+            
 
         
