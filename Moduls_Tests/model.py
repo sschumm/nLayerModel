@@ -99,7 +99,7 @@ class Model():
     def get_B_plot(self):
         
         r_i, r_o = 0.01, 3
-        r = np.linspace(r_i, r_o, 30)
+        r = np.linspace(r_i, r_o, 50)
         t = np.linspace(0, 2*np.pi, 40)
         # R, T = np.meshgrid(r, t)
         R_tuple, T_tuple = tuple(), tuple()
@@ -140,6 +140,36 @@ class Model():
             Br_tuple += (Br_lay, )
             Bt_tuple += (Bt_lay, )
             
+        
+        ##########################
+        
+        lower = r >= self.layers[self.n_layers - 1].r
+        upper = r <=  3.
+        idxs = np.argwhere(lower & upper).flatten()
+        r_lay = r[idxs]
+        
+        R_lay, T_lay = np.meshgrid(r_lay, t)
+        
+        Br_lay = sm.Br_no_k(self.p,
+                            R_lay, 
+                            T_lay,
+                            aj = self.solution[-2],
+                            bj = self.solution[-1]
+                            )
+        
+        Bt_lay = sm.B0_no_k(self.p,
+                            R_lay, 
+                            T_lay,
+                            aj = self.solution[-2],
+                            bj = self.solution[-1]
+                            )
+        
+        R_tuple += (R_lay, )
+        T_tuple += (T_lay, )
+        Br_tuple += (Br_lay, )
+        Bt_tuple += (Bt_lay, )
+        
+        ##########################
         R = np.hstack(R_tuple)
         T = np.hstack(T_tuple)        
         Br = np.hstack(Br_tuple)

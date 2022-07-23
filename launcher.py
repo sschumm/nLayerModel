@@ -32,7 +32,7 @@ m1.add_layer(CurrentLoading(r= 0.8, K = 300000))
 m1.add_layer(AirLayer(r = 1))
 m1.add_layer(CurrentLoading(r= 1.3, K = 200000))
 m1.add_layer(AirLayer(r = 1.4))
-m1.add_layer(MagneticLayer(r = 2.0, mu_r=20000))
+m1.add_layer(MagneticLayer(r = 2.0, mu_r=10000))
 # m1.add_layer(AirLayer(r = 2.5))
 
 
@@ -49,10 +49,8 @@ m1.build()
 #%%
 x = m1.solve()
 
-# =============================================================================
 # print("x=\n", x, "\n")
 # print("M=\n", m1.M, "\n")
-# =============================================================================
 
 #%%
 X1, Y1, U1, V1 = m1.get_B_plot()
@@ -72,15 +70,17 @@ radii = m1.get_radii_data()
 # =============================================================================
 
 #%%
-# plotting.streamplot_B(X1, Y1, U1, V1, radii, m1.layers)
+plotting.streamplot_B(X1, Y1, U1, V1, radii, m1.layers)
 #%%
 # plotting.quiver_B(X1, Y1, U1, V1, radii, m1.layers)
 #%%
 # plotting.contour_A(X2, Y2, Z2, radii, m1.layers)
 #%%
-data = {"streamplot": (X1, Y1, U1, V1, radii, m1.layers),
-        "contour": (X2, Y2, Z2, radii, m1.layers)}
-plotting.multi_figure(2, 1, data=data)
+# =============================================================================
+# data = {"streamplot": (X1, Y1, U1, V1, radii, m1.layers),
+#         "contour": (X2, Y2, Z2, radii, m1.layers)}
+# plotting.multi_figure(2, 1, data=data)
+# =============================================================================
 
 
 

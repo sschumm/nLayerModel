@@ -41,14 +41,16 @@ radii = m1.get_radii_data()
 
 
 #%%
-data = {"streamplot": (X1, Y1, U1, V1, radii, m1.layers),
-        "contour": (X2, Y2, Z2, radii, m1.layers)}
-plotting.multi_figure(2, 1, data=data)
+# =============================================================================
+# data = {"streamplot": (X1, Y1, U1, V1, radii, m1.layers),
+#         "contour": (X2, Y2, Z2, radii, m1.layers)}
+# plotting.multi_figure(2, 1, data=data)
+# =============================================================================
 
 
 #%%
 plotting.streamplot_B(X1, Y1, U1, V1, radii, m1.layers)
 #%%
-plotting.quiver_B(X1, Y1, U1, V1, radii, m1.layers)
+# plotting.quiver_B(X1, Y1, U1, V1, radii, m1.layers)
 #%%
-plotting.contour_A(X2, Y2, Z2, radii, m1.layers)
+# plotting.contour_A(X2, Y2, Z2, radii, m1.layers)

@@ -35,8 +35,8 @@ def streamplot_B(X, Y, U, V, radii, layers, axis=None):
     add_machine_dimensions(ax, layers)
                                 
     
-    x = np.linspace(X.min(), X.max(), 500)
-    y = np.linspace(Y.min(), Y.max(), 500)
+    x = np.linspace(X.min(), X.max(), 1000)
+    y = np.linspace(Y.min(), Y.max(), 1000)
     xi, yi = np.meshgrid(x,y)
     intensity = np.sqrt(U**2, V**2)
     
@@ -142,7 +142,7 @@ def add_machine_dimensions(ax, layers):
 
 def add_plot_dimensions(ax, radii):
     
-    lim = max(radii)*1.1
+    lim = max(radii)*1.2
 
     ax.set_aspect( 1 )
     ax.set_xlim(-lim, lim)
