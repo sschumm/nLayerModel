@@ -42,4 +42,4 @@ print(f"b3 - analytic: 0.736087 - numeric: {b3}")
 
 #%%
 p = Plot(m1)
-p.streamplot()
+p.streamplot(400, 400)
