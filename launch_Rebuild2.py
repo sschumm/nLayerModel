@@ -33,8 +33,11 @@ print("sysb= \n", model.sysb, "\n")
 
 print("")
 
-print("A= \n", cl1.A(p, R=0.2, a_j=model.x[0], b_j=model.x[1]), "\n")
-print("dA= \n", cl1.dA(p, R=0.2, a_j=model.x[0], b_j=model.x[1]), "\n")
-print("Az= \n", cl1.Az(p, R=0.2, T=pi, a_j=model.x[0], b_j=model.x[1]), "\n")
-print("Br= \n", cl1.Br(p, R=0.2, T=pi, a_j=model.x[0], b_j=model.x[1]), "\n")
-print("Bt= \n", cl1.Bt(p, R=0.2, T=pi, a_j=model.x[0], b_j=model.x[1]), "\n")
+i = 1
+r = np.array([4., 3, 2, 1])
+
+print("A= \n", model.layers[i].A(p, R=r, a_j=model.x[i], b_j=model.x[i+1]), "\n")
+print("dA= \n", model.layers[i].dA(p, R=r, a_j=model.x[i], b_j=model.x[i+1]), "\n")
+print("Az= \n", model.layers[i].Az(p, R=r, T=pi, a_j=model.x[i], b_j=model.x[i+1]), "\n")
+print("Br= \n", model.layers[i].Br(p, R=r, T=pi, a_j=model.x[i], b_j=model.x[i+1]), "\n")
+print("Bt= \n", model.layers[i].Bt(p, R=r, T=pi, a_j=model.x[i], b_j=model.x[i+1]), "\n")

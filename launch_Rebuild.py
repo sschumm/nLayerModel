@@ -20,7 +20,7 @@ r_f     = 0.425
 r_1     = 0.2
 mu_1    = 10e3
 
-m1 = Model(p = 2)
+m1 = Model(p)
 
 m1.add_layer(Layer(r=r_1, mu_r=mu_1))
 m1.add_layer(CurrentLoading(K=K_f0, r=r_f, mu_r=1))
@@ -38,22 +38,3 @@ print(f"a2 - analytic: 3.336371 - numeric: {a2}")
 print(f"b2 - analytic: 0.133455 - numeric: {b2}")
 print(f"a3 - analytic:        0 - numeric: {a3}")
 print(f"b3 - analytic: 0.736087 - numeric: {b3}")
-
-#%%
-m2 = Model(p = 2)
-m2.build()
-
-
-
-
-
-
-
-
-# =============================================================================
-#     def Ar(a, b, p, r):
-#         if b == 0:
-#             return a * r**p
-#         else:
-#             return a * r**p + b * r**-p
-# =============================================================================

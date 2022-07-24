@@ -30,6 +30,9 @@ class Layer():
     # ------ computation of vector potential ------
     
     def A(self, p, R, a_j, b_j):
+        if not np.all(R <= self.r):
+            print("Warning: computed field lies outside of its corresponding layer")
+        
         if self.idx == 0:
             return a_j * R**p
         else:
@@ -37,26 +40,32 @@ class Layer():
         
     
     def dA(self, p, R, a_j, b_j):
+        if not np.all(R <= self.r):
+            print("Warning: computed field lies outside of its corresponding layer")
+            
         if self.idx == 0:
             return a_j * p * R**(p-1)
         else:
             return a_j * p * R**(p-1)  -  b_j * p * R**-(p+1)
     
     
-    def Az(self, p, R, T, a_j, b_j):
+    def Az(self, p, R, T, a_j, b_j):    
         return np.sin(p*T) * self.A(p, R, a_j, b_j)
     
     
     # ------ computation of flux densities ------
     
     def Br(self, p, R, T, a_j, b_j):
+        if not np.all(R <= self.r):
+            print("Warning: computed field lies outside of its corresponding layer")
+            
         if self.idx == 0:
             return np.cos(p*T) * p * (a_j * R**(p-1))
         else: 
             return np.cos(p*T) * p * (a_j * R**(p-1) + b_j * R**-(p+1))
         
     
-    def Bt(self, p, R, T, a_j, b_j):
+    def Bt(self, p, R, T, a_j, b_j):           
         return np.sin(p*T) * -self.dA(p, R, a_j, b_j)
         
 
