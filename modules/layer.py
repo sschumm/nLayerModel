@@ -44,7 +44,7 @@ class Layer():
     
     
     def Az(self, p, R, T, a_j, b_j):
-        return np.sin(p*T) * self.A(self, p, R, a_j, b_j)
+        return np.sin(p*T) * self.A(p, R, a_j, b_j)
     
     
     # ------ computation of flux densities ------
@@ -57,7 +57,7 @@ class Layer():
         
     
     def Bt(self, p, R, T, a_j, b_j):
-        return np.sin(p*T) * -self.dA(self, p, R, a_j, b_j)
+        return np.sin(p*T) * -self.dA(p, R, a_j, b_j)
         
 
 
