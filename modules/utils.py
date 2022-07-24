@@ -9,7 +9,7 @@ import numpy as np
 
 
 
-xy_to_r = lambda x, y: np.sqrt(x**2, y**2)
+xy_to_r = lambda x, y: np.sqrt(x**2 + y**2)
 xy_to_t = lambda x, y: np.arctan2(y, x)
 
 
