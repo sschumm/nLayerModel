@@ -9,7 +9,7 @@ import numpy as np
 np.set_printoptions(suppress=True, linewidth=250, precision=3)
 
 from modules.model import Model
-from modules.layer import Layer, CurrentLoading
+from modules.layer import MagneticLayer, CurrentLoading
 from modules.plot import Plot
 
 
@@ -23,7 +23,7 @@ mu_1    = 10e3
 
 m1 = Model(p)
 
-m1.add_layer(Layer(r=r_1, mu_r=mu_1))
+m1.add_layer(MagneticLayer(r=r_1, mu_r=mu_1))
 m1.add_layer(CurrentLoading(K=K_f0, r=r_f, mu_r=1))
 
 m1.build()

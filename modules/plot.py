@@ -12,7 +12,7 @@ from matplotlib import cm
 from matplotlib.colors import ListedColormap
 
 from scipy.interpolate import griddata
-from .layer import Layer, CurrentLoading
+from .layer import MagneticLayer, CurrentLoading
 from .model import Model
 
 Winter = cm.get_cmap("winter_r")
@@ -44,7 +44,7 @@ class Plot():
             facecolor = "#e6e6e6" # "white"
             if isinstance(layer, CurrentLoading):
                 edgecolor = "red"
-            elif isinstance(layer, Layer):
+            elif isinstance(layer, MagneticLayer):
                 facecolor = "#a6a6a6"
             else: 
                 pass

@@ -85,6 +85,12 @@ class AirLayer(Layer):
     def __init__(self, r: float):
         super().__init__(r, mu_r=1)
         
+        
+class MagneticLayer(Layer):
+    
+    def __init__(self, r: float, mu_r: float):
+        super().__init__(r, mu_r)
+        
 
 class Environment(Layer):
 
