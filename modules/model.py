@@ -9,7 +9,8 @@ import numpy as np
 
 from scipy.constants import mu_0
 from .continuities import c_Br, c_Ht
-from .layer import Layer, CurrentLoading
+from .layer import Layer, CurrentLoading, Environment
+from .utils import rt_to_xy, BrBt_to_UV
 
 
 class Model():
@@ -61,6 +62,41 @@ class Model():
             return x
         else:
             raise Exception("(sschumm) solution seems to be no good...")
+            
+            
+    def get_B_data(self, r, t):
+        R_tuple, T_tuple = tuple(), tuple()
+        Br_tuple, Bt_tuple = tuple(), tuple()
+        
+        plot_layers = self.layers + [Environment()]
+        for i, j in enumerate(range(0, len(self.x), 2)):
+            if i == 0:
+                r_i = 0.
+            else:
+                r_i = self.layers[i - 1].r
+            
+            this_r = r[np.argwhere((r >= r_i) & (r < plot_layers[i].r)).flatten()]
+            this_R, this_T = np.meshgrid(this_r, t)
+            
+            this_Br= plot_layers[i].Br(self.p, this_R, this_T,
+                                       a_j = self.x[j],
+                                       b_j = self.x[j+1])
+            this_Bt= plot_layers[i].Bt(self.p, this_R, this_T,
+                                       a_j = self.x[j],
+                                       b_j = self.x[j+1])
+
+            R_tuple += (this_R, )
+            T_tuple += (this_T, )
+            Br_tuple += (this_Br, )
+            Bt_tuple += (this_Bt, )
+
+        R, T = np.hstack(R_tuple), np.hstack(T_tuple)
+        Br, Bt = np.hstack(Br_tuple), np.hstack(Bt_tuple)
+        
+        X, Y = rt_to_xy(R, T)
+        U, V = BrBt_to_UV(Br, Bt, T)
+        return X, Y, U, V
+            
         
         
     def _build_sysA(self):
