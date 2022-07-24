@@ -5,7 +5,7 @@ Created on Sat Jul 23 14:34:28 2022
 @author: svens
 """
 
-# import numpy as np
+import numpy as np
 
 from scipy.constants import mu_0
 
@@ -27,6 +27,41 @@ class Layer():
         self.idx = index
         
         
+    # ------ computation of vector potential ------
+    
+    def A(self, p, R, a_j, b_j):
+        if self.idx == 0:
+            return a_j * R**p
+        else:
+            return a_j * R**p  +  b_j * R**-p
+        
+    
+    def dA(self, p, R, a_j, b_j):
+        if self.idx == 0:
+            return a_j * p * R**(p-1)
+        else:
+            return a_j * p * R**(p-1)  -  b_j * p * R**-(p+1)
+    
+    
+    def Az(self, p, R, T, a_j, b_j):
+        return np.sin(p*T) * self.A(self, p, R, a_j, b_j)
+    
+    
+    # ------ computation of flux densities ------
+    
+    def Br(self, p, R, T, a_j, b_j):
+        if self.idx == 0:
+            return np.cos(p*T) * p * (a_j * R**(p-1))
+        else: 
+            return np.cos(p*T) * p * (a_j * R**(p-1) + b_j * R**-(p+1))
+        
+    
+    def Bt(self, p, R, T, a_j, b_j):
+        return np.sin(p*T) * -self.dA(self, p, R, a_j, b_j)
+        
+
+
+
 
 class CurrentLoading(Layer):
     
