@@ -69,9 +69,16 @@ class CurrentLoading(Layer):
         super().__init__(r, mu_r)
         
         self.K = K
+
         
 class AirLayer(Layer):
+
     def __init__(self, r: float):
         super().__init__(r, mu_r=1)
         
+
+class Environment(Layer):
+
+    def __init__(self):
+        super().__init__(r=np.inf, mu_r=1)        
     
