@@ -9,7 +9,8 @@ import numpy as np
 np.set_printoptions(suppress=True, linewidth=250, precision=3)
 
 from modules.model import Model
-from modules.layer import Layer, AirLayer, CurrentLoading
+from modules.layer import Layer, CurrentLoading
+from modules.plot import Plot
 
 
 # parameters from bumby appendix
@@ -38,3 +39,7 @@ print(f"a2 - analytic: 3.336371 - numeric: {a2}")
 print(f"b2 - analytic: 0.133455 - numeric: {b2}")
 print(f"a3 - analytic:        0 - numeric: {a3}")
 print(f"b3 - analytic: 0.736087 - numeric: {b3}")
+
+#%%
+p = Plot(m1)
+p.streamplot()
