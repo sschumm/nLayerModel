@@ -23,9 +23,6 @@ myWinter = ListedColormap(sampled_Winter[104:, :])
 res = 256
 n = 1
 sampled_Winter = Winter(np.linspace(0,1,2*res))
-# sampled_Winter[:res, -1] = np.flip(np.logspace(n, 0, res))
-# sampled_Winter[res:, -1] = np.logspace(n, 0, res)
-
 sampled_Winter[:res, -1] = np.flip(np.linspace(0, 1, res))**n
 sampled_Winter[res:, -1] = np.linspace(0, 1, res)**n
 contourWinter = ListedColormap(sampled_Winter)
@@ -39,6 +36,12 @@ class Plot():
         self.fgsz = fgsz
         self.lim = max(model.radii) * 1.2
         self.r_max = np.sqrt(2 * self.lim**2)
+        
+        
+    def _set_up_plot(self):
+        fig = plt.figure(figsize=(self.fgsz, self.fgsz))
+        ax = plt.subplot()        
+        return fig, ax
         
         
     def _set_plot_dims(self, ax):
@@ -72,8 +75,7 @@ class Plot():
     
         
     def streamplot(self, dr, dt):
-        plt.figure(figsize=(self.fgsz, self.fgsz))
-        ax = plt.subplot()
+        fig, ax = self._set_up_plot()
         self._set_plot_dims(ax)
         self._set_machine_dims(ax)
         
@@ -113,8 +115,7 @@ class Plot():
         
     
     def contour(self, dr, dt, **kwargs):
-        fig = plt.figure(figsize=(self.fgsz, self.fgsz))
-        ax = plt.subplot()
+        fig, ax = self._set_up_plot()
         self._set_plot_dims(ax)
         self._set_machine_dims(ax)
         
@@ -135,12 +136,36 @@ class Plot():
                          vmax=np.nanmax(Az),
                          cmap=contourWinter)
         #ax.clabel(cs, inline=True, fontsize=self.fgsz)
-        fig.colorbar(cs, shrink = 0.8)
+        # fig.colorbar(cs, shrink = 0.8)
         
         print("INFO: finished contour.")
         
     
+
+class DoublePlot(Plot):
     
+    def __init__(self, model: Model, fgsz = 20):
+        super().__init__(model, fgsz)
+        
+        self.ny = 1
+        self.nx = 2
+        self.fig, self.axs = plt.subplots(self.ny, self.nx)
+        self.fig.set_figheight(self.ny * self.fgsz)
+        self.fig.set_figwidth(self.nx * self.fgsz)
+        self.count_x = 0
+        
+        
+    def _set_up_plot(self):
+        this_count_x = self.count_x
+        self.count_x += 1
+        return self.fig, self.axs[this_count_x]
+    
+    
+    def plot_BandA(self, dr, dt):
+        self.streamplot(dr, dt)
+        self.contour(dr, dt)
+    
+        
     
         
     
