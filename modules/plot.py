@@ -23,8 +23,8 @@ myWinter = ListedColormap(sampled_Winter[104:, :])
 res = 256
 n = 1
 sampled_Winter = Winter(np.linspace(0,1,2*res))
-sampled_Winter[:res, -1] = np.flip(np.linspace(0.05, 1, res))**n
-sampled_Winter[res:, -1] = np.linspace(0.05, 1, res)**n
+sampled_Winter[:res, -1] = np.flip(np.linspace(0., 1, res))**n
+sampled_Winter[res:, -1] = np.linspace(0., 1, res)**n
 contourWinter = ListedColormap(sampled_Winter)
 
 
@@ -109,12 +109,7 @@ class PlanePlot():
                       arrowsize= 0.1*self.fgsz, 
                       color=gi, cmap=myWinter)
         print("INFO: finished streamplot.")
-    
-    
-    def quiver():
-        
-        pass
-        
+           
     
     def contour(self, dr, dt, **kwargs):
         fig, ax = self._set_up_plot()
@@ -140,7 +135,24 @@ class PlanePlot():
         
         print("INFO: finished contour.")
         
-      
+    
+    def quiver(self, dr, dt):
+        fig, ax = self._set_up_plot()
+        self._set_plot_dims(ax)
+        self._set_machine_dims(ax)
+        
+        r = np.linspace(0, self.r_max, dr)
+        t = np.linspace(0, 2*pi, dt)
+        
+        print("INFO: computing quiver...")
+        
+        X, Y, U, V, _, _, _, _ = self.m.get_B_data(r, t)
+        intensity = np.sqrt(U**2 + V**2)
+    
+        ax.quiver(X, Y, U, V, intensity,
+                  scale=3*dt,
+                  cmap=myWinter) # color="b")
+        print("INFO: finished quiver.")
     
 
 class PlaneDoublePlot(PlanePlot):

@@ -62,13 +62,15 @@ rM_plot = RadialMsizePlot(model)
 # =============================================================================
 
 #%%
-stime = time.time()
-p_plot.contour(400, 400)
-etime = time.time()
-print(f"Runtime of contour: {etime - stime} seconds.")
+# =============================================================================
+# stime = time.time()
+# p_plot.contour(400, 400)
+# etime = time.time()
+# print(f"Runtime of contour: {etime - stime} seconds.")
+# =============================================================================
 
 #%%
-p_plot.quiver(40, 40)
+p_plot.quiver(40, 30)
 
 #%%
 # pD_plot.plot_BandA(100, 100)
