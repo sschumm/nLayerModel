@@ -11,9 +11,9 @@ np.set_printoptions(suppress=True, linewidth=250, precision=5)
 from scipy.constants import pi
 from modules.model import Model
 from modules.layer import MagneticLayer, AirLayer, CurrentLoading
-from modules.plot import PlanePlot, PlaneDoublePlot, AxialPlot
+from modules.plot import PlanePlot, PlaneDoublePlot, RadialPlot, RadialMsizePlot
 
-p = 1
+p = 3
 
 cl1 = CurrentLoading(K=5e6, r=0.5, mu_r=1)
 al1 = AirLayer(r=0.7)
@@ -53,12 +53,20 @@ p_plot = PlanePlot(model)
 p_plot.contour(400, 400)
 
 #%%
-# pD_plot = PlaneDoublePlot(model)
+pD_plot = PlaneDoublePlot(model)
 # pD_plot.plot_BandA(100, 100)
 
 #%%
-a_plot = AxialPlot(model)
-a_plot.plot_axial_Az(angle=0.25)
-a_plot.plot_axial_Br(angle=0)
+# r_plot = RadialPlot(model)
+# r_plot.plot_radial_Az(angle=0.25)
+# r_plot.plot_radial_Br(angle=0.25)
+# r_plot.plot_radial_Ht(angle=0.25)
+
+#%%
+rM_plot = RadialMsizePlot(model)
+angle=0.
+rM_plot.plot_radial_Az(angle=angle)
+rM_plot.plot_radial_Br(angle=angle)
+# rM_plot.plot_radial_Ht(angle=0.25)
 
 

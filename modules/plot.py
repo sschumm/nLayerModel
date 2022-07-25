@@ -12,7 +12,7 @@ from matplotlib import cm, patches
 from matplotlib.colors import ListedColormap
 
 from scipy.interpolate import griddata
-from scipy.constants import pi
+from scipy.constants import pi, mu_0
 from .layer import MagneticLayer, CurrentLoading
 from .model import Model
 
@@ -23,8 +23,8 @@ myWinter = ListedColormap(sampled_Winter[104:, :])
 res = 256
 n = 1
 sampled_Winter = Winter(np.linspace(0,1,2*res))
-sampled_Winter[:res, -1] = np.flip(np.linspace(0, 1, res))**n
-sampled_Winter[res:, -1] = np.linspace(0, 1, res)**n
+sampled_Winter[:res, -1] = np.flip(np.linspace(0.05, 1, res))**n
+sampled_Winter[res:, -1] = np.linspace(0.05, 1, res)**n
 contourWinter = ListedColormap(sampled_Winter)
 
 
@@ -58,6 +58,8 @@ class PlanePlot():
             edgecolor = "black"
             facecolor = "#e6e6e6" # "white"
             if isinstance(layer, CurrentLoading):
+                if not layer.mu == mu_0:
+                    facecolor = "#a6a6a6"
                 edgecolor = "red"
             elif isinstance(layer, MagneticLayer):
                 facecolor = "#a6a6a6"
@@ -196,8 +198,20 @@ class RadialPlot():
         ax.set_xlim(0, self.lim)
         ax.set_ylim(self.ymin * 1.1, self.ymax * 1.1)
         
-        ax.tick_params(axis='both', which='major', labelsize=self.fgsz_x)
-        ax.tick_params(axis='both', which='minor', labelsize=int(0.8 * self.fgsz_x))
+        ax.tick_params(axis='both', which='major', 
+                       labelsize=self.fgsz_x, pad=self.fgsz_x)
+        ax.tick_params(axis='both', which='minor', 
+                       labelsize=int(0.8 * self.fgsz_x), pad=self.fgsz_x)
+        ax.set_ylabel
+        
+        
+    def _set_machine_dims(self, ax):
+        for layer in reversed(self.m.layers):
+            v_color = "black"
+            if isinstance(layer, CurrentLoading):
+                v_color = "red"
+
+            ax.axvline(layer.r, color=v_color, linewidth=4)
                     
             
     def _unpack_kwargs(self, kwargs):
@@ -219,7 +233,7 @@ class RadialPlot():
         self.ymax = np.nanmax(this_Az)
         self.ymin = np.nanmin(this_Az)
         self._set_plot_dims(ax)
-        # self._set_machine_dims(ax)
+        self._set_machine_dims(ax)
         ax.grid(True)
         ax.plot(r, this_Az)        
         
@@ -233,7 +247,7 @@ class RadialPlot():
         self.ymax = np.nanmax(this_Br)
         self.ymin = np.nanmin(this_Br)        
         self._set_plot_dims(ax)
-        # self._set_machine_dims(ax)
+        self._set_machine_dims(ax)
         ax.plot(r, this_Br) 
     
     
@@ -247,7 +261,7 @@ class RadialPlot():
         self.ymax = np.nanmax(this_Ht)
         self.ymin = np.nanmin(this_Ht)
         self._set_plot_dims(ax)
-        # self._set_machine_dims(ax)
+        self._set_machine_dims(ax)
         ax.plot(r, this_Ht) 
         
         
@@ -259,7 +273,7 @@ class RadialMsizePlot(RadialPlot):
                
         
     def _set_up_plot(self):
-        fig, axs = plt.subplots(2, 1, gridspec_kw={'height_ratios': [5, 1]})
+        fig, axs = plt.subplots(2, 1, gridspec_kw={'height_ratios': [9, 1]})
         fig.set_figheight(self.fgsz_y + self.machinesz)
         fig.set_figwidth(self.fgsz_x)
         
@@ -283,6 +297,8 @@ class RadialMsizePlot(RadialPlot):
             v_color = "black"
             h_color = "#e6e6e6" # "white"
             if isinstance(layer, CurrentLoading):
+                if not layer.mu == mu_0:
+                    h_color = "#a6a6a6"
                 v_color = "red"
             if isinstance(layer, MagneticLayer):
                 h_color = "#a6a6a6"
