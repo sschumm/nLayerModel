@@ -11,9 +11,9 @@ np.set_printoptions(suppress=True, linewidth=250, precision=5)
 from scipy.constants import pi
 from modules.model import Model
 from modules.layer import MagneticLayer, AirLayer, CurrentLoading
-from modules.plot import Plot
+from modules.plot import PlanePlot, PlaneDoublePlot
 
-p = 1
+p = 3
 
 cl1 = CurrentLoading(K=5e6, r=0.5, mu_r=1)
 al1 = AirLayer(r=0.7)
@@ -46,5 +46,12 @@ model.solve()
 # =============================================================================
 
 #%%
-p = Plot(model)
+p = PlanePlot(model)
 p.streamplot(400, 400)
+
+#%%
+p.contour(400, 400)
+
+#%%
+q = PlaneDoublePlot(model)
+q.plot_BandA(100, 100)

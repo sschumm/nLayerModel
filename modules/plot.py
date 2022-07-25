@@ -28,7 +28,7 @@ sampled_Winter[res:, -1] = np.linspace(0, 1, res)**n
 contourWinter = ListedColormap(sampled_Winter)
 
 
-class Plot():
+class PlanePlot():
     
     def __init__(self, model: Model, fgsz = 20):
         self.m = model
@@ -140,12 +140,10 @@ class Plot():
         
         print("INFO: finished contour.")
         
-        
-
-        
+      
     
 
-class DoublePlot(Plot):
+class PlaneDoublePlot(PlanePlot):
     
     def __init__(self, model: Model, fgsz = 20):
         super().__init__(model, fgsz)

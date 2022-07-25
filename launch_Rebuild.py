@@ -10,7 +10,7 @@ np.set_printoptions(suppress=True, linewidth=250, precision=3)
 
 from modules.model import Model
 from modules.layer import MagneticLayer, CurrentLoading
-from modules.plot import Plot
+from modules.plot import PlanePlot
 
 
 # parameters from bumby appendix
@@ -41,5 +41,6 @@ print(f"a3 - analytic:        0 - numeric: {a3}")
 print(f"b3 - analytic: 0.736087 - numeric: {b3}")
 
 #%%
-p = Plot(m1)
+p = PlanePlot(m1)
 p.streamplot(400, 400)
+p.contour(400, 400)
