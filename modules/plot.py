@@ -8,7 +8,7 @@ Created on Sun Jul 24 11:56:57 2022
 import numpy as np 
 import matplotlib.pyplot as plt 
 
-from matplotlib import cm
+from matplotlib import cm, patches
 from matplotlib.colors import ListedColormap
 
 from scipy.interpolate import griddata
@@ -171,78 +171,114 @@ class PlaneDoublePlot(PlanePlot):
       
     
     
-class AxialPlot():
+class RadialPlot():
     
     
     def __init__(self, model: Model, fgsz = 20):
         self.m = model
         
         self.fgsz_x = fgsz
-        self.fgsz_y = fgsz * 0.6
+        self.fgsz_y = fgsz * 0.4
+        self.machinesz = self.fgsz_y * 0.1
         self.lim = max(model.radii) * 1.2
+        self.ymax = 1
+        self.ymin = -1
         
         
     def _set_up_plot(self):
         fig = plt.figure(figsize=(self.fgsz_x, self.fgsz_y))
-        plt.style.use('_mpl-gallery')
+        # plt.style.use('_mpl-gallery')
         ax = plt.subplot()        
         return fig, ax
         
     
-    def _set_plot_dims(self, ax, y_max):
+    def _set_plot_dims(self, ax):
         ax.set_xlim(0, self.lim)
-        ax.set_ylim(-y_max * 1.1, y_max * 1.1)
-    
-    
-    def plot_axial_Az(self, **kwargs):
-        fig, ax = self._set_up_plot()
+        ax.set_ylim(self.ymin * 1.1, self.ymax * 1.1)
         
-        dr = kwargs.get("dr", 100)
-        dt = kwargs.get("dt", 100)
-        angle = kwargs.get("angle", 0)
+        ax.tick_params(axis='both', which='major', labelsize=self.fgsz_x)
+        ax.tick_params(axis='both', which='minor', labelsize=int(0.8 * self.fgsz_x))
+        
+    
+    def _set_machine_dims(self, ax):
+        pass
+# =============================================================================
+#         for layer in reversed(self.m.layers):
+#             v_color = "black"
+#             h_color = "#e6e6e6" # "white"
+#             if isinstance(layer, CurrentLoading):
+#                 v_color = "red"
+#             if isinstance(layer, MagneticLayer):
+#                 h_color = "#a6a6a6"
+#                 
+#             ax.add_patch(patches.Rectangle((layer.r, self.ymin), 
+#                                            width=layer.r,
+#                                            height=self.machinesz,
+#                                            angle=180,
+#                                            facecolor=h_color
+#                                            )
+#                          )
+#                            
+#             ax.vlines(x=layer.r, 
+#                       ymin=-self.ymax, 
+#                       ymax=self.ymax, 
+#                       colors=v_color,
+#                       linewidth=3)
+# =============================================================================
+            
+            
+    def _unpack_kwargs(self, kwargs):
+        dr = kwargs.get("dr", self.fgsz_x * 50)
+        dt = kwargs.get("dt", self.fgsz_x * 50)
+        a = kwargs.get("angle", 0)
         r = np.linspace(0, self.lim, dr)
-        t = np.linspace(0, 2*pi, dt) 
+        t = np.linspace(0, 2*pi, dt)
+        return r, t, a
+                    
         
-        print("INFO: computing axial_Az...")
-        
+    def plot_radial_Az(self, **kwargs):
+        fig, ax = self._set_up_plot()
+        r, t, a = self._unpack_kwargs(kwargs)
         _, _, Az, R, T = self.m.get_A_data(r, t)
         
-        this_Az = Az[int(dt * angle)]
-        self._set_plot_dims(ax, y_max = np.nanmax(this_Az))
         
-        ax.plot(r, this_Az)
-        print("INFO: finished axial_Az.")
+        this_Az = Az[int(len(t) * a)]
+        self.ymax = np.nanmax(this_Az)
+        self.ymin = np.nanmin(this_Az)
+        self._set_plot_dims(ax)
+        self._set_machine_dims(ax)
+        ax.grid(True)
+        ax.plot(r, this_Az)        
         
-        
-    def plot_axial_Br(self, **kwargs):
+
+    def plot_radial_Br(self, **kwargs):
         fig, ax = self._set_up_plot()
-        
-        dr = kwargs.get("dr", 100)
-        dt = kwargs.get("dt", 100)
-        angle = kwargs.get("angle", 0)
-        r = np.linspace(0, self.lim, dr)
-        t = np.linspace(0, 2*pi, dt) 
-        
-        print("INFO: computing axial_Az...")
-        
+        r, t, a = self._unpack_kwargs(kwargs)
         _, _, _, _, _, _, Br, _ = self.m.get_B_data(r, t)
         
-        this_Br = Br[int(dt * angle)]
-        self._set_plot_dims(ax, y_max = np.nanmax(this_Br))
+        this_Br = Br[int(len(t) * a)]
+        self.ymax = np.nanmax(this_Br)
+        self.ymin = np.nanmin(this_Br)        
+        self._set_plot_dims(ax)
+        self._set_machine_dims(ax)
+        ax.plot(r, this_Br) 
+    
+    
+    def plot_radial_Ht(self, **kwargs):
+        fig, ax = self._set_up_plot()
+        r, t, a = self._unpack_kwargs(kwargs)
+        _, _, _, _, _, _, _, Ht = self.m.get_H_data(r, t)
         
-        ax.plot(r, this_Br)
-        print("INFO: finished axial_Az.")
+
+        this_Ht = Ht[int(len(t) * a)]
+        self.ymax = np.nanmax(this_Ht)
+        self.ymin = np.nanmin(this_Ht)
+        self._set_plot_dims(ax)
+        self._set_machine_dims(ax)
+        ax.plot(r, this_Ht) 
         
         
-        
-        
-    
-    
-    
-    
-    
-    
-    
+
     
     
     
