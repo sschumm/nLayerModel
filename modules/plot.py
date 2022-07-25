@@ -84,7 +84,7 @@ class Plot():
         
         print("INFO: computing streamplot...")
         
-        X, Y, U, V = self.m.get_B_data(r, t)
+        X, Y, U, V, _, _, _, _ = self.m.get_B_data(r, t)
         
         x = np.linspace(X.min(), X.max(), self.fgsz * 50)
         y = np.linspace(Y.min(), Y.max(), self.fgsz * 50)
@@ -126,7 +126,7 @@ class Plot():
         
         print("INFO: computing contour...")
         
-        X, Y, Az = self.m.get_A_xy_data(r, t)
+        X, Y, Az, _, _ = self.m.get_A_data(r, t)
         # Az = Az / np.nanmax(Az)
 
         
@@ -139,6 +139,9 @@ class Plot():
         # fig.colorbar(cs, shrink = 0.8)
         
         print("INFO: finished contour.")
+        
+        
+
         
     
 

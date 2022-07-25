@@ -68,6 +68,8 @@ class Model():
         R_tuple, T_tuple = tuple(), tuple()
         Br_tuple, Bt_tuple = tuple(), tuple()
         
+        # this does not add a new layer to the model but is used to compute
+        # the field for the environment, otherwise a_n & b_n would be unused
         plot_layers = self.layers + [Environment()]
         for i, j in enumerate(range(0, len(self.x), 2)):
             if i == 0:
@@ -75,9 +77,11 @@ class Model():
             else:
                 r_i = self.layers[i - 1].r
             
+            # create mesh for every layer
             this_r = r[np.argwhere((r >= r_i) & (r < plot_layers[i].r)).flatten()]
             this_R, this_T = np.meshgrid(this_r, t)
             
+            # compute the flux densities for the i-th layer
             this_Br= plot_layers[i].Br(self.p, this_R, this_T,
                                        a_j = self.x[j],
                                        b_j = self.x[j+1])
@@ -85,6 +89,7 @@ class Model():
                                        a_j = self.x[j],
                                        b_j = self.x[j+1])
 
+            # store the result for the i-th layer
             R_tuple += (this_R, )
             T_tuple += (this_T, )
             Br_tuple += (this_Br, )
@@ -95,10 +100,10 @@ class Model():
         
         X, Y = rt_to_xy(R, T)
         U, V = BrBt_to_UV(Br, Bt, T)
-        return X, Y, U, V
+        return X, Y, U, V, R, T, Br, Bt
     
     
-    def get_A_xy_data(self, r, t):
+    def get_A_data(self, r, t):
         R_tuple, T_tuple = tuple(), tuple()
         Az_tuple = tuple()
         
@@ -128,7 +133,7 @@ class Model():
         R, T = np.hstack(R_tuple), np.hstack(T_tuple)
         Az = np.hstack(Az_tuple)
         X, Y = rt_to_xy(R, T)
-        return X, Y, Az
+        return X, Y, Az, R, T
             
         
         
