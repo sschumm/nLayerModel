@@ -127,9 +127,7 @@ class PlanePlot():
         print("INFO: computing contour...")
         
         X, Y, Az, _, _ = self.m.get_A_data(r, t)
-        # Az = Az / np.nanmax(Az)
-
-        
+                
         cs = ax.contourf(X, Y, Az,
                          levels=lvls,
                          vmin=np.nanmin(Az),
@@ -150,13 +148,17 @@ class PlaneDoublePlot(PlanePlot):
         
         self.ny = 1
         self.nx = 2
-        self.fig, self.axs = plt.subplots(self.ny, self.nx)
-        self.fig.set_figheight(self.ny * self.fgsz)
-        self.fig.set_figwidth(self.nx * self.fgsz)
+        self.fig = None
+        self.axs = None
         self.count_x = 0
         
         
     def _set_up_plot(self):
+        if self.count_x == 0:
+            self.fig, self.axs = plt.subplots(self.ny, self.nx)
+            self.fig.set_figheight(self.ny * self.fgsz)
+            self.fig.set_figwidth(self.nx * self.fgsz)
+        
         this_count_x = self.count_x
         self.count_x += 1
         return self.fig, self.axs[this_count_x]
@@ -166,8 +168,91 @@ class PlaneDoublePlot(PlanePlot):
         self.streamplot(dr, dt)
         self.contour(dr, dt)
     
+      
+    
+    
+class AxialPlot():
+    
+    
+    def __init__(self, model: Model, fgsz = 20):
+        self.m = model
+        
+        self.fgsz_x = fgsz
+        self.fgsz_y = fgsz * 0.6
+        self.lim = max(model.radii) * 1.2
+        
+        
+    def _set_up_plot(self):
+        fig = plt.figure(figsize=(self.fgsz_x, self.fgsz_y))
+        plt.style.use('_mpl-gallery')
+        ax = plt.subplot()        
+        return fig, ax
         
     
+    def _set_plot_dims(self, ax, y_max):
+        ax.set_xlim(0, self.lim)
+        ax.set_ylim(-y_max * 1.1, y_max * 1.1)
+    
+    
+    def plot_axial_Az(self, **kwargs):
+        fig, ax = self._set_up_plot()
+        
+        dr = kwargs.get("dr", 100)
+        dt = kwargs.get("dt", 100)
+        angle = kwargs.get("angle", 0)
+        r = np.linspace(0, self.lim, dr)
+        t = np.linspace(0, 2*pi, dt) 
+        
+        print("INFO: computing axial_Az...")
+        
+        _, _, Az, R, T = self.m.get_A_data(r, t)
+        
+        this_Az = Az[int(dt * angle)]
+        self._set_plot_dims(ax, y_max = np.nanmax(this_Az))
+        
+        ax.plot(r, this_Az)
+        print("INFO: finished axial_Az.")
+        
+        
+    def plot_axial_Br(self, **kwargs):
+        fig, ax = self._set_up_plot()
+        
+        dr = kwargs.get("dr", 100)
+        dt = kwargs.get("dt", 100)
+        angle = kwargs.get("angle", 0)
+        r = np.linspace(0, self.lim, dr)
+        t = np.linspace(0, 2*pi, dt) 
+        
+        print("INFO: computing axial_Az...")
+        
+        _, _, _, _, _, _, Br, _ = self.m.get_B_data(r, t)
+        
+        this_Br = Br[int(dt * angle)]
+        self._set_plot_dims(ax, y_max = np.nanmax(this_Br))
+        
+        ax.plot(r, this_Br)
+        print("INFO: finished axial_Az.")
+        
+        
+        
         
     
-        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
