@@ -178,7 +178,7 @@ class RadialPlot():
         self.m = model
         
         self.fgsz_x = fgsz
-        self.fgsz_y = fgsz * 0.4
+        self.fgsz_y = fgsz * 0.6
         self.machinesz = self.fgsz_y * 0.1
         self.lim = max(model.radii) * 1.2
         self.ymax = 1
@@ -198,34 +198,7 @@ class RadialPlot():
         
         ax.tick_params(axis='both', which='major', labelsize=self.fgsz_x)
         ax.tick_params(axis='both', which='minor', labelsize=int(0.8 * self.fgsz_x))
-        
-    
-    def _set_machine_dims(self, ax):
-        pass
-# =============================================================================
-#         for layer in reversed(self.m.layers):
-#             v_color = "black"
-#             h_color = "#e6e6e6" # "white"
-#             if isinstance(layer, CurrentLoading):
-#                 v_color = "red"
-#             if isinstance(layer, MagneticLayer):
-#                 h_color = "#a6a6a6"
-#                 
-#             ax.add_patch(patches.Rectangle((layer.r, self.ymin), 
-#                                            width=layer.r,
-#                                            height=self.machinesz,
-#                                            angle=180,
-#                                            facecolor=h_color
-#                                            )
-#                          )
-#                            
-#             ax.vlines(x=layer.r, 
-#                       ymin=-self.ymax, 
-#                       ymax=self.ymax, 
-#                       colors=v_color,
-#                       linewidth=3)
-# =============================================================================
-            
+                    
             
     def _unpack_kwargs(self, kwargs):
         dr = kwargs.get("dr", self.fgsz_x * 50)
@@ -246,7 +219,7 @@ class RadialPlot():
         self.ymax = np.nanmax(this_Az)
         self.ymin = np.nanmin(this_Az)
         self._set_plot_dims(ax)
-        self._set_machine_dims(ax)
+        # self._set_machine_dims(ax)
         ax.grid(True)
         ax.plot(r, this_Az)        
         
@@ -260,7 +233,7 @@ class RadialPlot():
         self.ymax = np.nanmax(this_Br)
         self.ymin = np.nanmin(this_Br)        
         self._set_plot_dims(ax)
-        self._set_machine_dims(ax)
+        # self._set_machine_dims(ax)
         ax.plot(r, this_Br) 
     
     
@@ -274,17 +247,55 @@ class RadialPlot():
         self.ymax = np.nanmax(this_Ht)
         self.ymin = np.nanmin(this_Ht)
         self._set_plot_dims(ax)
-        self._set_machine_dims(ax)
+        # self._set_machine_dims(ax)
         ax.plot(r, this_Ht) 
         
         
 
     
+class RadialMsizePlot(RadialPlot):
+    def __init__(self, model: Model, fgsz = 20):
+        super().__init__(model, fgsz)
+               
+        
+    def _set_up_plot(self):
+        fig, axs = plt.subplots(2, 1, gridspec_kw={'height_ratios': [5, 1]})
+        fig.set_figheight(self.fgsz_y + self.machinesz)
+        fig.set_figwidth(self.fgsz_x)
+        
+        self._add_machine_dims(axs[1])
+        
+        return fig, axs[0]
     
     
-    
-    
-    
+    def _add_machine_dims(self, ax):
+        
+        ax.set_xlim(0, self.lim)
+        ax.set_ylim(0,1)
+        ax.grid(False)
+        ax.tick_params(axis='both', which='both', 
+                       left=False,
+                       labelleft=False,
+                       bottom=False,
+                       labelbottom=False)
+        
+        for layer in reversed(self.m.layers):
+            v_color = "black"
+            h_color = "#e6e6e6" # "white"
+            if isinstance(layer, CurrentLoading):
+                v_color = "red"
+            if isinstance(layer, MagneticLayer):
+                h_color = "#a6a6a6"
+                
+            ax.add_patch(patches.Rectangle((layer.r, 0), 
+                                           width=1,
+                                           height=layer.r,
+                                           angle=90,
+                                           facecolor=h_color
+                                           )
+                         )
+            ax.axvline(layer.r, color=v_color, linewidth=4)
+
     
     
     
