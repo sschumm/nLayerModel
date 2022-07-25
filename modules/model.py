@@ -135,7 +135,45 @@ class Model():
         X, Y = rt_to_xy(R, T)
         return X, Y, Az, R, T
             
+    
+    def get_H_data(self, r, t):
+        R_tuple, T_tuple = tuple(), tuple()
+        Hr_tuple, Ht_tuple = tuple(), tuple()
         
+        # this does not add a new layer to the model but is used to compute
+        # the field for the environment, otherwise a_n & b_n would be unused
+        plot_layers = self.layers + [Environment()]
+        for i, j in enumerate(range(0, len(self.x), 2)):
+            if i == 0:
+                r_i = 0.
+            else:
+                r_i = self.layers[i - 1].r
+            
+            # create mesh for every layer
+            this_r = r[np.argwhere((r >= r_i) & (r < plot_layers[i].r)).flatten()]
+            this_R, this_T = np.meshgrid(this_r, t)
+            
+            # compute the field strength for the i-th layer
+            this_Hr= plot_layers[i].Hr(self.p, this_R, this_T,
+                                       a_j = self.x[j],
+                                       b_j = self.x[j+1])
+            this_Ht= plot_layers[i].Ht(self.p, this_R, this_T,
+                                       a_j = self.x[j],
+                                       b_j = self.x[j+1])
+
+            # store the result for the i-th layer
+            R_tuple += (this_R, )
+            T_tuple += (this_T, )
+            Hr_tuple += (this_Hr, )
+            Ht_tuple += (this_Ht, )
+
+        R, T = np.hstack(R_tuple), np.hstack(T_tuple)
+        Hr, Ht = np.hstack(Hr_tuple), np.hstack(Ht_tuple)
+        
+        X, Y = rt_to_xy(R, T)
+        U, V = BrBt_to_UV(Hr, Ht, T)
+        return X, Y, U, V, R, T, Hr, Ht
+    
         
     def _build_sysA(self):
         
