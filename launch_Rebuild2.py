@@ -5,6 +5,7 @@ Created on Sun Jul 24 11:08:20 2022
 @author: svens
 """
 
+import time
 import numpy as np
 np.set_printoptions(suppress=True, linewidth=250, precision=5)
 
@@ -13,7 +14,7 @@ from modules.model import Model
 from modules.layer import MagneticLayer, AirLayer, CurrentLoading
 from modules.plot import PlanePlot, PlaneDoublePlot, RadialPlot, RadialMsizePlot
 
-p = 3
+p = 4
 
 cl1 = CurrentLoading(K=5e6, r=0.5, mu_r=1)
 al1 = AirLayer(r=0.7)
@@ -28,11 +29,18 @@ model.add_layer(ml1)
 model.build()
 model.solve()
 
+p_plot = PlanePlot(model)
+pD_plot = PlaneDoublePlot(model)
+r_plot = RadialPlot(model)
+rM_plot = RadialMsizePlot(model)
+
 # =============================================================================
 # print("x= \n", model.x, "\n")
 # print("sysA= \n", model.sysA, "\n")
 # print("sysb= \n", model.sysb, "\n")
-# 
+# =============================================================================
+
+# =============================================================================
 # print("")
 # 
 # i = 1
@@ -46,27 +54,34 @@ model.solve()
 # =============================================================================
 
 #%%
-p_plot = PlanePlot(model)
+# =============================================================================
+# stime = time.time()
 # p_plot.streamplot(400, 400)
+# etime = time.time()
+# print(f"Runtime of streamplot: {etime - stime} seconds.")
+# =============================================================================
 
 #%%
+stime = time.time()
 p_plot.contour(400, 400)
+etime = time.time()
+print(f"Runtime of contour: {etime - stime} seconds.")
 
 #%%
-pD_plot = PlaneDoublePlot(model)
+p_plot.quiver(40, 40)
+
+#%%
 # pD_plot.plot_BandA(100, 100)
 
 #%%
-# r_plot = RadialPlot(model)
 # r_plot.plot_radial_Az(angle=0.25)
 # r_plot.plot_radial_Br(angle=0.25)
 # r_plot.plot_radial_Ht(angle=0.25)
 
 #%%
-rM_plot = RadialMsizePlot(model)
 angle=0.
-rM_plot.plot_radial_Az(angle=angle)
-rM_plot.plot_radial_Br(angle=angle)
+# rM_plot.plot_radial_Az(angle=angle)
+# rM_plot.plot_radial_Br(angle=angle)
 # rM_plot.plot_radial_Ht(angle=0.25)
 
 
