@@ -20,6 +20,16 @@ Winter = cm.get_cmap("winter_r")
 sampled_Winter = Winter(np.linspace(0,1,360))
 myWinter = ListedColormap(sampled_Winter[104:, :])
 
+res = 256
+n = 1
+sampled_Winter = Winter(np.linspace(0,1,2*res))
+# sampled_Winter[:res, -1] = np.flip(np.logspace(n, 0, res))
+# sampled_Winter[res:, -1] = np.logspace(n, 0, res)
+
+sampled_Winter[:res, -1] = np.flip(np.linspace(0, 1, res))**n
+sampled_Winter[res:, -1] = np.linspace(0, 1, res)**n
+contourWinter = ListedColormap(sampled_Winter)
+
 
 class Plot():
     
@@ -94,7 +104,7 @@ class Plot():
                       density= 3 * self.lim, 
                       arrowsize= 0.1*self.fgsz, 
                       color=gi, cmap=myWinter)
-        
+        print("INFO: finished streamplot.")
     
     
     def quiver():
@@ -102,8 +112,33 @@ class Plot():
         pass
         
     
-    def contour():
-        pass
+    def contour(self, dr, dt, **kwargs):
+        fig = plt.figure(figsize=(self.fgsz, self.fgsz))
+        ax = plt.subplot()
+        self._set_plot_dims(ax)
+        self._set_machine_dims(ax)
+        
+        lvls = kwargs.get("lvls", 50)
+        
+        r = np.linspace(0, self.r_max, dr)
+        t = np.linspace(0, 2*pi, dt) 
+        
+        print("INFO: computing contour...")
+        
+        X, Y, Az = self.m.get_A_xy_data(r, t)
+        # Az = Az / np.nanmax(Az)
+
+        
+        cs = ax.contourf(X, Y, Az,
+                         levels=lvls,
+                         vmin=np.nanmin(Az),
+                         vmax=np.nanmax(Az),
+                         cmap=contourWinter)
+        #ax.clabel(cs, inline=True, fontsize=self.fgsz)
+        fig.colorbar(cs, shrink = 0.8)
+        
+        print("INFO: finished contour.")
+        
     
     
     

@@ -96,6 +96,39 @@ class Model():
         X, Y = rt_to_xy(R, T)
         U, V = BrBt_to_UV(Br, Bt, T)
         return X, Y, U, V
+    
+    
+    def get_A_xy_data(self, r, t):
+        R_tuple, T_tuple = tuple(), tuple()
+        Az_tuple = tuple()
+        
+        # this does not add a new layer to the model but is used to compute
+        # the field for the environment, otherwise a_n & b_n would be unused
+        plot_layers = self.layers + [Environment()]
+        for i, j in enumerate(range(0, len(self.x), 2)):
+            if i == 0:
+                r_i = 0.
+            else:
+                r_i = self.layers[i - 1].r
+            
+            # create mesh for every layer
+            this_r = r[np.argwhere((r >= r_i) & (r < plot_layers[i].r)).flatten()]
+            this_R, this_T = np.meshgrid(this_r, t)
+            
+            # compute the vector potential for the i-th layer
+            this_Az= plot_layers[i].Az(self.p, this_R, this_T, 
+                                       a_j = self.x[j], 
+                                       b_j = self.x[j+1])
+            
+            # store the result for the i-th layer
+            R_tuple += (this_R, )
+            T_tuple += (this_T, )
+            Az_tuple += (this_Az, )
+        
+        R, T = np.hstack(R_tuple), np.hstack(T_tuple)
+        Az = np.hstack(Az_tuple)
+        X, Y = rt_to_xy(R, T)
+        return X, Y, Az
             
         
         
