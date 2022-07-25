@@ -67,6 +67,16 @@ class Layer():
     
     def Bt(self, p, R, T, a_j, b_j):           
         return np.sin(p*T) * -self.dA(p, R, a_j, b_j)
+    
+    
+    # ------ computation of field strength ------
+    
+    def Hr(self, p, R, T, a_j, b_j):
+        return self.mu_inv * self.Br(p, R, T, a_j, b_j)
+    
+    
+    def Ht(self, p, R, T, a_j, b_j):
+        return self.mu_inv * self.Bt(p, R, T, a_j, b_j)
         
 
 
