@@ -84,7 +84,7 @@ class Layer():
 
 class CurrentLoading(Layer):
     
-    def __init__(self, K: float, r: float, mu_r: float):
+    def __init__(self, K: float, r: float, mu_r: float = 1.0):
         super().__init__(r, mu_r)
         
         self.K = K
@@ -93,7 +93,7 @@ class CurrentLoading(Layer):
 class AirLayer(Layer):
 
     def __init__(self, r: float):
-        super().__init__(r, mu_r=1)
+        super().__init__(r, mu_r=1.0)
         
         
 class MagneticLayer(Layer):
