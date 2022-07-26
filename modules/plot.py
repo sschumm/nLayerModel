@@ -101,7 +101,7 @@ class PlanePlot():
         gu = griddata((px,py), pu, (xi,yi))
         gv = griddata((px,py), pv, (xi,yi))
         gi = griddata((px,py), i, (xi, yi))
-        lw = ( (0.38 * self.lim * self.fgsz) / np.nanmax(gi) ) * gi + 0.2
+        lw = ( (0.38 * self.fgsz) / np.nanmax(gi) ) * gi + 0.2
         
         ax.streamplot(x,y,gu,gv,  
                       linewidth=lw, 
