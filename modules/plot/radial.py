@@ -64,7 +64,7 @@ class RadialPlot():
         t = np.linspace(0, 2*pi, dt)
         
         if "title" in kwargs: 
-            ax.set_title(kwargs["title"], fontsize=self.fgsz_x)
+            ax.set_title(kwargs["title"], fontsize=self.fgsz_x*1.2)
 
         a = kwargs.get("angle", 0)
         a = (a % 360) / 360
@@ -122,6 +122,7 @@ class RadialMsizePlot(RadialPlot):
         fig, axs = plt.subplots(2, 1, gridspec_kw={'height_ratios': [9, 1]})
         fig.set_figheight(self.fgsz_y + self.machinesz)
         fig.set_figwidth(self.fgsz_x)
+        fig.tight_layout() 
         
         self._add_machine_dims(axs[1])
         
@@ -175,7 +176,10 @@ class RadialMultiPlot(RadialMsizePlot):
         return self.fig, self.axs[self.count_y]
     
     
-    def multiplot(self, quantities: list, details: list, **kwargs):
+    def multiplot(self, 
+                  quantities: list = ["Br", "Ht"], 
+                  details: list = [{"title": "Br"}, {"title": "Ht"}],
+                  **kwargs):
         ny = len(quantities)
         self.fgsz_y = self.fgsz_x * 0.8/ny
         
@@ -194,18 +198,24 @@ class RadialMultiPlot(RadialMsizePlot):
         
         if machine_dims:
             self._add_machine_dims(self.axs[-1])
-        
-        for q, d in zip(quantities, details):
-            if q == "Az":
-                self.plot_radial_Az(**(d | kwargs))
-            elif q == "Br":
-                self.plot_radial_Br(**(d | kwargs))
-            elif q == "Ht":
-                self.plot_radial_Ht(**(d | kwargs))
-            else:
-                print(f"INFO: Plot Quantity {q} is unknown.")
-                
-            self.count_y += 1
+            
+        diff = len(quantities) - len(details)
+        if diff > 0:
+            details = details + [{}] * diff
+        elif diff < 0:
+            raise Exception("quantities must have atleast as many elements as details")
+        else:
+            for q, d in zip(quantities, details):
+                if q == "Az":
+                    self.plot_radial_Az(**(d | kwargs))
+                elif q == "Br":
+                    self.plot_radial_Br(**(d | kwargs))
+                elif q == "Ht":
+                    self.plot_radial_Ht(**(d | kwargs))
+                else:
+                    print(f"INFO: Plot Quantity {q} is unknown.")
+                    
+                self.count_y += 1
 
     
     
