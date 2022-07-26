@@ -40,10 +40,11 @@ print(f"a1 - analytic: {a1_a}{(24 - len(str(a1_a))) * ' '}- numeric: {a1_n}")
 print(f"b1 - analytic: {b1_a}{(24 - len(str(b1_a))) * ' '}- numeric: {b1_n}")
 print(f"a2 - analytic: {a2_a}{(24 - len(str(a2_a))) * ' '}- numeric: {a2_n}")
 print(f"b2 - analytic: {b2_a}{(24 - len(str(b2_a))) * ' '}- numeric: {b2_n}")
+print(f"\nNumeric solution is {np.allclose(x_numeric, x_analytic)}. \n")
 
 p_plot = PlanePlot(model)
-p_plot.streamplot(dr=100, dt=100)
-p_plot.contour(dr=100, dt=100)
+# p_plot.streamplot(dr=100, dt=100)
+# p_plot.contour(dr=100, dt=100)
 
 #%%
 
