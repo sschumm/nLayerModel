@@ -57,19 +57,23 @@ class RadialPlot():
             ax.axvline(layer.r, color=v_color, linewidth=4)
                     
             
-    def _unpack_kwargs(self, kwargs):
+    def _unpack_kwargs(self, ax, **kwargs):
         dr = kwargs.get("dr", self.fgsz_x * 50)
         dt = kwargs.get("dt", self.fgsz_x * 50)
-        a = kwargs.get("angle", 0)
-        a = (a % 360) / 360
         r = np.linspace(0, self.lim, dr)
         t = np.linspace(0, 2*pi, dt)
+        
+        if "title" in kwargs: 
+            ax.set_title(kwargs["title"], fontsize=self.fgsz_x)
+
+        a = kwargs.get("angle", 0)
+        a = (a % 360) / 360
         return r, t, a
                     
         
     def plot_radial_Az(self, **kwargs):
         fig, ax = self._set_up_plot()
-        r, t, a = self._unpack_kwargs(kwargs)
+        r, t, a = self._unpack_kwargs(ax, **kwargs)
         _, _, Az, R, T = self.m.get_A_data(r, t)
         
         
@@ -84,7 +88,7 @@ class RadialPlot():
 
     def plot_radial_Br(self, **kwargs):
         fig, ax = self._set_up_plot()
-        r, t, a = self._unpack_kwargs(kwargs)
+        r, t, a = self._unpack_kwargs(ax, **kwargs)
         _, _, _, _, _, _, Br, _ = self.m.get_B_data(r, t)
         
         this_Br = Br[int(len(t) * a)]
@@ -97,7 +101,7 @@ class RadialPlot():
     
     def plot_radial_Ht(self, **kwargs):
         fig, ax = self._set_up_plot()
-        r, t, a = self._unpack_kwargs(kwargs)
+        r, t, a = self._unpack_kwargs(ax, **kwargs)
         _, _, _, _, _, _, _, Ht = self.m.get_H_data(r, t)
         
 
@@ -171,7 +175,7 @@ class RadialMultiPlot(RadialMsizePlot):
         return self.fig, self.axs[self.count_y]
     
     
-    def multiplot(self, quantities: list = ["Br", "Ht"], **kwargs):
+    def multiplot(self, quantities: list, details: list, **kwargs):
         ny = len(quantities)
         self.fgsz_y = self.fgsz_x * 0.8/ny
         
@@ -191,13 +195,13 @@ class RadialMultiPlot(RadialMsizePlot):
         if machine_dims:
             self._add_machine_dims(self.axs[-1])
         
-        for q in quantities:
+        for q, d in zip(quantities, details):
             if q == "Az":
-                self.plot_radial_Az(**kwargs)
+                self.plot_radial_Az(**(d | kwargs))
             elif q == "Br":
-                self.plot_radial_Br(**kwargs)
+                self.plot_radial_Br(**(d | kwargs))
             elif q == "Ht":
-                self.plot_radial_Ht(**kwargs)
+                self.plot_radial_Ht(**(d | kwargs))
             else:
                 print(f"INFO: Plot Quantity {q} is unknown.")
                 
