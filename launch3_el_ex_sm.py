@@ -10,12 +10,12 @@ np.set_printoptions(suppress=True, linewidth=250, precision=5)
 
 from modules.model import Model
 from modules.layer import MagneticLayer, AirLayer, CurrentLoading
-from modules.plot import PlanePlot, PlaneDoublePlot, RadialPlot, RadialMsizePlot
-
+from modules.plot.radial import RadialPlot, RadialMsizePlot, RadialMultiPlot
+from modules.plot.plane import PlanePlot, PlaneDoublePlot
 
 
 # -------- init params --------
-p = 4
+p = 3
 wd = 0.1
 
 r_ri = 0.4
@@ -45,8 +45,14 @@ model.solve()
 # -------- output -------- 
 print("x =", model.x, "\n")
 
-p_plot = PlanePlot(model)
-p_plot.contour(dr=400, dt=200)
+rm_plot = RadialMultiPlot(model)
+rm_plot.multiplot(angle=0.5/p)
+
+
+# =============================================================================
+# p_plot = PlanePlot(model)
+# p_plot.contour(dr=400, dt=200)
+# =============================================================================
 
 # =============================================================================
 # rm_plot = RadialMsizePlot(model)

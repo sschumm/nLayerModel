@@ -107,8 +107,6 @@ class RadialPlot():
         self._set_machine_dims(ax)
         ax.plot(r, this_Ht) 
         
-        
-
     
 class RadialMsizePlot(RadialPlot):
     def __init__(self, model: Model, fgsz = 20):
@@ -155,9 +153,55 @@ class RadialMsizePlot(RadialPlot):
                          )
             ax.axvline(layer.r, color=v_color, linewidth=4)
 
+  
+  
+class RadialMultiPlot(RadialMsizePlot):
+    
+    def __init__(self, model: Model, fgsz = 20):
+        super().__init__(model, fgsz)
+        
+        self.fig = None
+        self.axs = None
+        self.count_y = 0
+        
+        
+    def _set_up_plot(self):
+        
+        return self.fig, self.axs[self.count_y]
     
     
-    
+    def multiplot(self, quantities: list = ["Br", "Ht"], **kwargs):
+        ny = len(quantities)
+        self.fgsz_y = self.fgsz_x * 0.8/ny
+        
+        machine_dims = kwargs.get("machine_dims", True)
+        gspecs = {"height_ratios": [self.fgsz_y] * ny}
+        height = self.fgsz_y * ny
+        
+        if machine_dims:
+            ny += 1
+            height += 1
+            gspecs["height_ratios"].append(1)
+                
+        self.fig, self.axs = plt.subplots(ny, 1, gridspec_kw=gspecs)
+        self.fig.set_figheight(height)
+        self.fig.set_figwidth(self.fgsz_x)
+        
+        if machine_dims:
+            self._add_machine_dims(self.axs[-1])
+        
+        for q in quantities:
+            if q == "Az":
+                self.plot_radial_Az(**kwargs)
+            elif q == "Br":
+                self.plot_radial_Br(**kwargs)
+            elif q == "Ht":
+                self.plot_radial_Ht(**kwargs)
+            else:
+                print(f"INFO: Plot Quantity {q} is unknown.")
+                
+            self.count_y += 1
+
     
     
     
