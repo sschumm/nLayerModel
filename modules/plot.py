@@ -21,7 +21,7 @@ sampled_Winter = Winter(np.linspace(0,1,360))
 myWinter = ListedColormap(sampled_Winter[104:, :])
 
 res = 256
-n = 1
+n = 0.65
 sampled_Winter = Winter(np.linspace(0,1,2*res))
 sampled_Winter[:res, -1] = np.flip(np.linspace(0., 1, res))**n
 sampled_Winter[res:, -1] = np.linspace(0., 1, res)**n

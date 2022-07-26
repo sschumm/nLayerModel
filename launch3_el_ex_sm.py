@@ -15,7 +15,7 @@ from modules.plot import PlanePlot, PlaneDoublePlot, RadialPlot, RadialMsizePlot
 
 
 # -------- init params --------
-p = 2
+p = 4
 wd = 0.1
 
 r_ri = 0.4
@@ -45,5 +45,16 @@ model.solve()
 # -------- output -------- 
 print("x =", model.x, "\n")
 
-pd_plot = PlaneDoublePlot(model)
-pd_plot.plot_BandA(dr=400, dt=200)
+p_plot = PlanePlot(model)
+p_plot.contour(dr=400, dt=200)
+
+# =============================================================================
+# rm_plot = RadialMsizePlot(model)
+# rm_plot.plot_radial_Br()
+# =============================================================================
+
+# =============================================================================
+# pd_plot = PlaneDoublePlot(model)
+# pd_plot.plot_BandA(dr=400, dt=200)
+# =============================================================================
+
