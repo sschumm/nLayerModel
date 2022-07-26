@@ -61,6 +61,7 @@ class RadialPlot():
         dr = kwargs.get("dr", self.fgsz_x * 50)
         dt = kwargs.get("dt", self.fgsz_x * 50)
         a = kwargs.get("angle", 0)
+        a = (a % 360) / 360
         r = np.linspace(0, self.lim, dr)
         t = np.linspace(0, 2*pi, dt)
         return r, t, a

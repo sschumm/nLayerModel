@@ -46,7 +46,7 @@ model.solve()
 print("x =", model.x, "\n")
 
 rm_plot = RadialMultiPlot(model)
-rm_plot.multiplot(angle=0.5/p)
+rm_plot.multiplot(["Az", "Br", "Ht"], angle=(0))
 
 
 # =============================================================================
