@@ -46,12 +46,13 @@ model.solve()
 print("x =", model.x, "\n")
 
 rM_plot = RadialMultiPlot(model)
-# rM_plot.multiplot()
 
-rM_plot.multiplot(["Az", "Br", "Ht"], 
-                  [{"title": "hello"}, 
-                   {"title": "test"}],
-                  angle=(90))
+rM_plot.set_Br_details(title="Br")
+rM_plot.set_Ht_details(title="Ht")
+
+rM_plot.multiplot(title="Multiplot", angle=90)
+# rM_plot.plot_radial_Br()
+# rM_plot.multiplot(["Az", "Br", "Ht"], angle=(90))
 
 
 # =============================================================================

@@ -64,7 +64,7 @@ class RadialPlot():
         t = np.linspace(0, 2*pi, dt)
         
         if "title" in kwargs: 
-            ax.set_title(kwargs["title"], fontsize=self.fgsz_x*1.2)
+            ax.set_title(kwargs["title"], fontsize=self.fgsz_x*1.4)
 
         a = kwargs.get("angle", 0)
         a = (a % 360) / 360
@@ -112,7 +112,10 @@ class RadialPlot():
         self._set_machine_dims(ax)
         ax.plot(r, this_Ht) 
         
+
+
     
+
 class RadialMsizePlot(RadialPlot):
     def __init__(self, model: Model, fgsz = 20):
         super().__init__(model, fgsz)
@@ -159,6 +162,8 @@ class RadialMsizePlot(RadialPlot):
                          )
             ax.axvline(layer.r, color=v_color, linewidth=4)
 
+
+
   
   
 class RadialMultiPlot(RadialMsizePlot):
@@ -169,54 +174,82 @@ class RadialMultiPlot(RadialMsizePlot):
         self.fig = None
         self.axs = None
         self.count_y = 0
+        self.multi = False
+        
+        self.Az_details = dict()
+        self.Br_details = dict()
+        self.Ht_details = dict()
         
         
     def _set_up_plot(self):
+        if not self.multi:
+            fig = plt.figure(figsize=(self.fgsz_x, self.fgsz_y))
+            ax = plt.subplot()        
+            return fig, ax
+        else:           
+            return self.fig, self.axs[self.count_y]
+    
+    
+    def set_Az_details(self, **kwargs):
+        self.Az_details = self.Az_details | kwargs
         
-        return self.fig, self.axs[self.count_y]
+    
+    def set_Br_details(self, **kwargs):
+        self.Br_details = self.Br_details | kwargs
+        
+        
+    def set_Ht_details(self, **kwargs):
+        self.Ht_details = self.Ht_details | kwargs
     
     
-    def multiplot(self, 
-                  quantities: list = ["Br", "Ht"], 
-                  details: list = [{"title": "Br"}, {"title": "Ht"}],
-                  **kwargs):
+    def multiplot(self, quantities: list = ["Br", "Ht"], **kwargs):
+        self.multi = True
+        
+        
+        # ------- get information on what to draw
         ny = len(quantities)
         self.fgsz_y = self.fgsz_x * 0.8/ny
-        
         machine_dims = kwargs.get("machine_dims", True)
         gspecs = {"height_ratios": [self.fgsz_y] * ny}
-        height = self.fgsz_y * ny
-        
+        height = self.fgsz_y * ny        
         if machine_dims:
             ny += 1
             height += 1
             gspecs["height_ratios"].append(1)
-                
+        
+        
+        # ------- build figure -------
         self.fig, self.axs = plt.subplots(ny, 1, gridspec_kw=gspecs)
         self.fig.set_figheight(height)
         self.fig.set_figwidth(self.fgsz_x)
-        
         if machine_dims:
             self._add_machine_dims(self.axs[-1])
-            
-        diff = len(quantities) - len(details)
-        if diff > 0:
-            details = details + [{}] * diff
-        elif diff < 0:
-            raise Exception("quantities must have atleast as many elements as details")
-        else:
-            for q, d in zip(quantities, details):
-                if q == "Az":
-                    self.plot_radial_Az(**(d | kwargs))
-                elif q == "Br":
-                    self.plot_radial_Br(**(d | kwargs))
-                elif q == "Ht":
-                    self.plot_radial_Ht(**(d | kwargs))
-                else:
-                    print(f"INFO: Plot Quantity {q} is unknown.")
-                    
-                self.count_y += 1
+        
+        
+        # ------- handle kwargs ------- 
+        a = kwargs.get("angle", 0)
+        if "title" in kwargs:
+            self.fig.suptitle(kwargs["title"], fontsize=self.fgsz_x * 2)
+        
+        
+        
+        # ------- draw the different plots -------
+        for q in quantities:
+            if q == "Az":
+                self.Az_details["angle"] = a
+                self.plot_radial_Az(**self.Az_details)
+            elif q == "Br":
+                self.Br_details["angle"] = a
+                self.plot_radial_Br(**self.Br_details)
+            elif q == "Ht":
+                self.Ht_details["angle"] = a
+                self.plot_radial_Ht(**self.Ht_details)
+            else:
+                print(f"INFO: Plot Quantity {q} is unknown.")
+                
+            self.count_y += 1
 
+        self.fig.tight_layout()
     
     
     
