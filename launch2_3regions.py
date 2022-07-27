@@ -10,7 +10,7 @@ np.set_printoptions(suppress=True, linewidth=250, precision=3)
 
 from modules.model import Model
 from modules.layer import CurrentLoading, MagneticLayer
-from modules.plot import PlanePlot
+from modules.plot.plane import PlanePlot
 
 from analytics.three_regions import analytic_solution
 

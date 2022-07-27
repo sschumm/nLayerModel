@@ -10,7 +10,7 @@ np.set_printoptions(suppress=True, linewidth=250, precision=5)
 
 from modules.model import Model
 from modules.layer import MagneticLayer, AirLayer, CurrentLoading
-from modules.plot.radial import RadialPlot, RadialMsizePlot, RadialMultiPlot
+from modules.plot.radial import RadialMultiPlot
 from modules.plot.plane import PlanePlot, PlaneDoublePlot
 
 
@@ -46,27 +46,13 @@ model.solve()
 print("x =", model.x, "\n")
 
 rM_plot = RadialMultiPlot(model)
-
 rM_plot.set_Br_details(title="Br")
 rM_plot.set_Ht_details(title="Ht")
+rM_plot.multiplot(angle=90)
 
-rM_plot.multiplot(title="Multiplot", angle=90)
-# rM_plot.plot_radial_Br()
-# rM_plot.multiplot(["Az", "Br", "Ht"], angle=(90))
-
-
-# =============================================================================
-# p_plot = PlanePlot(model)
+p_plot = PlanePlot(model)
 # p_plot.contour(dr=400, dt=200)
-# =============================================================================
 
-# =============================================================================
-# rm_plot = RadialMsizePlot(model)
-# rm_plot.plot_radial_Br()
-# =============================================================================
-
-# =============================================================================
-# pd_plot = PlaneDoublePlot(model)
+pd_plot = PlaneDoublePlot(model)
 # pd_plot.plot_BandA(dr=400, dt=200)
-# =============================================================================
 

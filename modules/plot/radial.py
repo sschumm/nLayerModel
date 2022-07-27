@@ -63,6 +63,7 @@ class RadialPlot():
         r = np.linspace(0, self.lim, dr)
         t = np.linspace(0, 2*pi, dt)
         
+        ax.grid(True)
         if "title" in kwargs: 
             ax.set_title(kwargs["title"], fontsize=self.fgsz_x*1.4)
 
@@ -82,7 +83,6 @@ class RadialPlot():
         self.ymin = np.nanmin(this_Az)
         self._set_plot_dims(ax)
         self._set_machine_dims(ax)
-        ax.grid(True)
         ax.plot(r, this_Az)        
         
 

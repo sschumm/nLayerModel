@@ -5,14 +5,13 @@ Created on Sun Jul 24 11:08:20 2022
 @author: svens
 """
 
-import time
 import numpy as np
 np.set_printoptions(suppress=True, linewidth=250, precision=5)
 
-from scipy.constants import pi
 from modules.model import Model
 from modules.layer import MagneticLayer, AirLayer, CurrentLoading
-from modules.plot import PlanePlot, PlaneDoublePlot, RadialPlot, RadialMsizePlot
+from modules.plot.plane import PlanePlot, PlaneDoublePlot
+from modules.plot.radial import RadialPlot, RadialMsizePlot
 
 p = 4
 

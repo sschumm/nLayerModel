@@ -10,7 +10,7 @@ np.set_printoptions(suppress=True, linewidth=250, precision=3)
 
 from modules.model import Model
 from modules.layer import CurrentLoading
-from modules.plot import PlanePlot
+from modules.plot.plane import PlanePlot
 
 from analytics.two_regions import analytic_solution
 
@@ -20,9 +20,11 @@ p       = 1
 K_f0    = 5.31e6 # A/m
 r_f     = 0.425 # m
 
-p       = 3
-K_f0    = 2e6
-r_f     = 1.
+# =============================================================================
+# p       = 3
+# K_f0    = 2e6
+# r_f     = 1.
+# =============================================================================
 
 
 model = Model(p)
@@ -44,7 +46,7 @@ print(f"\nNumeric solution is {np.allclose(x_numeric, x_analytic)}. \n")
 
 p_plot = PlanePlot(model)
 # p_plot.streamplot(dr=100, dt=100)
-# p_plot.contour(dr=100, dt=100)
+p_plot.contour(dr=100, dt=100)
 
 #%%
 
