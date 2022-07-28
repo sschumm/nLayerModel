@@ -8,7 +8,7 @@ Created on Tue Jul 26 06:57:00 2022
 import numpy as np
 np.set_printoptions(suppress=True, linewidth=250, precision=3)
 
-from modules.model import Model
+from modules.model2 import Model
 from modules.layer import CurrentLoading
 from modules.plot.plane import PlanePlot
 
@@ -34,7 +34,7 @@ model.build()
 x_numeric = model.solve()
 x_analytic= analytic_solution(p, r_f, K_f0)
 
-a1_n, b1_n, a2_n, b2_n = x_numeric
+a1_n, b1_n, a2_n, b2_n = x_numeric[0]
 a1_a, b1_a, a2_a, b2_a = x_analytic
 
 print("Solution: ")
@@ -46,7 +46,7 @@ print(f"\nNumeric solution is {np.allclose(x_numeric, x_analytic)}. \n")
 
 p_plot = PlanePlot(model)
 # p_plot.streamplot(dr=100, dt=100)
-p_plot.contour(dr=100, dt=100)
+# p_plot.contour(dr=100, dt=100)
 
 #%%
 
@@ -61,7 +61,7 @@ for i in range(1, 1001):
 
     x_numeric = model.solve()
     x_analytic= analytic_solution(p_i, r_i, K_i)
-    close = np.allclose(x_numeric, x_analytic)
+    close = np.allclose(x_numeric[0], x_analytic)
     if close:
         print("=", end="")
     else: 
