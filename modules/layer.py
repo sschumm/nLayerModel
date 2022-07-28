@@ -22,6 +22,7 @@ class Layer():
         self.mu_inv = 1 / self.mu
         
         self.idx = None
+        self.alpha = 0
         
         
     def set_index(self, index: int):
@@ -50,34 +51,34 @@ class Layer():
             return a_j * p * R**(p-1)  -  b_j * p * R**-(p+1)
     
     
-    def Az(self, p, R, T, a_j, b_j, alpha = 0.0):    
-        return np.sin(p*T + alpha) * self.A(p, R, a_j, b_j)
+    def Az(self, p, R, T, a_j, b_j):    
+        return np.sin(p*T + self.alpha) * self.A(p, R, a_j, b_j)
     
     
     # ------ computation of flux densities ------
     
-    def Br(self, p, R, T, a_j, b_j, alpha = 0.0):
+    def Br(self, p, R, T, a_j, b_j):
         if not np.all(R <= self.r):
             print("Warning: computed field lies outside of its corresponding layer")
             
         if self.idx == 0:
-            return np.cos(p*T + alpha) * p * (a_j * R**(p-1))
+            return np.cos(p*T + self.alpha) * p * (a_j * R**(p-1))
         else: 
-            return np.cos(p*T + alpha) * p * (a_j * R**(p-1) + b_j * R**-(p+1))
+            return np.cos(p*T + self.alpha) * p * (a_j * R**(p-1) + b_j * R**-(p+1))
         
     
-    def Bt(self, p, R, T, a_j, b_j, alpha = 0.0):           
-        return np.sin(p*T + alpha) * -self.dA(p, R, a_j, b_j)
+    def Bt(self, p, R, T, a_j, b_j):           
+        return np.sin(p*T + self.alpha) * -self.dA(p, R, a_j, b_j)
     
     
     # ------ computation of field strength ------
     
-    def Hr(self, p, R, T, a_j, b_j, alpha = 0.0):
-        return self.mu_inv * self.Br(p, R, T, a_j, b_j, alpha)
+    def Hr(self, p, R, T, a_j, b_j):
+        return self.mu_inv * self.Br(p, R, T, a_j, b_j)
     
     
-    def Ht(self, p, R, T, a_j, b_j, alpha = 0.0):
-        return self.mu_inv * self.Bt(p, R, T, a_j, b_j, alpha)
+    def Ht(self, p, R, T, a_j, b_j):
+        return self.mu_inv * self.Bt(p, R, T, a_j, b_j)
         
 
 
