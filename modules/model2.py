@@ -60,6 +60,9 @@ class Model():
                     
                     new_cl.set_index(lay.idx)
                     layers[idx] = new_cl
+                else:
+                    lay.alpha = layer.alpha
+                    
             new_submodel = SubModel(self.p, layers)
             self.submodels.append(new_submodel)                   
            
