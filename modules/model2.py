@@ -78,7 +78,6 @@ class Model():
         R_tuple, T_tuple = tuple(), tuple()
         Az_tuple = tuple()
         
-        
         # computes the vector potential for the i-th layer per iteration
         for i, j in enumerate(range(0, self.x.shape[-1], 2)):
             if i == 0:
@@ -94,8 +93,7 @@ class Model():
             # create mesh for the i-th layer
             this_r = r[np.argwhere((r >= r_i) & (r < r_a)).flatten()]
             this_R, this_T = np.meshgrid(this_r, t)
-            
-            
+                      
             # start computing the superposition of the vector potential
             this_Az = np.zeros(this_R.shape)
             
@@ -110,7 +108,6 @@ class Model():
                                              a_j = subm.x[j], 
                                              b_j = subm.x[j+1])
             
- 
             # store the result for the i-th layer
             R_tuple += (this_R, )
             T_tuple += (this_T, )
@@ -119,15 +116,118 @@ class Model():
         R, T = np.hstack(R_tuple), np.hstack(T_tuple)
         Az = np.hstack(Az_tuple)
         X, Y = rt_to_xy(R, T)
-        # data = (X, Y, Az, R, Ts)
+        # data = (X, Y, Az, R, T)
         return X, Y, Az, R, T
+    
+    
+    def get_B_data(self, r, t):
+        R_tuple, T_tuple = tuple(), tuple()
+        Br_tuple, Bt_tuple = tuple(), tuple()
+        
+        # computes the flux densities for the i-th layer per iteration
+        for i, j in enumerate(range(0, self.x.shape[-1], 2)):
+            if i == 0:
+                r_i = 0.
+            else:
+                r_i = self.layers[i - 1].r
+                
+            if j == (self.x.shape[-1] - 2):
+                r_a = np.inf
+            else:
+                r_a = self.layers[i].r
+            
+            # create mesh for the i-th layer
+            this_r = r[np.argwhere((r >= r_i) & (r < r_a)).flatten()]
+            this_R, this_T = np.meshgrid(this_r, t)
+                      
+            # start computing the superposition of the flux densities
+            this_Br = np.zeros(this_R.shape)
+            this_Bt = np.zeros(this_R.shape)
+            
+            for subm in self.submodels:
+                
+                # this does not add a new layer to the model but is used to compute
+                # the field for the environment, otherwise a_n & b_n would be unused
+                plot_layers = subm.layers + [Environment()]
+                
+                # sums up the radial flux density for all current loadings
+                this_Br += plot_layers[i].Br(self.p, this_R, this_T, 
+                                             a_j = subm.x[j], 
+                                             b_j = subm.x[j+1])
+                # sums up the tangential flux density for all current loadings
+                this_Bt += plot_layers[i].Bt(self.p, this_R, this_T, 
+                                             a_j = subm.x[j], 
+                                             b_j = subm.x[j+1])
+            
+            # store the result for the i-th layer
+            R_tuple += (this_R, )
+            T_tuple += (this_T, )
+            Br_tuple += (this_Br, )
+            Bt_tuple += (this_Bt, )
+
+        R, T = np.hstack(R_tuple), np.hstack(T_tuple)
+        Br, Bt = np.hstack(Br_tuple), np.hstack(Bt_tuple)
+        
+        X, Y = rt_to_xy(R, T)
+        U, V = BrBt_to_UV(Br, Bt, T)
+        # data = (X, Y, U, V, R, T, Br, Bt)
+        return X, Y, U, V, R, T, Br, Bt
+
+
+def get_H_data(self, r, t):
+    R_tuple, T_tuple = tuple(), tuple()
+    Hr_tuple, Ht_tuple = tuple(), tuple()
+
+    # computes the field strength for the i-th layer per iteration
+    for i, j in enumerate(range(0, self.x.shape[-1], 2)):
+        if i == 0:
+            r_i = 0.
+        else:
+            r_i = self.layers[i - 1].r
+            
+        if j == (self.x.shape[-1] - 2):
+            r_a = np.inf
+        else:
+            r_a = self.layers[i].r
+        
+        # create mesh for the i-th layer
+        this_r = r[np.argwhere((r >= r_i) & (r < r_a)).flatten()]
+        this_R, this_T = np.meshgrid(this_r, t)
+                  
+        # start computing the superposition of the flux densities
+        this_Hr = np.zeros(this_R.shape)
+        this_Ht = np.zeros(this_R.shape)
+        
+        for subm in self.submodels:
+            
+            # this does not add a new layer to the model but is used to compute
+            # the field for the environment, otherwise a_n & b_n would be unused
+            plot_layers = subm.layers + [Environment()]
+            
+            # sums up the radial flux density for all current loadings
+            this_Hr += plot_layers[i].Hr(self.p, this_R, this_T, 
+                                         a_j = subm.x[j], 
+                                         b_j = subm.x[j+1])
+            # sums up the tangential flux density for all current loadings
+            this_Ht += plot_layers[i].Ht(self.p, this_R, this_T, 
+                                         a_j = subm.x[j], 
+                                         b_j = subm.x[j+1])
 
 
 
+        # store the result for the i-th layer
+        R_tuple += (this_R, )
+        T_tuple += (this_T, )
+        Hr_tuple += (this_Hr, )
+        Ht_tuple += (this_Ht, )
 
-
-
-
+    R, T = np.hstack(R_tuple), np.hstack(T_tuple)
+    Hr, Ht = np.hstack(Hr_tuple), np.hstack(Ht_tuple)
+    
+    X, Y = rt_to_xy(R, T)
+    U, V = BrBt_to_UV(Hr, Ht, T)
+    # data = (X, Y, U, V, R, T, Hr, Ht)
+    return X, Y, U, V, R, T, Hr, Ht
 
 
 
