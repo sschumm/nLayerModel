@@ -17,7 +17,8 @@ class Layer():
     def __init__(self, r: float, mu_r: float):
         
         self.r = r
-        self.mu = mu_0 * mu_r
+        self.mu_r = mu_r
+        self.mu = mu_0 * self.mu_r
         self.mu_inv = 1 / self.mu
         
         self.idx = None
