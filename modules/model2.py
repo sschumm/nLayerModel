@@ -55,8 +55,11 @@ class Model():
             
             for idx, lay in enumerate(layers):
                 if isinstance(lay, CurrentLoading) and (lay.idx != layer.idx):
-                    layers[idx] = CurrentLoading(K=0., r=lay.r, 
-                                                 alpha=lay.alpha, mu_r=lay.mu_r)
+                    new_cl = CurrentLoading(K=0., r=lay.r, 
+                                            alpha=0, mu_r=lay.mu_r)
+                    
+                    new_cl.set_index(lay.idx)
+                    layers[idx] = new_cl
             new_submodel = SubModel(self.p, layers)
             self.submodels.append(new_submodel)                   
            
@@ -71,7 +74,53 @@ class Model():
         return x
 
 
-
+    def get_A_data(self, r, t):
+        R_tuple, T_tuple = tuple(), tuple()
+        Az_tuple = tuple()
+        
+        
+        # computes the vector potential for the i-th layer per iteration
+        for i, j in enumerate(range(0, self.x.shape[-1], 2)):
+            if i == 0:
+                r_i = 0.
+            else:
+                r_i = self.layers[i - 1].r
+                
+            if j == (self.x.shape[-1] - 2):
+                r_a = np.inf
+            else:
+                r_a = self.layers[i].r
+            
+            # create mesh for the i-th layer
+            this_r = r[np.argwhere((r >= r_i) & (r < r_a)).flatten()]
+            this_R, this_T = np.meshgrid(this_r, t)
+            
+            
+            # start computing the superposition of the vector potential
+            this_Az = np.zeros(this_R.shape)
+            
+            for subm in self.submodels:
+                
+                # this does not add a new layer to the model but is used to compute
+                # the field for the environment, otherwise a_n & b_n would be unused
+                plot_layers = subm.layers + [Environment()]
+                
+                # sums up the vector potential for all current loadings
+                this_Az += plot_layers[i].Az(self.p, this_R, this_T, 
+                                             a_j = subm.x[j], 
+                                             b_j = subm.x[j+1])
+            
+ 
+            # store the result for the i-th layer
+            R_tuple += (this_R, )
+            T_tuple += (this_T, )
+            Az_tuple += (this_Az, )
+        
+        R, T = np.hstack(R_tuple), np.hstack(T_tuple)
+        Az = np.hstack(Az_tuple)
+        X, Y = rt_to_xy(R, T)
+        # data = (X, Y, Az, R, Ts)
+        return X, Y, Az, R, T
 
 
 
