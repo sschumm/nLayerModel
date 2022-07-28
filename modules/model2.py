@@ -58,15 +58,7 @@ class Model():
                     layers[idx] = CurrentLoading(K=0., r=lay.r, 
                                                  alpha=lay.alpha, mu_r=lay.mu_r)
             new_submodel = SubModel(self.p, layers)
-            self.submodels.append(new_submodel)
-            
-        sysA = []
-        sysb = []
-        
-        for subm in self.submodels:
-            sysA.append(subm.sysA)
-            sysb.append(subm.sysb)
-                    
+            self.submodels.append(new_submodel)                   
            
             
     def solve(self):
