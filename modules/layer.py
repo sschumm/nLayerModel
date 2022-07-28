@@ -84,10 +84,11 @@ class Layer():
 
 class CurrentLoading(Layer):
     
-    def __init__(self, K: float, r: float, mu_r: float = 1.0):
+    def __init__(self, K: float, r: float, alpha: float = 0., mu_r: float = 1.0):
         super().__init__(r, mu_r)
         
         self.K = K
+        self.alpha = alpha
 
         
 class AirLayer(Layer):
