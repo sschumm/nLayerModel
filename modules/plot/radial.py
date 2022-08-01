@@ -12,7 +12,7 @@ from matplotlib import patches
 
 from scipy.constants import pi, mu_0
 from ..layer import MagneticLayer, CurrentLoading
-from ..model import Model
+from ..model2 import Model
 
 
 
