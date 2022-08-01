@@ -8,7 +8,7 @@ Created on Thu Jul 28 11:53:17 2022
 import copy
 import numpy as np
 
-from scipy.constants import mu_0
+from scipy.constants import mu_0, pi
 from .continuities import c_Br, c_Ht
 from .layer import Layer, CurrentLoading, Environment
 from .utils import rt_to_xy, BrBt_to_UV
@@ -56,13 +56,6 @@ class Model():
             
             for idx, lay in enumerate(layers):
                 if isinstance(lay, CurrentLoading) and (lay.idx != layer.idx):
-# =============================================================================
-#                     new_cl = CurrentLoading(K=0., r=lay.r, 
-#                                             alpha=0, mu_r=lay.mu_r)
-#                     
-#                     new_cl.set_index(lay.idx)
-#                     layers[idx] = new_cl
-# =============================================================================
                     lay.alpha = layer.alpha
                     lay.K = 0.
                 else:
@@ -80,6 +73,34 @@ class Model():
         
         self.x = np.asarray(x)
         return x
+    
+    
+    def tangential_forces(self):
+        
+        F = list()
+        r = list() 
+        
+        t=np.linspace(0, 2*pi, 1000, endpoint=True)
+        
+        
+        for i, cl in enumerate(self.current_loadings):
+            r.append(cl.r)
+            j = cl.idx * 2
+            Br = 0.
+            
+            for sm in self.submodels[:i] + self.submodels[i+1:]:
+                Br += sm.layers[cl.idx].Br(self.p, r[i], t,
+                                           a_j = sm.x[j],
+                                           b_j = sm.x[j+1])
+            
+            Kt = cl.Kt(self.p, t)
+            
+            f = np.trapz(Kt * Br * r[i], t)
+            F.append(f)
+
+        return F, r
+        
+        
 
 
     def get_A_data(self, r, t):
