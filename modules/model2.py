@@ -5,6 +5,7 @@ Created on Thu Jul 28 11:53:17 2022
 @author: svens
 """
 
+import copy
 import numpy as np
 
 from scipy.constants import mu_0
@@ -51,15 +52,19 @@ class Model():
             
         # create a submodel for each current loading
         for idx, layer in enumerate(self.current_loadings):
-            layers = self.layers.copy()
+            layers = copy.deepcopy(self.layers)
             
             for idx, lay in enumerate(layers):
                 if isinstance(lay, CurrentLoading) and (lay.idx != layer.idx):
-                    new_cl = CurrentLoading(K=0., r=lay.r, 
-                                            alpha=0, mu_r=lay.mu_r)
-                    
-                    new_cl.set_index(lay.idx)
-                    layers[idx] = new_cl
+# =============================================================================
+#                     new_cl = CurrentLoading(K=0., r=lay.r, 
+#                                             alpha=0, mu_r=lay.mu_r)
+#                     
+#                     new_cl.set_index(lay.idx)
+#                     layers[idx] = new_cl
+# =============================================================================
+                    lay.alpha = layer.alpha
+                    lay.K = 0.
                 else:
                     lay.alpha = layer.alpha
                     
