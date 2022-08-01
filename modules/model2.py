@@ -101,7 +101,25 @@ class Model():
 
         return F, r
         
+    
+    def total_torque(self, dt=1000):
         
+        self.tangential_forces(dt)
+        
+        pos_torque = []
+        neg_torque = []
+        
+        for cl in self.current_loadings:
+            if cl.tangential_force >= 0.:
+                pos_torque.append(cl.tangential_force * cl.r)
+            else:
+                neg_torque.append(cl.tangential_force * cl.r)
+        
+        M = sum(pos_torque)
+        if np.allclose(M, -sum(neg_torque)):
+            return M
+        else:
+            raise Exception("Pos. and neg. torque are NOT np.allclose().")
 
 
     def get_A_data(self, r, t):

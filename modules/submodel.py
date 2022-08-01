@@ -86,7 +86,7 @@ class SubModel():
             self.x = x
             return x
         else:
-            raise Exception("(sschumm) solution seems to be no good...")
+            raise Exception("System solution x is NOT np.allclose().")
 
 
 
