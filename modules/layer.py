@@ -91,6 +91,10 @@ class CurrentLoading(Layer):
         
         self.K = K
         self.alpha = alpha
+        
+    
+    def Kt(self, p, T):
+        return self.K * np.sin(p * T + self.alpha)
 
         
 class AirLayer(Layer):
