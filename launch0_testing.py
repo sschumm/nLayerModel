@@ -8,7 +8,7 @@ Created on Sun Jul 24 11:08:20 2022
 import numpy as np
 np.set_printoptions(suppress=True, linewidth=250, precision=3)
 
-from modules.model2 import Model
+from modules.model import Model
 from modules.layer import MagneticLayer, AirLayer, CurrentLoading
 from modules.plot.plane import PlanePlot, PlaneDoublePlot
 from modules.plot.radial import RadialPlot, RadialMsizePlot

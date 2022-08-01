@@ -14,7 +14,7 @@ from matplotlib.colors import ListedColormap
 from scipy.interpolate import griddata
 from scipy.constants import pi, mu_0
 from ..layer import MagneticLayer, CurrentLoading
-from ..model2 import Model
+from ..model import Model
 
 Winter = cm.get_cmap("winter_r")
 sampled_Winter = Winter(np.linspace(0,1,360))
