@@ -75,46 +75,48 @@ class Model():
         return x
     
     
-    def tangential_forces(self, dt=1000):
-        
+    def tangential_forces(self, dt=1000):        
         F = list()
-        r = list() 
-        
+        r = list()         
         t=np.linspace(0, 2*pi, dt, endpoint=True)
         
-        
+        # compute the tangential force on one current loading layer ...
         for i, cl in enumerate(self.current_loadings):
             r.append(cl.r)
             j = cl.idx * 2
             Br = 0.
             
+            # ... by multiplying the radial flux created by 
+            # all other current loadings at its radius ...
             for sm in self.submodels[:i] + self.submodels[i+1:]:
                 Br += sm.layers[cl.idx].Br(self.p, r[i], t,
                                            a_j = sm.x[j],
                                            b_j = sm.x[j+1])
             
+            # ... with it's own current loading ...
             Kt = cl.Kt(self.p, t)
             
+            # ... and integrating over it using np.trapz().
             f = np.trapz(Kt * Br * r[i], t)
             cl.tangential_force = f
             F.append(f)
-
         return F, r
         
     
     def total_torque(self, dt=1000):
-        
-        self.tangential_forces(dt)
-        
+        self.tangential_forces(dt)        
         pos_torque = []
         neg_torque = []
         
+        # store the acting forces in either direction multiplied
+        # with the respective radius in 2 lists
         for cl in self.current_loadings:
             if cl.tangential_force >= 0.:
                 pos_torque.append(cl.tangential_force * cl.r)
             else:
                 neg_torque.append(cl.tangential_force * cl.r)
         
+        # check if the torque in both directions is equal
         M = sum(pos_torque)
         if np.allclose(M, -sum(neg_torque)):
             return M
@@ -277,11 +279,3 @@ class Model():
         # data = (X, Y, U, V, R, T, Hr, Ht)
         return X, Y, U, V, R, T, Hr, Ht
     
-    
-    
-    
-    
-    
-    
-    
-            
