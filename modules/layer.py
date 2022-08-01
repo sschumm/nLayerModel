@@ -91,6 +91,7 @@ class CurrentLoading(Layer):
         
         self.K = K
         self.alpha = alpha
+        self.tangential_force = None
         
     
     def Kt(self, p, T):

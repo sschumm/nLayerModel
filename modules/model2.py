@@ -75,12 +75,12 @@ class Model():
         return x
     
     
-    def tangential_forces(self):
+    def tangential_forces(self, dt=1000):
         
         F = list()
         r = list() 
         
-        t=np.linspace(0, 2*pi, 1000, endpoint=True)
+        t=np.linspace(0, 2*pi, dt, endpoint=True)
         
         
         for i, cl in enumerate(self.current_loadings):
@@ -96,6 +96,7 @@ class Model():
             Kt = cl.Kt(self.p, t)
             
             f = np.trapz(Kt * Br * r[i], t)
+            cl.tangential_force = f
             F.append(f)
 
         return F, r
