@@ -30,7 +30,7 @@ model.build()
 x_numeric = model.solve()
 x_analytic= analytic_solution(p, r1=r_1, r2=r_2, K=K_f, mu_r=mu_r)
 
-a1_n, b1_n, a2_n, b2_n, a3_n, b3_n = x_numeric
+a1_n, b1_n, a2_n, b2_n, a3_n, b3_n = x_numeric[0]
 a1_a, b1_a, a2_a, b2_a, a3_a, b3_a = x_analytic
 
 print("Solution: ")
@@ -45,7 +45,7 @@ print(f"\nNumeric solution is {np.allclose(x_numeric, x_analytic)}. \n")
 p_plot = PlanePlot(model)
 # p_plot.streamplot(dr=1000, dt=200)
 # p_plot.quiver(50, 40)
-p_plot.contour(dr=100, dt=100)
+# p_plot.contour(dr=100, dt=100)
 
 #%%
 
@@ -63,7 +63,7 @@ for i in range(1, 1001):
 
     x_numeric = model.solve()
     x_analytic= analytic_solution(p_i, r_i1, r_i2, K_i, mu_r=mu_r)
-    close = np.allclose(x_numeric, x_analytic)
+    close = np.allclose(x_numeric[0], x_analytic)
     if close:
         print("=", end="")
     else: 

@@ -150,7 +150,6 @@ class PlanePlot():
         intensity = np.sqrt(U**2 + V**2)
     
         ax.quiver(X, Y, U, V, intensity,
-                  scale=3*dt,
                   cmap=myWinter) # color="b")
         print("INFO: finished quiver.")
     

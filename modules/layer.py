@@ -17,10 +17,12 @@ class Layer():
     def __init__(self, r: float, mu_r: float):
         
         self.r = r
-        self.mu = mu_0 * mu_r
+        self.mu_r = mu_r
+        self.mu = mu_0 * self.mu_r
         self.mu_inv = 1 / self.mu
         
         self.idx = None
+        self.alpha = 0
         
         
     def set_index(self, index: int):
@@ -50,7 +52,7 @@ class Layer():
     
     
     def Az(self, p, R, T, a_j, b_j):    
-        return np.sin(p*T) * self.A(p, R, a_j, b_j)
+        return np.sin(p*T + self.alpha) * self.A(p, R, a_j, b_j)
     
     
     # ------ computation of flux densities ------
@@ -60,13 +62,13 @@ class Layer():
             print("Warning: computed field lies outside of its corresponding layer")
             
         if self.idx == 0:
-            return np.cos(p*T) * p * (a_j * R**(p-1))
+            return np.cos(p*T + self.alpha) * p * (a_j * R**(p-1))
         else: 
-            return np.cos(p*T) * p * (a_j * R**(p-1) + b_j * R**-(p+1))
+            return np.cos(p*T + self.alpha) * p * (a_j * R**(p-1) + b_j * R**-(p+1))
         
     
     def Bt(self, p, R, T, a_j, b_j):           
-        return np.sin(p*T) * -self.dA(p, R, a_j, b_j)
+        return np.sin(p*T + self.alpha) * -self.dA(p, R, a_j, b_j)
     
     
     # ------ computation of field strength ------
@@ -84,10 +86,16 @@ class Layer():
 
 class CurrentLoading(Layer):
     
-    def __init__(self, K: float, r: float, mu_r: float = 1.0):
+    def __init__(self, K: float, r: float, alpha: float = 0., mu_r: float = 1.0):
         super().__init__(r, mu_r)
         
         self.K = K
+        self.alpha = alpha
+        self.tangential_force = None
+        
+    
+    def Kt(self, p, T):
+        return self.K * np.sin(p * T + self.alpha)
 
         
 class AirLayer(Layer):
