@@ -35,6 +35,10 @@ model.add_layer(ml1)
 model.build()
 model.solve()
 
+M = model.total_torque()
+print(M)
+
+
 p_plot = PlanePlot(model)
 # pD_plot = PlaneDoublePlot(model)
 # r_plot = RadialPlot(model)
