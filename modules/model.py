@@ -25,6 +25,7 @@ class Model():
         
         self.submodels = list()
         self.x = None
+        self.M = None
         
         
         
@@ -119,6 +120,7 @@ class Model():
         # check if the torque in both directions is equal
         M = sum(pos_torque)
         if np.allclose(M, -sum(neg_torque)):
+            self.M = M
             return M
         else:
             raise Exception("Pos. and neg. torque are NOT np.allclose().")

@@ -95,6 +95,8 @@ class CurrentLoading(Layer):
         
     
     def Kt(self, p, T):
+        # positive angle -> current loading leading clockwise
+        # negative angle -> current loading lagging clockwise
         return self.K * np.sin(p * T + self.alpha)
 
         
