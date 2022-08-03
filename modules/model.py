@@ -200,7 +200,7 @@ class Model():
                 
                 # this does not add a new layer to the model but is used to compute
                 # the field for the environment, otherwise a_n & b_n would be unused
-                plot_layers = subm.layers + [Environment()]
+                plot_layers = subm.layers + [Environment(subm.alpha)]
                 
                 # sums up the radial flux density for all current loadings
                 this_Br += plot_layers[i].Br(self.p, this_R, this_T, 
@@ -254,7 +254,7 @@ class Model():
                 
                 # this does not add a new layer to the model but is used to compute
                 # the field for the environment, otherwise a_n & b_n would be unused
-                plot_layers = subm.layers + [Environment()]
+                plot_layers = subm.layers + [Environment(subm.alpha)]
                 
                 # sums up the radial flux density for all current loadings
                 this_Hr += plot_layers[i].Hr(self.p, this_R, this_T, 
