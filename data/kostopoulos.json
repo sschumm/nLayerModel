@@ -1,0 +1,23 @@
+{
+
+"Type": "Fully Superconducting Generator",
+
+"Authors": "Kostopoulos, Dimitris & Liu, Dong & Genani, Gaurav & Polinder, Henk. (2013).", 
+
+"Title": "Feasibility Study of a 10 MW MgB2 Fully Superconducting Generator for Offshore Wind Turbines.",
+    
+"p": 10,
+
+"P_out": [10, 1e6, "[MW]"], 
+
+"n_min": [4, 1, "[rpm]"],
+
+"n_max": [11, 1, "[rpm]"],
+
+"K_r": [4.6, 1e6, "[MA/m]"],
+
+"K_s": [174, 1e3, "[kA/m]"]
+
+
+
+}
