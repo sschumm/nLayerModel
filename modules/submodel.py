@@ -14,9 +14,10 @@ from .layer import CurrentLoading
 
 class SubModel():
     
-    def __init__(self, p: int, layers: list):
+    def __init__(self, p: int, layers: list, alpha: float):
         
         self.p = p
+        self.alpha = alpha
         
         self.sysA = None
         self.sysx = None
