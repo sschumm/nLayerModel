@@ -1,4 +1,6 @@
-# _MA_Python
+# n-Layer-Model for Electrical Machines
 
+**INFO**: 
 
-new lines
+Spyder: to run launchers that are not inside of the projects root directory,  
+select the root directory in ```Tools -> PYTHONPATH manager -> add path```

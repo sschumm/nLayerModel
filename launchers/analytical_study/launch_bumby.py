@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Tue Jul 26 06:57:00 2022
-
-@author: svens
-"""
-
 import numpy as np
 np.set_printoptions(suppress=True, linewidth=250, precision=3)
 
