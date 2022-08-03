@@ -114,6 +114,7 @@ class MagneticLayer(Layer):
 
 class Environment(Layer):
 
-    def __init__(self):
-        super().__init__(r=np.inf, mu_r=1)        
+    def __init__(self, alpha: float = 0):
+        super().__init__(r=np.inf, mu_r=1)
+        self.alpha = alpha
     

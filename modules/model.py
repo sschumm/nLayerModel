@@ -52,17 +52,17 @@ class Model():
             layer.idx = idx
             
         # create a submodel for each current loading
-        for idx, layer in enumerate(self.current_loadings):
+        for layer in self.current_loadings:
             layers = copy.deepcopy(self.layers)
             
-            for idx, lay in enumerate(layers):
+            for lay in layers:
                 if isinstance(lay, CurrentLoading) and (lay.idx != layer.idx):
                     lay.alpha = layer.alpha
                     lay.K = 0.
                 else:
                     lay.alpha = layer.alpha
                     
-            new_submodel = SubModel(self.p, layers)
+            new_submodel = SubModel(self.p, layers, layer.alpha)
             self.submodels.append(new_submodel)                   
            
             
@@ -153,7 +153,7 @@ class Model():
                 
                 # this does not add a new layer to the model but is used to compute
                 # the field for the environment, otherwise a_n & b_n would be unused
-                plot_layers = subm.layers + [Environment()]
+                plot_layers = subm.layers + [Environment(subm.alpha)]
                 
                 # sums up the vector potential for all current loadings
                 this_Az += plot_layers[i].Az(self.p, this_R, this_T, 
@@ -200,7 +200,7 @@ class Model():
                 
                 # this does not add a new layer to the model but is used to compute
                 # the field for the environment, otherwise a_n & b_n would be unused
-                plot_layers = subm.layers + [Environment()]
+                plot_layers = subm.layers + [Environment(subm.alpha)]
                 
                 # sums up the radial flux density for all current loadings
                 this_Br += plot_layers[i].Br(self.p, this_R, this_T, 
@@ -254,7 +254,7 @@ class Model():
                 
                 # this does not add a new layer to the model but is used to compute
                 # the field for the environment, otherwise a_n & b_n would be unused
-                plot_layers = subm.layers + [Environment()]
+                plot_layers = subm.layers + [Environment(subm.alpha)]
                 
                 # sums up the radial flux density for all current loadings
                 this_Hr += plot_layers[i].Hr(self.p, this_R, this_T, 
