@@ -10,15 +10,17 @@ from modules.plot.plane import PlanePlot, PlaneDoublePlot
 
 
 # -------- init params --------
-from data.load import info, load_json, data
+from data.load import data
 
-data, layers = data("kostopoulos", verbose=(True))
+data, layers = data("kostopoulos", verbose=(False))
 
 # -------- create model --------
 
 model = Model(data["p"])
-model.add_layer(CurrentLoading(K=layers[0]["K"], r=layers[0]["r"], alpha=pi*0.5))
-model.add_layer(CurrentLoading(K=layers[1]["K"], r=layers[1]["r"], alpha=pi*0.0))
+model.add_layer(CurrentLoading(K=layers[0]["K"], r=layers[0]["r"], alpha=pi*0.0))
+model.add_layer(CurrentLoading(K=layers[1]["K"], r=layers[1]["r"], alpha=pi*0.5))
+model.add_layer(AirLayer(r=layers[2]["r"]))
+model.add_layer(MagneticLayer(r=layers[3]["r"], mu_r=layers[3]["mu_r"]))
 
 
 model.build()
