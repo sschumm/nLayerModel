@@ -77,7 +77,7 @@ def info(filename):
                 else:
                     print(f"{key}{(max_key_length  - len(str(key))) * ' '}:  {val}")
             print("")
-    print(f"----------------------------{(max_title_length-23) * '-'}")    
+    print(f"----------------------------{(max_title_length-23) * '-'}\n")    
     
             
             

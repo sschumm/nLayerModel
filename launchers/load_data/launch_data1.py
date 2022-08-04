@@ -26,8 +26,11 @@ model.solve()
 model.total_torque()
 
 # -------- output -------- 
-print("x =", model.x, "\n")
-print("M =", model.M, "\n")
+# print("x =", model.x, "\n")
+print("M =", model.M, "[Nm] \n")
+
+print("P_min =", 2*pi* (data["n_min"]/60) * (model.M / 1e6), "[MW] \n")
+print("P_max =", 2*pi* (data["n_max"]/60) * (model.M / 1e6), "[MW] \n")
 
 rM_plot = RadialMultiPlot(model)
 rM_plot.set_Br_details(title="Br")
@@ -35,7 +38,7 @@ rM_plot.set_Ht_details(title="Ht")
 # rM_plot.multiplot(angle=90)
 
 p_plot = PlanePlot(model)
-p_plot.contour(dr=400, dt=200)
+# p_plot.contour(dr=400, dt=200)
 # p_plot.streamplot(dr=400, dt=200)
 
 pd_plot = PlaneDoublePlot(model)

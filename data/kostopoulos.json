@@ -16,16 +16,16 @@
 
 "layers": {
     "1": {
+        "type": "CurrentLoading",
         "K": [4.6, 1e6, "[MA/m]"],
         "r": [2.4, 1, "[m]"],
-        "mu_r": 1,
-        "type": "CurrentLoading"
+        "mu_r": 1
     },
     "2": {
+        "type": "CurrentLoading",
         "K": [174, 1e3, "[kA/m]"],
         "r": [2.5, 1, "[m]"],
-        "mu_r": 1,
-        "type": "CurrentLoading"
+        "mu_r": 1
     }
 }
 }
