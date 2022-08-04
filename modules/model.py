@@ -9,16 +9,16 @@ import copy
 import numpy as np
 
 from scipy.constants import mu_0, pi
-from .continuities import c_Br, c_Ht
 from .layer import Layer, CurrentLoading, Environment
 from .utils import rt_to_xy, BrBt_to_UV
 from .submodel import SubModel
 
 
 class Model():
-    def __init__(self, p: int):
+    def __init__(self, p: int, l: float = 1.0):
         
         self.p = p
+        self.l = l
         
         self.layers = list()
         self.current_loadings = list()
@@ -98,7 +98,7 @@ class Model():
             Kt = cl.Kt(self.p, t)
             
             # ... and integrating over it using np.trapz().
-            f = np.trapz(Kt * Br * r[i], t)
+            f = self.l * np.trapz(Kt * Br * r[i], t)
             cl.tangential_force = f
             F.append(f)
         return F, r
