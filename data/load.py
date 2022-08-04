@@ -11,9 +11,13 @@ def load_json(filename):
     return file_dict
 
 
-def data(filename):
+def data(filename, verbose=False):
+    
+    if verbose:
+        info(filename)
     
     file_dict = load_json(filename)
+    layers = None
     
     for key in list(file_dict.keys()):
         val = file_dict[key]
@@ -24,15 +28,26 @@ def data(filename):
         if isinstance(val, list):
             file_dict[key] = val[0] * val[1]
             
-    return file_dict
+    if "layers" in file_dict:
+        for layer in file_dict["layers"].values():
+            for param, val in layer.items():
+                if isinstance(val, list):
+                    layer[param] = val[0] * val[1]
+        layers = list(file_dict["layers"].values())
+        del file_dict["layers"]
+                
+    return file_dict, layers
 
 
 def info(filename):
     file_dict = load_json(filename)
     
-    max_title_length = max([len(key)+len(str(val)) for key, val in file_dict.items()])
-    max_info_length = max([len(key) for key, val in file_dict.items()])
-    max_data_length = max([len(key) for key, val in file_dict.items() if not isinstance(val, str)])
+    max_title_length = max([len(key)+len(str(val)) for key, val in file_dict.items() 
+                            if not isinstance(val, dict)])
+    max_info_length = max([len(key) for key, val in file_dict.items() 
+                           if not isinstance(val, dict)])
+    max_data_length = max([len(key) for key, val in file_dict.items() 
+                           if not isinstance(val, str)])
     
     print(f"\n--- MACHINE INFORMATIONS ---{(max_title_length-23) * '-'}")
     for key, val in file_dict.items():
@@ -49,4 +64,22 @@ def info(filename):
         if isinstance(val, list):
             print(f"{key}{(max_data_length-len(str(key)))*' '} = {val[0]}{(5-len(str(val[0])))*' '}{val[-1]}")
             
-
+    if "layers" in file_dict:
+        print(f"\n--- LAYER DATA ---{(max_title_length-13) * '-'}")
+        for lay_no, lay_info in file_dict["layers"].items():
+            print(f"--- Layer: {lay_no} ---")
+            max_key_length = max([len(key) for key in lay_info])
+            for key, val in lay_info.items():
+                if isinstance(val, list):
+                    print(f"{key}{(max_key_length  - len(str(key))) * ' '} = {val[0]} {val[-1]}")
+                elif isinstance(val, int):
+                    print(f"{key}{(max_key_length  - len(str(key))) * ' '} = {val}")
+                else:
+                    print(f"{key}{(max_key_length  - len(str(key))) * ' '}:  {val}")
+            print("")
+    print(f"----------------------------{(max_title_length-23) * '-'}")    
+    
+            
+            
+            
+            

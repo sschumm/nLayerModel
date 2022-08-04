@@ -12,19 +12,13 @@ from modules.plot.plane import PlanePlot, PlaneDoublePlot
 # -------- init params --------
 from data.load import info, load_json, data
 
-# dic = load_json("kostopoulos")
-# info("kostopoulos")
-
-data = data("kostopoulos")
-print(data)
+data, layers = data("kostopoulos", verbose=(True))
 
 # -------- create model --------
+
 model = Model(data["p"])
-
-
-# model.add_layer(CurrentLoading(K=data["K_r"], r=data["layers"]["radii"][0], alpha=pi * 0.0))
-model.add_layer(CurrentLoading(K=data["K_s"], r=data["layers"]["radii"][1], alpha=pi * 0.5))
-model.add_layer(AirLayer(r=data["layers"]["radii"][2]))
+model.add_layer(CurrentLoading(K=layers[0]["K"], r=layers[0]["r"], alpha=pi*0.5))
+model.add_layer(CurrentLoading(K=layers[1]["K"], r=layers[1]["r"], alpha=pi*0.0))
 
 
 model.build()
