@@ -11,8 +11,11 @@ from modules.plot.plane import PlanePlot, PlaneDoublePlot
 
 # -------- init params --------
 from data.load import data
+from data.precalculations import K_ph_amplitude, K_n_amplitude
 
-data, layers = data("song", verbose=(True))
+data, layers = data("song", verbose=(False))
+Kr = K_n_amplitude(T=1400*6, r=1.756, I = 680 * np.sqrt(2))
+print(Kr)
 
 # -------- create model --------
 
@@ -28,8 +31,10 @@ for layer in layers:
         loadings.append(layer)
 
     
-model.add_layer(CurrentLoading(K=loadings[0]["K"], r=loadings[0]["r"], alpha=pi*0.0))
+# model.add_layer(CurrentLoading(K=loadings[0]["K"], r=loadings[0]["r"], alpha=pi*0.0))
+model.add_layer(CurrentLoading(K=Kr, r=loadings[0]["r"], alpha=pi*0.0))
 model.add_layer(CurrentLoading(K=loadings[1]["K"], r=loadings[1]["r"], alpha=pi*0.5))
+# model.add_layer(CurrentLoading(K=Ks, r=loadings[1]["r"], alpha=pi*0.5))
 
 
 
@@ -50,7 +55,7 @@ rM_plot.set_Ht_details(title="Ht")
 # rM_plot.multiplot(angle=90)
 
 p_plot = PlanePlot(model)
-p_plot.contour(dr=400, dt=200)
+# p_plot.contour(dr=400, dt=200)
 # p_plot.streamplot(dr=400, dt=200)
 
 pd_plot = PlaneDoublePlot(model)
