@@ -4,10 +4,7 @@ import numpy as np
 from scipy.constants import mu_0
 
 # -- iron -- |k| -- air -- | | -- iron -- | | -- air --
-
-
-
-def analytic_solution(p, K1, r1, r2, r3, mu_r1, mu_r3):
+def analytic_solution_K1(p, K1, r1, r2, r3, mu_r1, mu_r3):
     eta_r3 = (1-mu_r3) / (1+mu_r3)
     eta_r1 = (mu_r1-1) / (mu_r1+1)
     lambda1= (mu_r1 / (mu_r1+1)) * ((mu_0*K1)/p)
@@ -44,4 +41,68 @@ def analytic_solution(p, K1, r1, r2, r3, mu_r1, mu_r3):
                 a4,
                 b4]
     return np.asarray(solution)
+    
+
+
+# -- iron -- | | -- air -- |k| -- iron -- | | -- air --
+def analytic_solution_K2(p, K2, r1, r2, r3, mu_r1, mu_r3):
+    eta_r1 = (mu_r1 - 1) / (mu_r1 + 1)
+    eta_r3 = (1 - mu_r3) / (1 + mu_r3)
+    
+    x = mu_r3 * (r2**(2*p) + r1**(2*p) * eta_r1)
+    y = (r2**(2*p) - r1**(2*p) * eta_r1) * (r3**(2*p) + r2**(2*p) * eta_r3) * mu_r3 
+    z = (r3**(2*p) - r2**(2*p) * eta_r3) * (r2**(2*p) + r1**(2*p) * eta_r1)
+    
+    # D
+    a3 = ((eta_r3 * x) / (y + z)) * ((mu_0 * K2)/p) * r2**(p+1)
+    
+    # C
+    a2 = (r3**(2*p) + eta_r3 * r2**(2*p)) / (eta_r3 * (r2**(2*p) + r1**(2*p) * eta_r1)) * a3
+    
+    # E
+    b3 = (x / (y + z)) * ((mu_0 * K2)/p) * r2**(p+1) * r3**(2*p)
+    
+    # F
+    b4 = a3 * r3**(2*p) + b3
+    
+    # A
+    a1 = (mu_r1 / (1 + mu_r1)) * 2 * a2
+    
+    # B
+    b2 = eta_r1 * r1**(2*p) * a2
+    
+    # zeros
+    a4 = 0
+    b1 = 0
+    
+    solution = [a1, 
+                b1, 
+                a2, 
+                b2, 
+                a3, 
+                b3,
+                a4,
+                b4]
+    return np.asarray(solution)
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     

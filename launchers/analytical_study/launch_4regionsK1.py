@@ -6,7 +6,7 @@ from modules.model import Model
 from modules.layer import CurrentLoading, MagneticLayer
 from modules.plot.plane import PlanePlot
 
-from analytics.four_regions import analytic_solution
+from analytics.four_regions import analytic_solution_K1
 
 
 # random parameters (scale approx to bumby)
@@ -25,7 +25,7 @@ model.add_layer(MagneticLayer(r=r_3, mu_r=mu_r3))
 model.build()
 
 x_numeric = model.solve()
-x_analytic= analytic_solution(p, K1=K_f, r1=r_1, r2=r_2, r3=r_3,  
+x_analytic= analytic_solution_K1(p, K1=K_f, r1=r_1, r2=r_2, r3=r_3,  
                               mu_r1=mu_r1, mu_r3=mu_r3)
 
 a1_n, b1_n, a2_n, b2_n, a3_n, b3_n, a4_n, b4_n = x_numeric[0]
@@ -70,7 +70,7 @@ for i in range(1, 1001):
     model.build()
 
     x_numeric = model.solve()
-    x_analytic= analytic_solution(p_i, K1=K_i, r1=r_i1, r2=r_i2, r3=r_i3,  
+    x_analytic= analytic_solution_K1(p_i, K1=K_i, r1=r_i1, r2=r_i2, r3=r_i3,  
                                   mu_r1=mu_ir1, mu_r3=mu_ir3)
     
     atol = 1e-5
