@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 
-from scipy.constants import mu_0
+from scipy.constants import mu_0, pi
 
 # -- iron -- |k| -- air -- | | -- iron -- | | -- air --
 def analytic_solution_K1(p, K1, r1, r2, r3, mu_r1, mu_r3):
@@ -86,7 +86,12 @@ def analytic_solution_K2(p, K2, r1, r2, r3, mu_r1, mu_r3):
     return np.asarray(solution)
     
     
-    
+def analytic_torque_on_K1(p, l, K1, r1, a1_K2, alpha1, alpha2):
+    const = l * K1 * p * a1_K2 * r1**(p+1)
+    x = pi * np.sin(alpha1 - alpha2)
+    y = (1 / (4*p)) * np.cos(4*p*pi + alpha1 + alpha2)
+    z = (1 / (4*p)) * np.cos(alpha1 + alpha2)
+    return np.abs(const * (x - y + z))
     
     
     
