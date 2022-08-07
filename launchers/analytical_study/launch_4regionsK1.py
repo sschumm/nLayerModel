@@ -55,7 +55,7 @@ p_plot = PlanePlot(model)
 #%%
 
 for i in range(1, 1001):
-    p_i = np.random.randint(1, 8)
+    p_i = np.random.randint(1, 30)
     K_i = K_f * np.random.rand()
     r_i1 = np.random.rand() * np.random.randint(1, 10) + 0.1
     r_i2 = r_i1 * np.random.randint(2, 10)
@@ -93,10 +93,11 @@ for i in range(1, 1001):
         print(f"a4 - analytic: {a4_a}{(24 - len(str(a4_a))) * ' '}- numeric: {a4_n}")
         print(f"b4 - analytic: {b4_a}{(24 - len(str(b4_a))) * ' '}- numeric: {b4_n}")
         
-        print(p_i)
-        print(K_i)
-        print(r_i1)
-        print(r_i2)
+        print("\np =", p_i)
+        print("K =", K_i)
+        print("r1=", r_i1)
+        print("r2=", r_i2)
+        print("r3=", r_i3)
         break
     if i % 100 == 0:
         print("")
