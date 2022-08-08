@@ -171,8 +171,8 @@ class Model():
         R, T = np.hstack(R_tuple), np.hstack(T_tuple)
         Az = np.hstack(Az_tuple)
         X, Y = rt_to_xy(R, T)
-        # data = (X, Y, Az, R, T)
-        return X, Y, Az, R, T
+        data = Data(R, T, X, Y, A = Az)
+        return data
     
     
     def get_B_data(self, r, t):
@@ -284,3 +284,14 @@ class Model():
         # data = (X, Y, U, V, R, T, Hr, Ht)
         return X, Y, U, V, R, T, Hr, Ht
     
+
+class Data():
+    
+    def __init__(self, R, T, X, Y, U=None, V=None, A=None):
+        self.R = R
+        self.T = T
+        self.X = X
+        self.Y = Y 
+        self.U = U
+        self.V = V
+        self.A = A

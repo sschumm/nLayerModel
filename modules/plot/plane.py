@@ -123,12 +123,12 @@ class PlanePlot():
         
         print("INFO: computing contour...")
         
-        X, Y, Az, _, _ = self.m.get_A_data(r, t)
+        data = self.m.get_A_data(r, t)
                 
-        cs = ax.contourf(X, Y, Az,
+        cs = ax.contourf(data.X, data.Y, data.A,
                          levels=lvls,
-                         vmin=np.nanmin(Az),
-                         vmax=np.nanmax(Az),
+                         vmin=np.nanmin(data.A),
+                         vmax=np.nanmax(data.A),
                          cmap=contourWinter)
         #ax.clabel(cs, inline=True, fontsize=self.fgsz)
         # fig.colorbar(cs, shrink = 0.8)
