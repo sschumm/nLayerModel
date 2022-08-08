@@ -171,7 +171,7 @@ class Model():
         R, T = np.hstack(R_tuple), np.hstack(T_tuple)
         Az = np.hstack(Az_tuple)
         X, Y = rt_to_xy(R, T)
-        data = Data(R, T, X, Y, A = Az)
+        data = Data(R, T, X, Y, Az = Az)
         return data
     
     
@@ -225,8 +225,8 @@ class Model():
         
         X, Y = rt_to_xy(R, T)
         U, V = BrBt_to_UV(Br, Bt, T)
-        # data = (X, Y, U, V, R, T, Br, Bt)
-        return X, Y, U, V, R, T, Br, Bt
+        data = Data(R, T, X, Y, U=U, V=V, Br=Br, Bt=Bt)
+        return data
 
 
     def get_H_data(self, r, t):
@@ -281,17 +281,22 @@ class Model():
         
         X, Y = rt_to_xy(R, T)
         U, V = BrBt_to_UV(Hr, Ht, T)
-        # data = (X, Y, U, V, R, T, Hr, Ht)
-        return X, Y, U, V, R, T, Hr, Ht
+        data = Data(R, T, X, Y, U=U, V=V, Hr=Hr, Ht=Ht)
+        return data
     
 
 class Data():
     
-    def __init__(self, R, T, X, Y, U=None, V=None, A=None):
+    def __init__(self, R, T, X, Y, U=None, V=None, Az=None,
+                 Br=None, Bt=None, Hr=None, Ht=None):
         self.R = R
         self.T = T
         self.X = X
         self.Y = Y 
         self.U = U
         self.V = V
-        self.A = A
+        self.Az = Az
+        self.Br = Br
+        self.Bt = Bt
+        self.Hr = Hr
+        self.Ht = Ht

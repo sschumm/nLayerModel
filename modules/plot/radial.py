@@ -75,10 +75,10 @@ class RadialPlot():
     def plot_radial_Az(self, **kwargs):
         fig, ax = self._set_up_plot()
         r, t, a = self._unpack_kwargs(ax, **kwargs)
-        _, _, Az, R, T = self.m.get_A_data(r, t)
+        d = self.m.get_A_data(r, t)
         
         
-        this_Az = Az[int(len(t) * a)]
+        this_Az = d.Az[int(len(t) * a)]
         self.ymax = np.nanmax(this_Az)
         self.ymin = np.nanmin(this_Az)
         self._set_plot_dims(ax)
@@ -89,9 +89,9 @@ class RadialPlot():
     def plot_radial_Br(self, **kwargs):
         fig, ax = self._set_up_plot()
         r, t, a = self._unpack_kwargs(ax, **kwargs)
-        _, _, _, _, _, _, Br, _ = self.m.get_B_data(r, t)
+        d = self.m.get_B_data(r, t)
         
-        this_Br = Br[int(len(t) * a)]
+        this_Br = d.Br[int(len(t) * a)]
         self.ymax = np.nanmax(this_Br)
         self.ymin = np.nanmin(this_Br)        
         self._set_plot_dims(ax)
@@ -102,10 +102,10 @@ class RadialPlot():
     def plot_radial_Ht(self, **kwargs):
         fig, ax = self._set_up_plot()
         r, t, a = self._unpack_kwargs(ax, **kwargs)
-        _, _, _, _, _, _, _, Ht = self.m.get_H_data(r, t)
+        d = self.m.get_H_data(r, t)
         
 
-        this_Ht = Ht[int(len(t) * a)]
+        this_Ht = d.Ht[int(len(t) * a)]
         self.ymax = np.nanmax(this_Ht)
         self.ymin = np.nanmin(this_Ht)
         self._set_plot_dims(ax)

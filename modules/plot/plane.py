@@ -86,17 +86,17 @@ class PlanePlot():
         
         print("INFO: computing streamplot...")
         
-        X, Y, U, V, _, _, _, _ = self.m.get_B_data(r, t)
+        d = self.m.get_B_data(r, t)
         
-        x = np.linspace(X.min(), X.max(), self.fgsz * 50)
-        y = np.linspace(Y.min(), Y.max(), self.fgsz * 50)
+        x = np.linspace(d.X.min(), d.X.max(), self.fgsz * 50)
+        y = np.linspace(d.Y.min(), d.Y.max(), self.fgsz * 50)
         xi, yi = np.meshgrid(x,y)
-        intensity = np.sqrt(U**2 + V**2)
+        intensity = np.sqrt(d.U**2 + d.V**2)
         
-        px = X.flatten()
-        py = Y.flatten()
-        pu = U.flatten()
-        pv = V.flatten()
+        px = d.X.flatten()
+        py = d.Y.flatten()
+        pu = d.U.flatten()
+        pv = d.V.flatten()
         i = intensity.flatten()
         gu = griddata((px,py), pu, (xi,yi))
         gv = griddata((px,py), pv, (xi,yi))
@@ -123,12 +123,12 @@ class PlanePlot():
         
         print("INFO: computing contour...")
         
-        data = self.m.get_A_data(r, t)
+        d = self.m.get_A_data(r, t)
                 
-        cs = ax.contourf(data.X, data.Y, data.A,
+        cs = ax.contourf(d.X, d.Y, d.Az,
                          levels=lvls,
-                         vmin=np.nanmin(data.A),
-                         vmax=np.nanmax(data.A),
+                         vmin=np.nanmin(d.Az),
+                         vmax=np.nanmax(d.Az),
                          cmap=contourWinter)
         #ax.clabel(cs, inline=True, fontsize=self.fgsz)
         # fig.colorbar(cs, shrink = 0.8)
@@ -146,10 +146,10 @@ class PlanePlot():
         
         print("INFO: computing quiver...")
         
-        X, Y, U, V, _, _, _, _ = self.m.get_B_data(r, t)
-        intensity = np.sqrt(U**2 + V**2)
+        d = self.m.get_B_data(r, t)
+        intensity = np.sqrt(d.U**2 + d.V**2)
     
-        ax.quiver(X, Y, U, V, intensity,
+        ax.quiver(d.X, d.Y, d.U, d.V, intensity,
                   cmap=myWinter) # color="b")
         print("INFO: finished quiver.")
     
