@@ -30,7 +30,7 @@ contourWinter = ListedColormap(sampled_Winter)
 
 class PlanePlot():
     
-    def __init__(self, model: Model, fgsz = 20):
+    def __init__(self, model: Model, fgsz = 50):
         self.m = model
         
         self.fgsz = fgsz

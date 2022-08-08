@@ -49,12 +49,14 @@ print("x =", model.x, "\n")
 print("M =", model.M, "\n")
 
 rM_plot = RadialMultiPlot(model)
+rM_plot.set_Az_details(title="Az")
 rM_plot.set_Br_details(title="Br")
 rM_plot.set_Ht_details(title="Ht")
-# rM_plot.multiplot(angle=90)
+# rM_plot.multiplot(["Az"], angle = 45)
+# rM_plot.multiplot(["Az", "Br"])
 
 p_plot = PlanePlot(model)
-# p_plot.contour(dr=400, dt=200)
+p_plot.contour(dr=400, dt=200)
 # p_plot.streamplot(dr=400, dt=200)
 
 pd_plot = PlaneDoublePlot(model)
