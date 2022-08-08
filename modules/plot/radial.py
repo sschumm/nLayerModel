@@ -83,6 +83,7 @@ class RadialPlot():
         self.ymin = np.nanmin(this_Az)
         self._set_plot_dims(ax)
         self._set_machine_dims(ax)
+        fig.tight_layout()
         ax.plot(r, this_Az)        
         
 
@@ -96,6 +97,7 @@ class RadialPlot():
         self.ymin = np.nanmin(this_Br)        
         self._set_plot_dims(ax)
         self._set_machine_dims(ax)
+        fig.tight_layout()
         ax.plot(r, this_Br) 
     
     
@@ -110,6 +112,7 @@ class RadialPlot():
         self.ymin = np.nanmin(this_Ht)
         self._set_plot_dims(ax)
         self._set_machine_dims(ax)
+        fig.tight_layout()
         ax.plot(r, this_Ht) 
         
 
@@ -204,7 +207,7 @@ class RadialMultiPlot(RadialMsizePlot):
     
     def multiplot(self, quantities: list = ["Br", "Ht"], **kwargs):
         self.multi = True
-        
+        self.count_y = 0
         
         # ------- get information on what to draw
         ny = len(quantities)
