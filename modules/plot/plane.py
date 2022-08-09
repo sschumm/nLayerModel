@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 from scipy.interpolate import griddata
 from scipy.constants import pi, mu_0
-from .colors import strp_winter, cntr_winter
+from .colors import strp_winter, cntr_winter, cntr_jet, cntr_rb
 from ..layer import MagneticLayer, CurrentLoading
 from ..model import Model
 
@@ -104,6 +104,7 @@ class PlanePlot():
         self._set_machine_dims(ax)
         
         lvls = kwargs.get("lvls", 50)
+        style = kwargs.get("style", "winter")
         
         r = np.linspace(0, self.r_max, dr)
         t = np.linspace(0, 2*pi, dt) 
@@ -111,12 +112,25 @@ class PlanePlot():
         print("INFO: computing contour...")
         
         d = self.m.get_A_data(r, t)
-                
-        cs = ax.contourf(d.X, d.Y, d.Az,
-                         levels=lvls,
-                         vmin=np.nanmin(d.Az),
-                         vmax=np.nanmax(d.Az),
-                         cmap=cntr_winter)
+        if style in ["winter", "jet", "rb"]:
+            if style == "winter":
+                cmap=cntr_winter
+            if style == "jet":
+                cmap=cntr_jet
+            if style == "rb":
+                cmap = cntr_rb
+            cs = ax.contourf(d.X, d.Y, d.Az,
+                             levels=lvls,
+                             vmin=np.nanmin(d.Az),
+                             vmax=np.nanmax(d.Az),
+                             cmap=cmap)
+        else: 
+            cs = ax.contour(d.X, d.Y, d.Az,
+                             levels=lvls,
+                             vmin=np.nanmin(d.Az),
+                             vmax=np.nanmax(d.Az),
+                             colors=style)
+            
         #ax.clabel(cs, inline=True, fontsize=self.fgsz)
         # fig.colorbar(cs, shrink = 0.8)
         
