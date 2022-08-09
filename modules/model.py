@@ -5,7 +5,7 @@ Created on Thu Jul 28 11:53:17 2022
 @author: svens
 """
 
-import copy
+import copy, math
 import numpy as np
 
 from scipy.constants import mu_0, pi
@@ -106,8 +106,8 @@ class Model():
     
     def total_torque(self, dt=1000):
         self.tangential_forces(dt)        
-        pos_torque = []
-        neg_torque = []
+        pos_torque = [0.]
+        neg_torque = [0.]
         
         # store the acting forces in either direction multiplied
         # with the respective radius in 2 lists
@@ -118,12 +118,15 @@ class Model():
                 neg_torque.append(cl.tangential_force * cl.r)
         
         # check if the torque in both directions is equal
+        # using math.isclose with absolute tolerance because the integration for 
+        # tangential forces yields zero but with tolerances of ~1e-7 but only 
+        # if alpha1 = alpha2 =/= 0
         M = sum(pos_torque)
-        if np.allclose(M, -sum(neg_torque)):
+        if math.isclose(M, -sum(neg_torque), abs_tol=1e-6):
             self.M = M
             return M
         else:
-            raise Exception("Pos. and neg. torque are NOT np.allclose().")
+            raise Exception("Pos. and neg. torque are NOT math.isclose().")
 
 
     def get_A_data(self, r, t):
@@ -168,8 +171,8 @@ class Model():
         R, T = np.hstack(R_tuple), np.hstack(T_tuple)
         Az = np.hstack(Az_tuple)
         X, Y = rt_to_xy(R, T)
-        # data = (X, Y, Az, R, T)
-        return X, Y, Az, R, T
+        data = Data(R, T, X, Y, Az = Az)
+        return data
     
     
     def get_B_data(self, r, t):
@@ -222,8 +225,8 @@ class Model():
         
         X, Y = rt_to_xy(R, T)
         U, V = BrBt_to_UV(Br, Bt, T)
-        # data = (X, Y, U, V, R, T, Br, Bt)
-        return X, Y, U, V, R, T, Br, Bt
+        data = Data(R, T, X, Y, U=U, V=V, Br=Br, Bt=Bt)
+        return data
 
 
     def get_H_data(self, r, t):
@@ -278,6 +281,22 @@ class Model():
         
         X, Y = rt_to_xy(R, T)
         U, V = BrBt_to_UV(Hr, Ht, T)
-        # data = (X, Y, U, V, R, T, Hr, Ht)
-        return X, Y, U, V, R, T, Hr, Ht
+        data = Data(R, T, X, Y, U=U, V=V, Hr=Hr, Ht=Ht)
+        return data
     
+
+class Data():
+    
+    def __init__(self, R, T, X, Y, U=None, V=None, Az=None,
+                 Br=None, Bt=None, Hr=None, Ht=None):
+        self.R = R
+        self.T = T
+        self.X = X
+        self.Y = Y 
+        self.U = U
+        self.V = V
+        self.Az = Az
+        self.Br = Br
+        self.Bt = Bt
+        self.Hr = Hr
+        self.Ht = Ht

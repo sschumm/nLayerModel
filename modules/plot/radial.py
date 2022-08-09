@@ -9,8 +9,8 @@ import numpy as np
 import matplotlib.pyplot as plt 
 
 from matplotlib import patches
-
 from scipy.constants import pi, mu_0
+from .colors import border_default, border_current, layer_default, layer_magnetic
 from ..layer import MagneticLayer, CurrentLoading
 from ..model import Model
 
@@ -75,41 +75,44 @@ class RadialPlot():
     def plot_radial_Az(self, **kwargs):
         fig, ax = self._set_up_plot()
         r, t, a = self._unpack_kwargs(ax, **kwargs)
-        _, _, Az, R, T = self.m.get_A_data(r, t)
+        d = self.m.get_A_data(r, t)
         
         
-        this_Az = Az[int(len(t) * a)]
+        this_Az = d.Az[int(len(t) * a)]
         self.ymax = np.nanmax(this_Az)
         self.ymin = np.nanmin(this_Az)
         self._set_plot_dims(ax)
         self._set_machine_dims(ax)
+        fig.tight_layout()
         ax.plot(r, this_Az)        
         
 
     def plot_radial_Br(self, **kwargs):
         fig, ax = self._set_up_plot()
         r, t, a = self._unpack_kwargs(ax, **kwargs)
-        _, _, _, _, _, _, Br, _ = self.m.get_B_data(r, t)
+        d = self.m.get_B_data(r, t)
         
-        this_Br = Br[int(len(t) * a)]
+        this_Br = d.Br[int(len(t) * a)]
         self.ymax = np.nanmax(this_Br)
         self.ymin = np.nanmin(this_Br)        
         self._set_plot_dims(ax)
         self._set_machine_dims(ax)
+        fig.tight_layout()
         ax.plot(r, this_Br) 
     
     
     def plot_radial_Ht(self, **kwargs):
         fig, ax = self._set_up_plot()
         r, t, a = self._unpack_kwargs(ax, **kwargs)
-        _, _, _, _, _, _, _, Ht = self.m.get_H_data(r, t)
+        d = self.m.get_H_data(r, t)
         
 
-        this_Ht = Ht[int(len(t) * a)]
+        this_Ht = d.Ht[int(len(t) * a)]
         self.ymax = np.nanmax(this_Ht)
         self.ymin = np.nanmin(this_Ht)
         self._set_plot_dims(ax)
         self._set_machine_dims(ax)
+        fig.tight_layout()
         ax.plot(r, this_Ht) 
         
 
@@ -144,14 +147,14 @@ class RadialMsizePlot(RadialPlot):
                        labelbottom=False)
         
         for layer in reversed(self.m.layers):
-            v_color = "black"
-            h_color = "#e6e6e6" # "white"
+            v_color = border_default
+            h_color = layer_default
             if isinstance(layer, CurrentLoading):
                 if not layer.mu == mu_0:
-                    h_color = "#a6a6a6"
-                v_color = "red"
+                    h_color = layer_magnetic
+                v_color = border_current
             if isinstance(layer, MagneticLayer):
-                h_color = "#a6a6a6"
+                h_color = layer_magnetic
                 
             ax.add_patch(patches.Rectangle((layer.r, 0), 
                                            width=1,
@@ -204,7 +207,7 @@ class RadialMultiPlot(RadialMsizePlot):
     
     def multiplot(self, quantities: list = ["Br", "Ht"], **kwargs):
         self.multi = True
-        
+        self.count_y = 0
         
         # ------- get information on what to draw
         ny = len(quantities)

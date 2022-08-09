@@ -8,8 +8,6 @@ Created on Thu Jul 28 11:54:41 2022
 import numpy as np
 
 from scipy.constants import mu_0
-
-from .continuities import c_Br, c_Ht
 from .layer import CurrentLoading
 
 class SubModel():
@@ -49,10 +47,8 @@ class SubModel():
         
         # add continuity conditions
         for i, layer in enumerate(self.layers):
-            Br = c_Br(r = self.radii[i], 
-                      p = self.p)
-            Ht = c_Ht(r = self.radii[i], 
-                      p = self.p, 
+            Br = self.continuity_Br(r = self.radii[i])
+            Ht = self.continuity_Ht(r = self.radii[i], 
                       mu_i_inv=self.mu_i_inv[i], 
                       mu_o_inv = self.mu_o_inv[i])
             
@@ -78,6 +74,20 @@ class SubModel():
                 sysb.append(0.)
         sysb.append(0.)
         self.sysb = np.asarray(sysb)
+        
+        
+    def continuity_Br(self, r):
+        return [-r**(self.p - 1), 
+                -r**-(self.p + 1),
+                 r**(self.p - 1),
+                 r**-(self.p + 1)]
+
+
+    def continuity_Ht(self, r, mu_i_inv, mu_o_inv):
+        return [ mu_i_inv * self.p * r**(self.p - 1),
+                -mu_i_inv * self.p * r**-(self.p+ 1),
+                -mu_o_inv * self.p * r**(self.p - 1),
+                 mu_o_inv * self.p * r**-(self.p+ 1)]
             
         
     def solve(self):

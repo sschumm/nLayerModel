@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import math
 import numpy as np
 np.set_printoptions(suppress=True, linewidth=250, precision=6)
 
@@ -86,15 +87,19 @@ for i in range(1, 1001):
     
     close_default = np.allclose(x_numeric, x_analytic)
     
-    M_numeric = model.total_torque()
     M_analytic = analytic_torque_on_K1(p_i, l, K1=K_i1, r1=r_i1, 
                                        a1_K2=x_analytic[1][0],
                                        alpha1=alphai1, alpha2=alphai2)
+    M_numeric = model.total_torque()
     
-    if close_default and np.allclose(M_numeric, M_analytic):
+    close_torque_np = np.allclose(M_numeric, M_analytic)
+    close_torque_math = math.isclose(M_numeric, M_analytic, abs_tol=1e-6)
+    
+    if close_default and close_torque_math: #close_torque_np:
         print("=", end="")
     else: 
         print("\n ! \n")
+        print(f"Solution is {close_default}")
         a1_n, b1_n, a2_n, b2_n, a3_n, b3_n, a4_n, b4_n = x_numeric[0]
         a1_a, b1_a, a2_a, b2_a, a3_a, b3_a, a4_a, b4_a = x_analytic[0]
         print("Solution: ")
@@ -122,6 +127,7 @@ for i in range(1, 1001):
         print(f"b4 - analytic: {b4_a}{(24 - len(str(b4_a))) * ' '}- numeric: {b4_n}")
         
         print("\np =", p_i)
+        print(f"Torque is {close_torque_math}")
         print("M_numeric = ", M_numeric)
         print("M_analytic =", M_analytic)
 

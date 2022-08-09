@@ -52,14 +52,14 @@ print("P_max =", 2*pi* (data["n_rated"]/60) * (model.M / 1e6), "[MW] \n")
 rM_plot = RadialMultiPlot(model)
 rM_plot.set_Br_details(title="Br")
 rM_plot.set_Ht_details(title="Ht")
-# rM_plot.multiplot(angle=90)
+rM_plot.multiplot(angle=90)
 
 p_plot = PlanePlot(model)
-# p_plot.contour(dr=400, dt=200)
+p_plot.contour(dr=400, dt=200)
 # p_plot.streamplot(dr=400, dt=200)
 
 pd_plot = PlaneDoublePlot(model)
-# pd_plot.plot_BandA(dr=400, dt=200)
+pd_plot.plot_BandA(dr=400, dt=200)
 
 
 

@@ -8,29 +8,17 @@ Created on Tue Jul 26 14:32:31 2022
 import numpy as np 
 import matplotlib.pyplot as plt 
 
-from matplotlib import cm, patches
-from matplotlib.colors import ListedColormap
-
 from scipy.interpolate import griddata
 from scipy.constants import pi, mu_0
+from .colors import strp_winter, cntr_winter, cntr_jet, cntr_rb
+from .colors import border_default, border_current, layer_default, layer_magnetic
 from ..layer import MagneticLayer, CurrentLoading
 from ..model import Model
-
-Winter = cm.get_cmap("winter_r")
-sampled_Winter = Winter(np.linspace(0,1,360))
-myWinter = ListedColormap(sampled_Winter[104:, :])
-
-res = 256
-n = 0.65
-sampled_Winter = Winter(np.linspace(0,1,2*res))
-sampled_Winter[:res, -1] = np.flip(np.linspace(0., 1, res))**n
-sampled_Winter[res:, -1] = np.linspace(0., 1, res)**n
-contourWinter = ListedColormap(sampled_Winter)
 
 
 class PlanePlot():
     
-    def __init__(self, model: Model, fgsz = 20):
+    def __init__(self, model: Model, fgsz = 50):
         self.m = model
         
         self.fgsz = fgsz
@@ -55,14 +43,14 @@ class PlanePlot():
     
     def _set_machine_dims(self, ax):
         for layer in reversed(self.m.layers):
-            edgecolor = "black"
-            facecolor = "#e6e6e6" # "white"
+            edgecolor = border_default
+            facecolor = layer_default
             if isinstance(layer, CurrentLoading):
                 if not layer.mu == mu_0:
-                    facecolor = "#a6a6a6"
-                edgecolor = "red"
+                    facecolor = layer_magnetic
+                edgecolor = border_current
             elif isinstance(layer, MagneticLayer):
-                facecolor = "#a6a6a6"
+                facecolor = layer_magnetic
             else: 
                 pass
             ax.add_artist(plt.Circle((0, 0), 
@@ -86,17 +74,17 @@ class PlanePlot():
         
         print("INFO: computing streamplot...")
         
-        X, Y, U, V, _, _, _, _ = self.m.get_B_data(r, t)
+        d = self.m.get_B_data(r, t)
         
-        x = np.linspace(X.min(), X.max(), self.fgsz * 50)
-        y = np.linspace(Y.min(), Y.max(), self.fgsz * 50)
+        x = np.linspace(d.X.min(), d.X.max(), self.fgsz * 50)
+        y = np.linspace(d.Y.min(), d.Y.max(), self.fgsz * 50)
         xi, yi = np.meshgrid(x,y)
-        intensity = np.sqrt(U**2 + V**2)
+        intensity = np.sqrt(d.U**2 + d.V**2)
         
-        px = X.flatten()
-        py = Y.flatten()
-        pu = U.flatten()
-        pv = V.flatten()
+        px = d.X.flatten()
+        py = d.Y.flatten()
+        pu = d.U.flatten()
+        pv = d.V.flatten()
         i = intensity.flatten()
         gu = griddata((px,py), pu, (xi,yi))
         gv = griddata((px,py), pv, (xi,yi))
@@ -107,7 +95,7 @@ class PlanePlot():
                       linewidth=lw, 
                       density= 3 * self.lim, 
                       arrowsize= 0.1*self.fgsz, 
-                      color=gi, cmap=myWinter)
+                      color=gi, cmap=strp_winter)
         print("INFO: finished streamplot.")
            
     
@@ -117,19 +105,33 @@ class PlanePlot():
         self._set_machine_dims(ax)
         
         lvls = kwargs.get("lvls", 50)
+        style = kwargs.get("style", "winter")
         
         r = np.linspace(0, self.r_max, dr)
         t = np.linspace(0, 2*pi, dt) 
         
         print("INFO: computing contour...")
         
-        X, Y, Az, _, _ = self.m.get_A_data(r, t)
-                
-        cs = ax.contourf(X, Y, Az,
-                         levels=lvls,
-                         vmin=np.nanmin(Az),
-                         vmax=np.nanmax(Az),
-                         cmap=contourWinter)
+        d = self.m.get_A_data(r, t)
+        if style in ["winter", "jet", "rb"]:
+            if style == "winter":
+                cmap=cntr_winter
+            if style == "jet":
+                cmap=cntr_jet
+            if style == "rb":
+                cmap = cntr_rb
+            cs = ax.contourf(d.X, d.Y, d.Az,
+                             levels=lvls,
+                             vmin=np.nanmin(d.Az),
+                             vmax=np.nanmax(d.Az),
+                             cmap=cmap)
+        else: 
+            cs = ax.contour(d.X, d.Y, d.Az,
+                             levels=lvls,
+                             vmin=np.nanmin(d.Az),
+                             vmax=np.nanmax(d.Az),
+                             colors=style)
+            
         #ax.clabel(cs, inline=True, fontsize=self.fgsz)
         # fig.colorbar(cs, shrink = 0.8)
         
@@ -146,11 +148,11 @@ class PlanePlot():
         
         print("INFO: computing quiver...")
         
-        X, Y, U, V, _, _, _, _ = self.m.get_B_data(r, t)
-        intensity = np.sqrt(U**2 + V**2)
+        d = self.m.get_B_data(r, t)
+        intensity = np.sqrt(d.U**2 + d.V**2)
     
-        ax.quiver(X, Y, U, V, intensity,
-                  cmap=myWinter) # color="b")
+        ax.quiver(d.X, d.Y, d.U, d.V, intensity,
+                  cmap=strp_winter) # color="b")
         print("INFO: finished quiver.")
     
 
