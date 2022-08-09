@@ -8,24 +8,11 @@ Created on Tue Jul 26 14:32:31 2022
 import numpy as np 
 import matplotlib.pyplot as plt 
 
-from matplotlib import cm, patches
-from matplotlib.colors import ListedColormap
-
 from scipy.interpolate import griddata
 from scipy.constants import pi, mu_0
+from .colors import strp_winter, cntr_winter
 from ..layer import MagneticLayer, CurrentLoading
 from ..model import Model
-
-Winter = cm.get_cmap("winter_r")
-sampled_Winter = Winter(np.linspace(0,1,360))
-myWinter = ListedColormap(sampled_Winter[104:, :])
-
-res = 256
-n = 0.65
-sampled_Winter = Winter(np.linspace(0,1,2*res))
-sampled_Winter[:res, -1] = np.flip(np.linspace(0., 1, res))**n
-sampled_Winter[res:, -1] = np.linspace(0., 1, res)**n
-contourWinter = ListedColormap(sampled_Winter)
 
 
 class PlanePlot():
@@ -107,7 +94,7 @@ class PlanePlot():
                       linewidth=lw, 
                       density= 3 * self.lim, 
                       arrowsize= 0.1*self.fgsz, 
-                      color=gi, cmap=myWinter)
+                      color=gi, cmap=strp_winter)
         print("INFO: finished streamplot.")
            
     
@@ -129,7 +116,7 @@ class PlanePlot():
                          levels=lvls,
                          vmin=np.nanmin(d.Az),
                          vmax=np.nanmax(d.Az),
-                         cmap=contourWinter)
+                         cmap=cntr_winter)
         #ax.clabel(cs, inline=True, fontsize=self.fgsz)
         # fig.colorbar(cs, shrink = 0.8)
         
@@ -150,7 +137,7 @@ class PlanePlot():
         intensity = np.sqrt(d.U**2 + d.V**2)
     
         ax.quiver(d.X, d.Y, d.U, d.V, intensity,
-                  cmap=myWinter) # color="b")
+                  cmap=strp_winter) # color="b")
         print("INFO: finished quiver.")
     
 
