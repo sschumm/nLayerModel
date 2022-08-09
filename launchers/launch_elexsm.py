@@ -56,7 +56,7 @@ rM_plot.set_Ht_details(title="Ht")
 # rM_plot.multiplot(["Az", "Br"])
 
 p_plot = PlanePlot(model)
-p_plot.contour(dr=400, dt=200)
+p_plot.contour(dr=400, dt=200, style="black")
 # p_plot.streamplot(dr=400, dt=200)
 
 pd_plot = PlaneDoublePlot(model)

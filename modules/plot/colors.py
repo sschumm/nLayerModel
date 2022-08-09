@@ -41,3 +41,11 @@ rb_sampled = rb_sampled[front:front + 2*res, :]
 rb_sampled[:res, -1] = np.flip(np.linspace(0., 1, res))**n
 rb_sampled[res:, -1] = np.linspace(0., 1, res)**n
 cntr_rb = ListedColormap(rb_sampled) # output
+
+
+
+# machine dimensions
+border_default = "black"
+border_current = "red"
+layer_default = "white"
+layer_magnetic = "#a6a6a6"

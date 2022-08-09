@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 from scipy.interpolate import griddata
 from scipy.constants import pi, mu_0
 from .colors import strp_winter, cntr_winter, cntr_jet, cntr_rb
+from .colors import border_default, border_current, layer_default, layer_magnetic
 from ..layer import MagneticLayer, CurrentLoading
 from ..model import Model
 
@@ -42,14 +43,14 @@ class PlanePlot():
     
     def _set_machine_dims(self, ax):
         for layer in reversed(self.m.layers):
-            edgecolor = "black"
-            facecolor = "#e6e6e6" # "white"
+            edgecolor = border_default
+            facecolor = layer_default
             if isinstance(layer, CurrentLoading):
                 if not layer.mu == mu_0:
-                    facecolor = "#a6a6a6"
-                edgecolor = "red"
+                    facecolor = layer_magnetic
+                edgecolor = border_current
             elif isinstance(layer, MagneticLayer):
-                facecolor = "#a6a6a6"
+                facecolor = layer_magnetic
             else: 
                 pass
             ax.add_artist(plt.Circle((0, 0), 

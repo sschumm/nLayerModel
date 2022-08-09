@@ -20,9 +20,9 @@ model = Model(p)
 
 # model.add_layer(CurrentLoading(K=5e6, r=0.4, mu_r=1e5))
 
-model.add_layer(AirLayer(r=0.2))
+model.add_layer(AirLayer(r=0.25))
 model.add_layer(MagneticLayer(r=0.3, mu_r=8))
-model.add_layer(AirLayer(r=0.4))
+model.add_layer(AirLayer(r=0.45))
 
 model.add_layer(CurrentLoading(K=5e6, r=0.5, mu_r=1, alpha=(np.pi/2) * 0.))
 
@@ -46,7 +46,7 @@ p_plot = PlanePlot(model)
 rM_plot = RadialMsizePlot(model)
 
 detail = 400
-# p_plot.contour(detail, detail)
+p_plot.contour(detail, detail, style="jet")
 # p_plot.streamplot(detail, detail)
 # p_plot.quiver(40, 40)
 angle=80

@@ -9,8 +9,8 @@ import numpy as np
 import matplotlib.pyplot as plt 
 
 from matplotlib import patches
-
 from scipy.constants import pi, mu_0
+from .colors import border_default, border_current, layer_default, layer_magnetic
 from ..layer import MagneticLayer, CurrentLoading
 from ..model import Model
 
@@ -147,14 +147,14 @@ class RadialMsizePlot(RadialPlot):
                        labelbottom=False)
         
         for layer in reversed(self.m.layers):
-            v_color = "black"
-            h_color = "#e6e6e6" # "white"
+            v_color = border_default
+            h_color = layer_default
             if isinstance(layer, CurrentLoading):
                 if not layer.mu == mu_0:
-                    h_color = "#a6a6a6"
-                v_color = "red"
+                    h_color = layer_magnetic
+                v_color = border_current
             if isinstance(layer, MagneticLayer):
-                h_color = "#a6a6a6"
+                h_color = layer_magnetic
                 
             ax.add_patch(patches.Rectangle((layer.r, 0), 
                                            width=1,
