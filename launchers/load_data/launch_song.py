@@ -6,15 +6,15 @@ from scipy.constants import pi
 from modules.model import Model
 from modules.layer import MagneticLayer, AirLayer, CurrentLoading
 from modules.plot.radial import RadialMultiPlot
-from modules.plot.plane import PlanePlot, PlaneDoublePlot
+from modules.plot.plane import PlanePlot
 
 
 # -------- init params --------
 from data.load import data
-from data.precalculations import K_ph_amplitude, K_n_amplitude
+from data.precalculations import K_n_amplitude
 
 # data, layers = data("song_gen1", verbose=(False))
-data, layers = data("song_gen2", verbose=(False))
+data, layers = data("song_gen2", verbose=(True))
 
 
 # -------- create model --------
@@ -32,8 +32,10 @@ for layer in layers:
 Kr = K_n_amplitude(T=data["T_p_pole"] * 2*data["p"], 
                    r=loadings[0]["r"], 
                    I=data["I_r"] * np.sqrt(2))   
-model.add_layer(CurrentLoading(K=Kr, r=loadings[0]["r"], alpha=pi*0.5))
-model.add_layer(CurrentLoading(K=loadings[1]["K"], r=loadings[1]["r"], alpha=pi*0.))
+model.add_layer(CurrentLoading(K=Kr, r=loadings[0]["r"], 
+                               alpha=pi*0.5))
+model.add_layer(CurrentLoading(K=loadings[1]["K"], r=loadings[1]["r"], 
+                               alpha=pi*0.))
 
 # -------- compute model --------
 model.build()
@@ -54,11 +56,9 @@ rM_plot.set_Ht_details(title="Ht")
 # rM_plot.multiplot(angle=90)
 
 p_plot = PlanePlot(model, fgsz=70)
-p_plot.contour(dr=400, dt=200)
+# p_plot.contour(dr=400, dt=200)
 # p_plot.streamplot(dr=400, dt=200)
 
-# pd_plot = PlaneDoublePlot(model)
-# pd_plot.plot_BandA(dr=400, dt=200)
 
 
 
