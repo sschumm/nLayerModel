@@ -13,12 +13,11 @@ from modules.plot.plane import PlanePlot, PlaneDoublePlot
 from data.load import data
 from data.precalculations import K_ph_amplitude, K_n_amplitude
 
-data, layers = data("song", verbose=(False))
-Kr = K_n_amplitude(T=24*1400, r=1.756, I = np.sqrt(2) * 680)
-# print(Kr)
+# data, layers = data("song_gen1", verbose=(False))
+data, layers = data("song_gen2", verbose=(False))
+
 
 # -------- create model --------
-
 model = Model(data["p"], data["l"])
 
 loadings = []
@@ -30,14 +29,13 @@ for layer in layers:
     else:
         loadings.append(layer)
 
-    
-# model.add_layer(CurrentLoading(K=loadings[0]["K"], r=loadings[0]["r"], alpha=pi*0.0))
+Kr = K_n_amplitude(T=data["T_p_pole"] * 2*data["p"], 
+                   r=loadings[0]["r"], 
+                   I=data["I_r"] * np.sqrt(2))   
 model.add_layer(CurrentLoading(K=Kr, r=loadings[0]["r"], alpha=pi*0.5))
 model.add_layer(CurrentLoading(K=loadings[1]["K"], r=loadings[1]["r"], alpha=pi*0.))
-# model.add_layer(CurrentLoading(K=Ks, r=loadings[1]["r"], alpha=pi*0.5))
 
-
-
+# -------- compute model --------
 model.build()
 model.solve()
 model.total_torque()
@@ -50,13 +48,13 @@ print("P_max =", 2*pi* (data["n_rated"]/60) * (model.M / 1e6), "[MW] \n")
 print("P_out =", (data["P_out"])/1e6, "[MW] \n")
 
 
-# rM_plot = RadialMultiPlot(model)
-# rM_plot.set_Br_details(title="Br")
-# rM_plot.set_Ht_details(title="Ht")
+rM_plot = RadialMultiPlot(model)
+rM_plot.set_Br_details(title="Br")
+rM_plot.set_Ht_details(title="Ht")
 # rM_plot.multiplot(angle=90)
 
-# p_plot = PlanePlot(model, fgsz=100)
-# p_plot.contour(dr=400, dt=200)
+p_plot = PlanePlot(model, fgsz=70)
+p_plot.contour(dr=400, dt=200)
 # p_plot.streamplot(dr=400, dt=200)
 
 # pd_plot = PlaneDoublePlot(model)
