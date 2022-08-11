@@ -14,7 +14,7 @@ from data.load import data
 from data.precalculations import K_n_amplitude
 
 # data, layers = data("song_gen1", verbose=(False))
-data, layers = data("song_gen2", verbose=(True))
+data, layers = data("song_gen2", verbose=(False))
 
 
 # -------- create model --------
@@ -53,11 +53,19 @@ print("P_out =", (data["P_out"])/1e6, "[MW] \n")
 rM_plot = RadialMultiPlot(model)
 rM_plot.set_Br_details(title="Br")
 rM_plot.set_Ht_details(title="Ht")
-# rM_plot.multiplot(angle=90)
+# for angle in np.linspace(0,20,20):  
+#     rM_plot.set_Br_details(title=f"Br at {angle}°.")
+#     rM_plot.set_Ht_details(title=f"Ht at {angle}°.")
+#     rM_plot.multiplot(dr=1000, dt=5000, angle=angle)
 
 p_plot = PlanePlot(model, fgsz=70)
-# p_plot.contour(dr=400, dt=200)
+p_plot.contour(dr=400, dt=200)
 # p_plot.streamplot(dr=400, dt=200)
+
+
+# d= model.get_B_data(r=np.linspace(0,2,100), 
+#                     t=np.linspace(0,2*pi,100))
+
 
 
 
