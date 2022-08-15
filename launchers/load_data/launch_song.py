@@ -11,10 +11,10 @@ from modules.plot.plane import PlanePlot
 
 # -------- init params --------
 from data.load import data
-from data.precalculations import K_n_amplitude
+from data.precalculations import kw, K, Kamp
 
-# data, layers = data("song_gen1", verbose=(False))
-data, layers = data("song_gen2", verbose=(False))
+data, layers = data("song_gen1", verbose=(False))
+# data, layers = data("song_gen2", verbose=(True))
 
 
 # -------- create model --------
@@ -29,12 +29,25 @@ for layer in layers:
     else:
         loadings.append(layer)
 
-Kr = K_n_amplitude(T=data["T_p_pole"] * 2*data["p"], 
-                   r=loadings[0]["r"], 
-                   I=data["I_r"] * np.sqrt(2))   
-model.add_layer(CurrentLoading(K=Kr, r=loadings[0]["r"], 
+# Kr = K_n_amplitude(T=data["T_p_pole"] * 2*data["p"], 
+#                    r=loadings[0]["r"], 
+#                    I=data["I_r"] * np.sqrt(2), o=0.5)   
+# Kr = 5.447 * 1e6
+k_w = kw(1, pi * 0.5)
+print(k_w)
+K_r = K(m=1, I=680, d=2*1.756, Ns=2*12*1400)
+print(K_r)
+K_r_amp = Kamp(k_w, K_r)
+print(K_r_amp)
+
+K_s = loadings[1]["K"]
+print(K_s)
+K_s_amp = Kamp(0.9577, K_s)
+print(K_s_amp)
+
+model.add_layer(CurrentLoading(K=K_r_amp, r=loadings[0]["r"], 
                                alpha=pi*0.5))
-model.add_layer(CurrentLoading(K=loadings[1]["K"], r=loadings[1]["r"], 
+model.add_layer(CurrentLoading(K=K_s_amp, r=loadings[1]["r"], 
                                alpha=pi*0.))
 
 # -------- compute model --------
@@ -44,7 +57,7 @@ model.total_torque()
 
 # -------- output -------- 
 # print("x =", model.x, "\n")
-print("M =", model.M, "[Nm] \n")
+# print("M =", model.M, "[Nm] \n")
 
 print("P_max =", 2*pi* (data["n_rated"]/60) * (model.M / 1e6), "[MW] \n")
 print("P_out =", (data["P_out"])/1e6, "[MW] \n")
@@ -59,7 +72,7 @@ rM_plot.set_Ht_details(title="Ht")
 #     rM_plot.multiplot(dr=1000, dt=5000, angle=angle)
 
 p_plot = PlanePlot(model, fgsz=70)
-p_plot.contour(dr=400, dt=200)
+p_plot.contour(dr=400, dt=200, style="rb")
 # p_plot.streamplot(dr=400, dt=200)
 
 
