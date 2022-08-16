@@ -3,6 +3,12 @@ import numpy as np
 from scipy.constants import pi
 
 
+def kd(m, q):
+    nom = np.sin(pi/(2*m))
+    den = q * np.sin(pi/(2 * m*q))
+    return nom / den
+
+
 def kw(n, o):
     num = np.sin(n * o/2)
     den = n * o/2
@@ -21,8 +27,8 @@ def Ns(p, q, Nc, a):
     return num / den
 
 
-def K(m, I, d, Ns):
-    num = 2 * m * Ns * I
+def K(m, I, d, N):
+    num = 2 * m * N * I
     den = pi * d
     return num / den
 
