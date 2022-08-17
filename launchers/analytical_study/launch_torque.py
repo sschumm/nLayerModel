@@ -90,9 +90,9 @@ if False:
 
 
 #%% Analytic vs. Numeric
-if False:
+if True:
     for i in range(1, 1001):
-        p_i = np.random.randint(1, 6)
+        p_i = np.random.randint(1, 30)
         K_i1 = K_1 * np.random.rand()
         K_i2 = K_2 * np.random.rand()
         r_i1 = np.random.rand() * np.random.randint(1, 10) + 0.1
@@ -167,3 +167,13 @@ if False:
         if i % 100 == 0:
             print("")
     
+#%% Debug
+if True:
+        x_analytic= [
+        analytic_solution_K1(p_i, K1=K_i1, r1=r_i1, r2=r_i2, r3=r_i3,  
+                                      mu_r1=mu_ir1, mu_r3=mu_ir3),
+        analytic_solution_K2(p_i, K2=K_i2, r1=r_i1, r2=r_i2, r3=r_i3,  
+                                  mu_r1=mu_ir1, mu_r3=mu_ir3)    
+            ]
+        
+        model.total_torque()
