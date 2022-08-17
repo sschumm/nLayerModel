@@ -3,15 +3,16 @@ import numpy as np
 from scipy.constants import pi
 
 
+# zone factor
 def kd(m, q):
     nom = np.sin(pi/(2*m))
     den = q * np.sin(pi/(2 * m*q))
     return nom / den
 
-
-def kw(n, o):
-    num = np.sin(n * o/2)
-    den = n * o/2
+# breadth factor
+def kb(n, sigma):
+    num = np.sin(n * sigma/2)
+    den = n * sigma/2
     return num / den
 
 
