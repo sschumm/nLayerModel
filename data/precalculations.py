@@ -11,9 +11,10 @@ def kd(m, q):
 
 # breadth factor
 def kb(n, sigma):
-    num = np.sin(n * sigma/2)
-    den = n * sigma/2
-    return num / den
+    return np.sinc(n * sigma/2)
+    # num = np.sin(n * sigma/2)
+    # den = n * sigma/2
+    # return num / den
 
 
 def q(Q, m, p):
