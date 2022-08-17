@@ -23,6 +23,10 @@ class Model():
         self.layers = list()
         self.current_loadings = list()
         
+        self.radii = list()
+        self.mu_i_inv = list()
+        self.mu_o_inv = None
+        
         self.submodels = list()
         self.x = None
         self.M = None
