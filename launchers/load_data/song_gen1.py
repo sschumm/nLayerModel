@@ -20,7 +20,7 @@ p = 12
 q = 4
 a  = 1
 mu_r = 1e6
-sigma = pi/2
+sigma = 0.5
 Nf_pp = 1400
 Na_ps = 22
 
