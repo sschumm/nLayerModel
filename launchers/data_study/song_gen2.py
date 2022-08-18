@@ -32,7 +32,7 @@ I_a = 760
 
 # [m]
 lfe = 0.8 
-rri = 1.55  # =/= gen1
+rri = 1.55 # 1.49 #1.55  # =/= gen1
 rro = 1.632 # =/= gen1
 r_f = 1.736 # =/= gen1
 r_a = 1.92
@@ -107,14 +107,15 @@ print(f"{P_out_model  = } [MW]")
 Torque = model.M/1e6
 print(f"{Torque = } [MN]")
 
-# B = model.get_B_data(np.linspace(rri, rso, 1000), np.linspace(0, 2*pi, 1000))
-# Bmax = np.max(B.Bt)
-
-# print(f"{Bmax = } [T]")
+# [T]
+B = model.get_B_data(np.linspace(rri, rso, 1000), np.linspace(0, 2*pi, 1000))
+Bmax = np.max(np.sqrt(B.Br**2 + B.Bt**2))
+print(f"{Bmax = } [T]")
 
 #%% -------------------- create plots --------------------
 plt = PlanePlot(model, fgsz=70)
 # plt.contour(dr=1000, dt=1000, style="jet")
+plt.fluxplot(dr=1000, dt=1000, lvls=15)
 
 
 
