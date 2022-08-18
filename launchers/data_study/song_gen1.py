@@ -7,7 +7,7 @@ from modules.model import Model
 from modules.layer import MagneticLayer, AirLayer, CurrentLoading
 from modules.plot.radial import RadialMultiPlot
 from modules.plot.plane import PlanePlot
-from data.precalculations import kb, kd, K
+from analytics.precalcs import kb, kd, K
 
 
 
