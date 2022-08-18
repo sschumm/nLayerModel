@@ -48,8 +48,8 @@ detail=1000
 a, b, c = 0, 6, 9.5
 start, cut, end = detail*a, detail*b, detail*c
 lcm = ListedColormap(rb(np.linspace(0,1,10000))[9000:10000])
-sample = np.concatenate((flux(np.linspace(0,1,int(detail/2))), 
-                         lcm(np.linspace(0,1,int(detail/2)))
+sample = np.concatenate((flux(np.linspace(0,1,int(cut-start))), 
+                         lcm(np.linspace(0,1,int(end-cut)))
                          ))
 flux_cutoff = ListedColormap(sample)
 

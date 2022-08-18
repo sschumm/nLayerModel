@@ -176,7 +176,7 @@ class PlanePlot():
         # print(np.nanmax(B))
         
         cs_cf = ax.contourf(dB.X, dB.Y, B,
-                            levels=500,
+                            levels=200,
                             vmin=np.nanmin(B),
                             vmax=np.nanmax(B),
                             cmap=flux)
@@ -185,6 +185,8 @@ class PlanePlot():
                           vmin=np.nanmin(A),
                           vmax=np.nanmax(A),
                           colors="black")
+        cbar = fig.colorbar(cs_cf, shrink = 0.8)
+        cbar.ax.tick_params(labelsize=self.fgsz)
 
         print("INFO: finished fluxplot.")
     
