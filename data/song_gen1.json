@@ -2,6 +2,8 @@
 
 "Type": "Fully Superconducting Generator",
 
+"Additional Info": "Stator Winding: 7-strand MgB2 wire - Rotor Winding: YPCO tape",
+
 "Authors": "X. Song, N. Mijatovic, B. B. Jensen and J. Holbøll (2015).", 
 
 "Title": "Design Study of Fully Superconducting Wind Turbine Generators.",
@@ -16,12 +18,21 @@
 
 "n_rated": [10, 1, "[rpm]"],
 
-"phase_no": 3,
+"m": 3,
 
 "U_ph": [4.5, 1e3, "[kV]"],
 
 "I_ph": [760, 1, "[A]"],
 
+"I_r": [680, 1, "[A]"],
+
+"Nc": 1400,
+
+"q": 4,
+
+"Q": 288,
+
+"a": 1,
 
 
 "layers": {

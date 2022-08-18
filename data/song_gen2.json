@@ -1,0 +1,63 @@
+{
+
+"Type": "Fully Superconducting Generator",
+
+"Additional Info": "Stator Winding: 7-strand MgB2 wire - Rotor Winding: 3-strand MgB2 wire",
+
+"Authors": "X. Song, N. Mijatovic, B. B. Jensen and J. Holbøll (2015).", 
+
+"Title": "Design Study of Fully Superconducting Wind Turbine Generators.",
+    
+"p": 12,
+
+"l": [0.8, 1, "[m]"],
+
+"P_rated": [10.26, 1e6, "[MVA]"],
+
+"P_out": [10, 1e6, "[MW]"], 
+
+"n_rated": [10, 1, "[rpm]"],
+
+"phase_no": 3,
+
+"U_ph": [4.5, 1e3, "[kV]"],
+
+"I_ph": [760, 1, "[A]"],
+
+"I_r": [340, 1, "[A]"],
+
+"T_p_pole": 3220,
+
+"layers": {
+    "1": {
+        "type": "AirLayer",
+        "r": [1550, 1e-3, "[mm]"]
+    },
+    "2": {
+        "type": "MagneticLayer",
+        "r": [1632, 1e-3, "[mm]"],
+        "mu_r": 1e5
+    },
+    "3": {
+        "type": "CurrentLoading",
+        "K": [1.1349, 1e6, "[MA/m]"],
+        "r": [1736, 1e-3, "[mm]"],
+        "mu_r": 1
+    },
+    "4": {
+        "type": "CurrentLoading",
+        "K": [400, 1e3, "[kA/m]"],
+        "r": [1920, 1e-3, "[mm]"],
+        "mu_r": 1
+    },
+    "5": {
+        "type": "AirLayer",
+        "r": [1974, 1e-3, "[mm]"] 
+    },
+    "6": {
+        "type": "MagneticLayer",
+        "r": [2050, 1e-3, "[mm]"],
+        "mu_r": 1e5
+    }
+}
+}

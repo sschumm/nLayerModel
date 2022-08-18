@@ -10,8 +10,8 @@ np.set_printoptions(suppress=True, linewidth=250, precision=3)
 
 from modules.model import Model
 from modules.layer import MagneticLayer, AirLayer, CurrentLoading
-from modules.plot.plane import PlanePlot, PlaneDoublePlot
-from modules.plot.radial import RadialPlot, RadialMsizePlot
+from modules.plot.plane import PlanePlot
+from modules.plot.radial import RadialMultiPlot
 
 p = 2
 
@@ -41,17 +41,17 @@ M = model.total_torque()
 
 
 p_plot = PlanePlot(model)
-# pD_plot = PlaneDoublePlot(model)
-# r_plot = RadialPlot(model)
-rM_plot = RadialMsizePlot(model)
+rM_plot = RadialMultiPlot(model)
+
+rM_plot.set_Az_details(title="Az")
+rM_plot.set_Br_details(title="Br")
+rM_plot.set_Ht_details(title="Ht")
+rM_plot.multiplot(["Az", "Br", "Ht"], angle = 45)
 
 detail = 400
+p_plot.contour(detail, detail)
 p_plot.contour(detail, detail, style="jet")
 # p_plot.streamplot(detail, detail)
 # p_plot.quiver(40, 40)
-angle=80
-rM_plot.plot_radial_Az(angle=angle)
-rM_plot.plot_radial_Br(angle=angle)
-rM_plot.plot_radial_Ht(angle=angle)
 
 
