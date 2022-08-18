@@ -69,11 +69,14 @@ rM_plot.multiplot(["Az", "Br", "Ht"], angle = 45)
 
 
 #%% angle sweep
-if False:
+if True:
+    print("INFO: computing load angle sweep...")
+    x_angle = (np.pi/2) * np.linspace(0, 2, 20)
+    y_torque = list()
     alpha2 = (np.pi/2) * 0.0
 
-    for i in np.linspace(0, 2, 20):
-        alpha1 = (np.pi/2) * i
+    for i in x_angle:
+        alpha1 = i
     
         model = Model(p, l)
         model.add_layer(CurrentLoading(K=K_1, r=r_1, mu_r=mu_r1, alpha=alpha1))
@@ -83,14 +86,23 @@ if False:
         model.solve()    
     
         M_numeric = model.total_torque()
-        print("M_numeric = ", M_numeric)
+        y_torque.append(M_numeric)
+        # print("M_numeric = ", M_numeric)
         
-        p_plot = PlanePlot(model)
-        p_plot.contour(dr=100, dt=100, style="jet")
-
+        if False:
+            p_plot = PlanePlot(model)
+            p_plot.contour(dr=100, dt=100, style="jet")
+    
+    # plot torque over angle
+    if True:
+        y_torque = np.array(y_torque)
+        import matplotlib.pyplot as plt
+        plt.figure(figsize=(10, 7))
+        plt.plot(x_angle, y_torque)
+    print("INFO: finished load angle sweep.")
 
 #%% Analytic vs. Numeric
-if True:
+if False:
     for i in range(1, 1001):
         p_i = np.random.randint(1, 30)
         K_i1 = K_1 * np.random.rand()
@@ -168,7 +180,7 @@ if True:
             print("")
     
 #%% Debug
-if True:
+if False:
         x_analytic= [
         analytic_solution_K1(p_i, K1=K_i1, r1=r_i1, r2=r_i2, r3=r_i3,  
                                       mu_r1=mu_ir1, mu_r3=mu_ir3),

@@ -54,6 +54,7 @@ k_b = kb(n=1, sigma=sigma)
 
 # --!--
 A_r = K(m=1, I=I_f, d=2*r_f, N=2*p*Nf)
+A_r = K(m=1, I=I_f, d=2*r_f, N=2*2*p*Nf) # 2 layer?
 A_r = K(m=1, I=I_f, d=2*r_f, N=Nf)
 A_r = K(m=1, I=I_f, d=2*r_f, N=2*Nf)
 # ----
@@ -79,7 +80,7 @@ alpha_a = pi * 0.0
 
 model = Model(p=p, l=lfe)
 
-# Air -- Iron -- Air -|- Air -|- Air -- Iron -- Air 
+# Air -| |- Iron -| |- Air -|k|- Air -|k|- Air -||- Iron -||- Env 
 
 model.add_layer(AirLayer(r=rri))
 model.add_layer(MagneticLayer(r=rro, 
