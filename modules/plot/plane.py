@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 from scipy.interpolate import griddata
 from scipy.constants import pi, mu_0
-from .colors import strp_winter, cntr_winter, cntr_jet, cntr_rb
+from .colors import strp_winter, cntr_winter, cntr_jet, cntr_rb, flux, flux_cutoff
 from .colors import border_default, border_current, layer_default, layer_magnetic
 from ..layer import MagneticLayer, CurrentLoading
 from ..model import Model
@@ -154,6 +154,39 @@ class PlanePlot():
         ax.quiver(d.X, d.Y, d.U, d.V, intensity,
                   cmap=strp_winter) # color="b")
         print("INFO: finished quiver.")
+        
+        
+    def fluxplot(self, dr, dt, **kwargs):
+        fig, ax = self._set_up_plot()
+        self._set_plot_dims(ax)
+        # self._set_machine_dims(ax)
+        
+        lvls = kwargs.get("lvls", 50)
+        
+        r = np.linspace(0, self.r_max, dr)
+        t = np.linspace(0, 2*pi, dt)
+        
+        print("INFO: computing fluxplot...")
+        
+        dA = self.m.get_A_data(r, t)
+        dB = self.m.get_B_data(r, t)
+        A = np.abs(dA.Az)
+        B = np.sqrt(dB.Br**2 + dB.Bt**2)
+        # print(np.nanmin(B))
+        # print(np.nanmax(B))
+        
+        cs_cf = ax.contourf(dB.X, dB.Y, B,
+                            levels=500,
+                            vmin=np.nanmin(B),
+                            vmax=np.nanmax(B),
+                            cmap=flux)
+        cs_c = ax.contour(dB.X, dB.Y, A,
+                          levels=lvls,
+                          vmin=np.nanmin(A),
+                          vmax=np.nanmax(A),
+                          colors="black")
+
+        print("INFO: finished fluxplot.")
     
 
 class PlaneDoublePlot(PlanePlot):

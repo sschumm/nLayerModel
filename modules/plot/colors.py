@@ -11,6 +11,7 @@ from matplotlib.colors import ListedColormap
 
 
 winter = cm.get_cmap("winter_r")
+flux = cm.get_cmap("jet")
 jet = cm.get_cmap("jet_r")
 rb = cm.get_cmap("gist_rainbow")
 
@@ -42,7 +43,15 @@ rb_sampled[:res, -1] = np.flip(np.linspace(0., 1, res))**n
 rb_sampled[res:, -1] = np.linspace(0., 1, res)**n
 cntr_rb = ListedColormap(rb_sampled) # output
 
-
+# build flux cut off
+detail=1000
+a, b, c = 0, 6, 9.5
+start, cut, end = detail*a, detail*b, detail*c
+lcm = ListedColormap(rb(np.linspace(0,1,10000))[9000:10000])
+sample = np.concatenate((flux(np.linspace(0,1,int(detail/2))), 
+                         lcm(np.linspace(0,1,int(detail/2)))
+                         ))
+flux_cutoff = ListedColormap(sample)
 
 # machine dimensions
 border_default = "black"
