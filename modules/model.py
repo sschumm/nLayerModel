@@ -29,7 +29,8 @@ class Model():
         
         self.submodels = list()
         self.x = None
-        self.M = None
+        self.Mpos = None
+        self.Mneg = None
         
         
         
@@ -125,10 +126,12 @@ class Model():
         # using math.isclose with absolute tolerance because the integration for 
         # tangential forces yields zero but with tolerances of ~1e-7 but only 
         # if alpha1 = alpha2 =/= 0
-        M = sum(pos_torque)
-        if math.isclose(M, -sum(neg_torque), abs_tol=1e-6):
-            self.M = M
-            return M
+        Mpos = sum(pos_torque)
+        Mneg = sum(neg_torque)
+        if math.isclose(Mpos, -Mneg, abs_tol=1e-6):
+            self.Mpos = Mpos
+            self.Mneg = Mneg
+            return Mneg
         else:
             raise Exception("Pos. and neg. torque are NOT math.isclose().")
 

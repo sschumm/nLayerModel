@@ -9,6 +9,10 @@ def kd(m, q):
     den = q * np.sin(pi/(2 * m*q))
     return nom / den
 
+# pitching factor
+def kp(w, tp, n=1):
+    return np.sin(n * (pi/2) * (w/tp))
+
 # breadth factor
 def kb(n, sigma):
     return np.sinc(n * sigma/2)

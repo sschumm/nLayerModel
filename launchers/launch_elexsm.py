@@ -46,7 +46,7 @@ model.total_torque()
 
 # -------- output -------- 
 print("x =", model.x, "\n")
-print("M =", model.M, "\n")
+print("M =", model.Mneg, "\n")
 
 rM_plot = RadialMultiPlot(model)
 rM_plot.set_Az_details(title="Az")
