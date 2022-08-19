@@ -14,62 +14,61 @@ from analytics.precalcs import kb, kd, kp, K
 #%% -------------------- init parameters --------------------
 
 # [-]
-Q = 468
+Q = 348
 m = 3
-p = 39
+p = 29
 q = 2
-a  = 156
+a  = 29
 mu_r = 1000
-Nf = 63
-Ns = 89
+Nf = 103
+Nc = 27
+Ns = 108
 
 
 # [A]
-I_f = 416.897
-I_a = 6.1654 * 1e3
+I_f = 1.1527 * 1e3
+I_a = 5.9685 * 1e3
 
 
 # [m]
 hp = 0.0481
-hyr = 0.0462
-tau_p = 0.2485 
-wp = 0.0982 
-wp_side = 0.012
+hyr = 0.0757
+tau_p = 0.3322 
+wp = 0.139 
+wp_side = 0.012 
 
-l_i = 1.2003 # lfe = 1.1173 # L = 1.2023 
-rri = 2.9532 
-rro = rri + hyr + hp # == 3.0475 
-r_f = rro 
-# rdelta = 3.0661
-r_a = 3.0847
-rsi = 3.0847
-rso = 3.2543
- 
+l_i = 0.7691 # lfe = 0.686 # L = 0.771 
+rri = 2.9054 
+rro = rri + hyr # == 2.9811
+r_f = rro + hp/2
+# rdelta = 3.0478
+r_a = 3.0664
+rsi = 3.0664
+rso = 3.2126
+
 
 # Rotor Winding Factor
-# breadth factor
 sigma_r = (tau_p - wp - wp_side) / tau_p
-kr_b = kb(n=1, sigma=sigma_r)
+kr_b = kb(n=1, sigma=sigma_r) # breadth factor
 
 
 # Stator Winding Factor
 ks_d = kd(m=m, q=q) # zone factor 
-ks_p = kp(w=5, tp=6) # pitching factor
+ks_p = kp(w=6, tp=6) # pitching factor
 
 # [A/m]
-# A_r = K(m=1, I=I_f, d=2*r_f, N=2*p*Nf) # 1 layer field winding
-A_r = K(m=1, I=I_f, d=2*r_f, N=2*2*p*Nf) # 2 layer field winding
-A_s = K(m=m, I=I_a, d=2*r_a, N=Ns) # given: A_s=1.6987*1e5 [A/m]
+A_r = K(m=1, I=I_f, d=2*r_f, N=2*p*Nf) # 1 layer field winding
+# A_r = K(m=1, I=I_f, d=2*r_f, N=2*2*p*Nf) # 2 layer field winding
+A_s = K(m=m, I=I_a, d=2*r_a, N=Ns) # given: A_s=2.0074*1e5 [A/m]
 
 A_r_amplitude = np.sqrt(2) * A_r * kr_b
-A_s_amplitude = np.sqrt(2) * A_s * ks_d * ks_p # np.sin((pi/2) * (5/6))
+A_s_amplitude = np.sqrt(2) * A_s * ks_d * ks_p 
 
 
 n_syn = 8.33   # [rpm]
 
 # [rad/s]
 w_syn = 0.8723 
-gamma = 2.9044
 alpha_f = pi * 0.5
 alpha_a = pi * 0.0
 
@@ -127,7 +126,7 @@ print(f"{Bmax = } [T]")
 #%% -------------------- create plots --------------------
 plt = PlanePlot(model, fgsz=150)
 # plt.contour(dr=1000, dt=1000, style="jet")
-# plt.fluxplot(dr=1000, dt=1000, lvls=15)
+plt.fluxplot(dr=1000, dt=1000, lvls=15)
 
 rmp = RadialMultiPlot(model)
 # rmp.multiplot(["Az", "Br", "Ht"])
@@ -142,7 +141,7 @@ if False:
     for i in x_angle:
         alpha_f = i
     
-        model = Model(p=p, l=lfe)
+        model = Model(p=p, l=l_i)
         
         # Air -| |- Iron -| |- Air -|k|- Air -|k|s- Iron -||- Env 
         
