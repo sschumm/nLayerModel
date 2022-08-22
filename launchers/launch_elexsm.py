@@ -46,7 +46,7 @@ model.total_torque()
 
 # -------- output -------- 
 print("x =", model.x, "\n")
-print("M =", model.M, "\n")
+print("M =", model.Mneg, "\n")
 
 rM_plot = RadialMultiPlot(model)
 rM_plot.set_Az_details(title="Az")
@@ -56,7 +56,9 @@ rM_plot.set_Ht_details(title="Ht")
 # rM_plot.multiplot(["Az", "Br"])
 
 p_plot = PlanePlot(model)
-p_plot.contour(dr=400, dt=200, style="black")
+# p_plot.contour(dr=400, dt=200, style="black")
+p_plot.contour(dr=400, dt=200, style="jet")
+p_plot.fluxplot(dr=400, dt=200)
 # p_plot.streamplot(dr=400, dt=200)
 
 pd_plot = PlaneDoublePlot(model)
