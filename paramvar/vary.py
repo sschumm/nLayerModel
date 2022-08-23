@@ -1,0 +1,81 @@
+# -*- coding: utf-8 -*-
+#%% imports
+import numpy as np
+np.set_printoptions(suppress=True, linewidth=250, precision=2)
+
+from scipy.constants import pi
+
+from modules.model import Model
+from modules.layer import MagneticLayer, AirLayer, CurrentLoading
+from modules.plot.radial import RadialMultiPlot
+from modules.plot.plane import PlanePlot
+
+from analytics.precalcs import kb, kd, kp, K, taup
+
+from data.specs import Generator as gn
+from data.specs import StatorWinding_Cu as sw
+from data.specs import FieldWinding as fw
+
+#%% init static variables
+
+p = 20
+
+# selected dimensions
+l = 2
+h_ys = 0.15 # [m]
+h_yr = 0.05 # [m]
+h_ws = 0.001 # [m]
+h_wr = 0.001 # [m]
+
+# derived dimensions
+d_so = np.sqrt(sw.d2so_L/l)
+r_so = d_so * 0.5
+r_si = r_so - h_ys
+r_ro = r_si - gn.delta_mag
+r_ri = r_ro - h_yr
+
+r_f = r_ro + 0.5 * h_wr
+r_a = r_si - 0.5 * h_ws
+
+tau_p = taup(d_si=r_si*2, p=p)
+print(f"{tau_p/gn.delta_mag = }, should be > 3")
+
+# load angle
+alpha_f = pi * 0.5
+alpha_a = pi * 0.0
+
+
+
+#%% define model
+def iterate_model():
+    
+    model = Model(p=p, l=l)
+
+    # Air -| |- Iron -| |- Air -|k|- Air -|k|s- Iron -| |- Env 
+
+    model.add_layer(AirLayer(r=r_ri))
+    model.add_layer(MagneticLayer(r=r_ro, 
+                                  mu_r=gn.mu_r_yoke))
+    model.add_layer(CurrentLoading(K=A_r_amplitude, 
+                                   r=r_f, 
+                                   alpha=alpha_f, 
+                                   mu_r=1
+                                   ))
+    model.add_layer(CurrentLoading(K=A_s_amplitude,
+                                   r=r_a,
+                                   alpha=alpha_a,
+                                   mu_r=1.
+                                   ))
+    # model.add_layer(AirLayer(r=rsi))
+    model.add_layer(MagneticLayer(r=r_so, 
+                                  mu_r=gn.mu_r_yoke))
+
+    model.build()
+    model.solve()
+    model.total_torque()
+
+
+#%% iterate
+
+iterate_model()
+
