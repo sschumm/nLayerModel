@@ -16,9 +16,6 @@ def kp(w, tp, n=1):
 # breadth factor
 def kb(n, sigma):
     return np.sinc(n * sigma/2)
-    # num = np.sin(n * sigma/2)
-    # den = n * sigma/2
-    # return num / den
 
 # current loading
 def K(m, I, d, N):
@@ -26,6 +23,11 @@ def K(m, I, d, N):
     den = pi * d
     return num / den
 
+# pole pitch
+def taup(d_si, p):
+    num = d_si * pi
+    den = 2 * p
+    return num / den
 
 def q(Q, m, p):
     num = Q

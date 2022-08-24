@@ -3,7 +3,8 @@
 from scipy.constants import pi
 
 class Generator():
-
+    
+    m = 3
     Pel_out = 7 * 1e6  # == 7 [MW]
     n_syn = 8.33       # [rpm]
     w_syn = 0.8723     # [rad/s]        
@@ -25,7 +26,7 @@ class StatorWinding_Cu():
     J_e = 3.8 # [A/mm2] - current density
     C_e = 37.71 # [kVA min/m3] - Essons Number - electromagnetic utilization
     d2so_L = 22.28 # [m3]
-    V_ges = pi/4 * d2so_L
+    V_ges = pi/4 * d2so_L # [m3]
 
     
 class StatorWinding_77K():

@@ -44,15 +44,32 @@ print(f"{tau_p/gn.delta_mag = }, should be > 3")
 alpha_f = pi * 0.5
 alpha_a = pi * 0.0
 
+# winding numbers
+Nf = 50
+Ns = 100
+
+# rotor winding factor
+kr_w = 1
+
+# stator winding factor
+ks_w = 1
+
+# currents
+I_f = 2e3
+I_a = 1e3
+
+# current loadings
+A_r = K(m=1, I=I_f, d=2*r_f, N=2*p*Nf)
+A_s = K(m=gn.m, I=I_a, d=2*r_a, N=Ns)
+
+A_r_amplitude = np.sqrt(2) * kr_w * A_r
+A_s_amplitude = np.sqrt(2) * ks_w * A_s
+
 
 
 #%% define model
-def iterate_model():
-    
+def iterate_model():    
     model = Model(p=p, l=l)
-
-    # Air -| |- Iron -| |- Air -|k|- Air -|k|s- Iron -| |- Env 
-
     model.add_layer(AirLayer(r=r_ri))
     model.add_layer(MagneticLayer(r=r_ro, 
                                   mu_r=gn.mu_r_yoke))
@@ -66,16 +83,18 @@ def iterate_model():
                                    alpha=alpha_a,
                                    mu_r=1.
                                    ))
-    # model.add_layer(AirLayer(r=rsi))
+    model.add_layer(AirLayer(r=r_si))
     model.add_layer(MagneticLayer(r=r_so, 
                                   mu_r=gn.mu_r_yoke))
-
     model.build()
     model.solve()
     model.total_torque()
+    return model
 
 
 #%% iterate
 
-iterate_model()
+i_model = iterate_model()
+P_el_out = gn.w_syn * i_model.Mneg / 1e6
+print(f"{P_el_out = } [MW]")
 
