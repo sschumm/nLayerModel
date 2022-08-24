@@ -16,59 +16,56 @@ from data.specs import Generator as gn
 from data.specs import StatorWinding_Cu as sw
 from data.specs import FieldWinding as fw
 
-#%% init static variables
-
-p = 20
-
-# selected dimensions
-l = 2
-h_ys = 0.15 # [m]
-h_yr = 0.05 # [m]
-h_ws = 0.001 # [m]
-h_wr = 0.001 # [m]
-
-# derived dimensions
-d_so = np.sqrt(sw.d2so_L/l)
-r_so = d_so * 0.5
-r_si = r_so - h_ys
-r_ro = r_si - gn.delta_mag
-r_ri = r_ro - h_yr
-
-r_f = r_ro + 0.5 * h_wr
-r_a = r_si - 0.5 * h_ws
-
-tau_p = taup(d_si=r_si*2, p=p)
-print(f"{tau_p/gn.delta_mag = }, should be > 3")
-
-# load angle
-alpha_f = pi * 0.5
-alpha_a = pi * 0.0
-
-# winding numbers
-Nf = 50
-Ns = 100
-
-# rotor winding factor
-kr_w = 1
-
-# stator winding factor
-ks_w = 1
-
-# currents
-I_f = 2e3
-I_a = 1e3
-
-# current loadings
-A_r = K(m=1, I=I_f, d=2*r_f, N=2*p*Nf)
-A_s = K(m=gn.m, I=I_a, d=2*r_a, N=Ns)
-
-A_r_amplitude = np.sqrt(2) * kr_w * A_r
-A_s_amplitude = np.sqrt(2) * ks_w * A_s
-
-
-
-#%% define model
-def iterate_model():    
+# define model
+def iterate_model(p, l):    
+    # ---------------- adjust params -------------------
+    p = p
+    
+    # selected dimensions
+    l = l
+    h_ys = 0.15 # [m]
+    h_yr = 0.05 # [m]
+    h_ws = 0.001 # [m]
+    h_wr = 0.001 # [m]
+    
+    # derived dimensions
+    d_so = np.sqrt(sw.d2so_L/l)
+    r_so = d_so * 0.5
+    r_si = r_so - h_ys
+    r_ro = r_si - gn.delta_mag
+    r_ri = r_ro - h_yr
+    
+    r_f = r_ro + 0.5 * h_wr
+    r_a = r_si - 0.5 * h_ws
+    
+    tau_p = taup(d_si=r_si*2, p=p)
+    # print(f"{tau_p/gn.delta_mag = }, should be > 3")
+    
+    # load angle
+    alpha_f = pi * 0.5
+    alpha_a = pi * 0.0
+    
+    # winding numbers
+    Nf = 50
+    Ns = 100
+    
+    # rotor winding factor
+    kr_w = 1
+    
+    # stator winding factor
+    ks_w = 1
+    
+    # currents
+    I_f = 2e3
+    I_a = 1e3
+    
+    # current loadings
+    A_r = K(m=1, I=I_f, d=2*r_f, N=2*p*Nf)
+    A_s = K(m=gn.m, I=I_a, d=2*r_a, N=Ns)
+    
+    A_r_amplitude = np.sqrt(2) * kr_w * A_r
+    A_s_amplitude = np.sqrt(2) * ks_w * A_s
+    # ---------------- build model ---------------------
     model = Model(p=p, l=l)
     model.add_layer(AirLayer(r=r_ri))
     model.add_layer(MagneticLayer(r=r_ro, 
@@ -92,9 +89,22 @@ def iterate_model():
     return model
 
 
-#%% iterate
+#%% vary generator length
 
-i_model = iterate_model()
-P_el_out = gn.w_syn * i_model.Mneg / 1e6
-print(f"{P_el_out = } [MW]")
+poles = np.arange(20,30)
+lengths = np.linspace(1,3,10)
+p_el_out = np.zeros((poles.shape[0], lengths.shape[0]))
+for i, pole in enumerate(poles):
+    for j, length in enumerate(lengths):
+        i_model = iterate_model(p=pole, l=length)
+        P_el_out = gn.w_syn * i_model.Mneg / 1e6
+        p_el_out[i,j] = P_el_out
+        print(f"{P_el_out = } [MW] with {length = } [m] and {pole = }.")
+        
 
+
+import matplotlib.pyplot as plt
+plt.figure(figsize=(10, 7))
+c = plt.contourf(lengths, poles, p_el_out,
+                 levels=100)
+plt.colorbar(c)
