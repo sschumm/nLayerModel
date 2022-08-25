@@ -17,9 +17,9 @@ from data.specs import StatorWinding_Cu as sw
 from data.specs import FieldWinding as fw
 
 # define model
-def iterate_model(p, l):    
+def iterate_model(l):    
     # ---------------- adjust params -------------------
-    p = p
+    p = 20
     
     # selected dimensions
     l = l
@@ -86,25 +86,30 @@ def iterate_model(p, l):
     model.build()
     model.solve()
     model.total_torque()
-    return model
+    return model, d_so
 
 
 #%% vary generator length
 
-poles = np.arange(20,30)
-lengths = np.linspace(1,3,10)
-p_el_out = np.zeros((poles.shape[0], lengths.shape[0]))
-for i, pole in enumerate(poles):
-    for j, length in enumerate(lengths):
-        i_model = iterate_model(p=pole, l=length)
-        P_el_out = gn.w_syn * i_model.Mneg / 1e6
-        p_el_out[i,j] = P_el_out
-        print(f"{P_el_out = } [MW] with {length = } [m] and {pole = }.")
-        
+lengths = list(np.linspace(1,5,10))
+diams = list()
+p_el_out = list()
 
+for length in lengths:
+    i_model, diam = iterate_model(length)
+    P_el_out = gn.w_syn * i_model.Mneg / 1e6
+    diams.append(diam)
+    p_el_out.append(P_el_out)
 
 import matplotlib.pyplot as plt
+from mpl_toolkits import mplot3d
+
 plt.figure(figsize=(10, 7))
-c = plt.contourf(lengths, poles, p_el_out,
-                 levels=100)
-plt.colorbar(c)
+# c = plt.contourf(lengths, poles, p_el_out,
+#                  levels=100)
+# plt.colorbar(c)
+ax = plt.axes(projection="3d")
+ax.plot3D(lengths, diams, p_el_out)
+ax.set_xlabel("Generator Length")
+ax.set_ylabel("Generator Diameter")
+ax.set_zlabel("Power Output")
