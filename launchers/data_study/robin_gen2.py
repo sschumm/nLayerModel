@@ -49,6 +49,7 @@ rso = 3.2126
 
 # Rotor Winding Factor
 sigma_r = (tau_p - wp - wp_side) / tau_p
+sigma_r = ((tau_p - wp - wp_side) / tau_p) * 2
 kr_b = kb(n=1, sigma=sigma_r) # breadth factor
 
 
@@ -58,7 +59,7 @@ ks_p = kp(w=6, tp=6) # pitching factor
 
 # [A/m]
 A_r = K(m=1, I=I_f, d=2*r_f, N=2*p*Nf) # 1 layer field winding
-# A_r = K(m=1, I=I_f, d=2*r_f, N=2*2*p*Nf) # 2 layer field winding
+A_r = K(m=1, I=I_f, d=2*r_f, N=2*2*p*Nf) # 2 layer field winding
 A_s = K(m=m, I=I_a, d=2*r_a, N=Ns) # given: A_s=2.0074*1e5 [A/m]
 
 A_r_amplitude = np.sqrt(2) * A_r * kr_b
@@ -126,7 +127,7 @@ print(f"{Bmax = } [T]")
 #%% -------------------- create plots --------------------
 plt = PlanePlot(model, fgsz=150)
 # plt.contour(dr=1000, dt=1000, style="jet")
-plt.fluxplot(dr=1000, dt=1000, lvls=15)
+# plt.fluxplot(dr=1000, dt=1000, lvls=15)
 
 rmp = RadialMultiPlot(model)
 # rmp.multiplot(["Az", "Br", "Ht"])

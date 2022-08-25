@@ -91,7 +91,7 @@ def iterate_model(l):
 
 #%% vary generator length
 
-lengths = list(np.linspace(1,5,10))
+lengths = list(np.linspace(1,5,100))
 diams = list()
 p_el_out = list()
 
@@ -104,7 +104,7 @@ for length in lengths:
 import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
 
-plt.figure(figsize=(10, 7))
+plt.figure(figsize=(15, 15))
 # c = plt.contourf(lengths, poles, p_el_out,
 #                  levels=100)
 # plt.colorbar(c)
