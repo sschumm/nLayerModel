@@ -31,25 +31,32 @@ I_a = 5.9685 * 1e3
 
 
 # [m]
-hp = 0.0481
-hyr = 0.0757
 tau_p = 0.3322 
+tau_Q = 0.0554
+hyr = 0.0757
+hys = 0.0635
+
+hp = 0.0481
 wp = 0.139 
-wp_side = 0.012 
+wp_side = 0.012
+
+hQ = 0.0827 
+bQ = 0.0471
+
+
 
 l_i = 0.7691 # lfe = 0.686 # L = 0.771 
 rri = 2.9054 
 rro = rri + hyr # == 2.9811
-r_f = rro + hp/2
+r_f = rro + hp
 # rdelta = 3.0478
-r_a = 3.0664
-rsi = 3.0664
 rso = 3.2126
+rsi = rso - hys # given: 3.0664 - but:   rso-hys == 3.1491
+r_a = rsi - hQ/2 # given: 3.0664 - but:  rso-hys-hQ/2 == 3.10775
 
 
 # Rotor Winding Factor
-sigma_r = (tau_p - wp - wp_side) / tau_p
-sigma_r = ((tau_p - wp - wp_side) / tau_p) * 2
+sigma_r = bQ / tau_Q
 kr_b = kb(n=1, sigma=sigma_r) # breadth factor
 
 
@@ -58,8 +65,7 @@ ks_d = kd(m=m, q=q) # zone factor
 ks_p = kp(w=6, tp=6) # pitching factor
 
 # [A/m]
-A_r = K(m=1, I=I_f, d=2*r_f, N=2*p*Nf) # 1 layer field winding
-A_r = K(m=1, I=I_f, d=2*r_f, N=2*2*p*Nf) # 2 layer field winding
+A_r = K(m=1, I=I_f, d=2*r_f, N=2*2*p*Nf) 
 A_s = K(m=m, I=I_a, d=2*r_a, N=Ns) # given: A_s=2.0074*1e5 [A/m]
 
 A_r_amplitude = np.sqrt(2) * A_r * kr_b
@@ -103,10 +109,10 @@ model.total_torque()
 
 #%% -------------------- evaluation --------------------
 
-print(f"{A_r = } [A/m]")
-print(f"{A_s = } [A/m]")
-print(f"{A_r_amplitude = } [A/m]")
-print(f"{A_s_amplitude = } [A/m]")
+# print(f"{A_r = } [A/m]")
+# print(f"{A_s = } [A/m]")
+# print(f"{A_r_amplitude = } [A/m]")
+# print(f"{A_s_amplitude = } [A/m]")
 
 # [MW]
 P_out_target = -7
@@ -122,7 +128,7 @@ print(f"{Torque = } [MN]")
 # [T]
 B = model.get_B_data(np.linspace(rri, rso, 1000), np.linspace(0, 2*pi, 1000))
 Bmax = np.max(np.sqrt(B.Br**2 + B.Bt**2))
-print(f"{Bmax = } [T]")
+# print(f"{Bmax = } [T]")
 
 #%% -------------------- create plots --------------------
 plt = PlanePlot(model, fgsz=150)
