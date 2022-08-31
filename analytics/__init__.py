@@ -1,7 +1,3 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Sat Jul 23 14:59:56 2022
-
-@author: svens
-"""
-
+from .dimensioning import K_from, B_from, Phi_from
+from .precalcs import kb, kd, kp, K, taup
