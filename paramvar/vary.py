@@ -12,9 +12,9 @@ from modules.plot.plane import PlanePlot
 
 from analytics.precalcs import kb, kd, kp, K, taup
 
-from data.specs import Generator as gn
-from data.specs import StatorWinding_Cu as sw
-from data.specs import FieldWinding as fw
+from data import Generator as gn
+from data import StatorWinding_Cu as sw
+from data import FieldWinding as fw
 
 # define model
 def iterate_model(l):    
