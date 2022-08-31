@@ -42,7 +42,7 @@ rso = 2.05
 # breadth factor, params taken from fig. 2
 coil_width = 0.12 # [m]
 coil_side_distance = 0.18 # [m]
-sigma_r = coil_width / (coil_width+coil_side_distance)
+sigma_r = coil_width / (coil_width+coil_side_distance) # maybe better: coil_width*2/(r_f*pi/p)
 kr_b = kb(n=1, sigma=sigma_r)
 
 # Stator Winding Factor

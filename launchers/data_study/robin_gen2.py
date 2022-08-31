@@ -47,8 +47,8 @@ bQ = 0.0471
 
 l_i = 0.7691 # lfe = 0.686 # L = 0.771 
 rri = 2.9054 
-rro = rri + hyr # == 2.9811
-r_f = rro + hp
+rro = rri + hyr + hp # == 3.0292
+r_f = rro
 # rdelta = 3.0478
 rso = 3.2126
 rsi = rso - hys # given: 3.0664 - but:   rso-hys == 3.1491
@@ -56,7 +56,7 @@ r_a = rsi - hQ/2 # given: 3.0664 - but:  rso-hys-hQ/2 == 3.10775
 
 
 # Rotor Winding Factor
-sigma_r = bQ / tau_Q
+sigma_r = (tau_p - wp - wp_side) / tau_p
 kr_b = kb(n=1, sigma=sigma_r) # breadth factor
 
 
@@ -69,7 +69,7 @@ A_r = K(m=1, I=I_f, d=2*r_f, N=2*2*p*Nf)
 A_s = K(m=m, I=I_a, d=2*r_a, N=Ns) # given: A_s=2.0074*1e5 [A/m]
 
 A_r_amplitude = np.sqrt(2) * A_r * kr_b
-A_s_amplitude = np.sqrt(2) * A_s * ks_d * ks_p 
+A_s_amplitude = np.sqrt(2) * A_s * ks_d * ks_p
 
 
 n_syn = 8.33   # [rpm]
@@ -84,7 +84,7 @@ alpha_a = pi * 0.0
 
 model = Model(p=p, l=l_i)
 
-# Air -| |- Iron -| |- Air -|k|- Air -|k|s- Iron -||- Env 
+# Air -| |- Iron -| |- Air -|k|- Air -|k|- Air -| |- Iron -| |- Env 
 
 model.add_layer(AirLayer(r=rri))
 model.add_layer(MagneticLayer(r=rro, 
@@ -99,7 +99,7 @@ model.add_layer(CurrentLoading(K=A_s_amplitude,
                                alpha=alpha_a,
                                mu_r=1.
                                ))
-# model.add_layer(AirLayer(r=rsi))
+model.add_layer(AirLayer(r=rsi))
 model.add_layer(MagneticLayer(r=rso, 
                               mu_r=mu_r))
 
