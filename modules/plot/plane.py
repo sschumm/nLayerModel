@@ -59,7 +59,7 @@ class PlanePlot():
                                      edgecolor = edgecolor,
                                      facecolor = facecolor, 
                                      linestyle = "-",
-                                     linewidth = 0.25 * self.fgsz, 
+                                     linewidth = 0.1 * self.fgsz, 
                                      alpha=0.7))
 
     

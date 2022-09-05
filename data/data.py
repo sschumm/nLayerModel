@@ -34,7 +34,7 @@ class StatorWinding_77K():
     T_HTS = 77 # [K] - LN2 - Liquid Nitrogen
     J_e = 11.8e6 # [A/m2] == 20/1.7 ~ 11.8 [A/mm2] - engineering current density
     C_e = 0.5*117*60*1e3 # [VAs/m3] == 0.5 * 117 [kVA min/m3] - Essons Number - electromagnetic utilization
-    d2so_L = 11.28 # [m3]
+    d2so_L = 15 # [m3]
     
     
 class StatorWinding_30K():
