@@ -142,7 +142,7 @@ if False:
     for i in x_angle:
         alpha_f = i
     
-        model = Model(p=p, l=lfe)
+        model = Model(p=p, l=l_i)
         
         # Air -| |- Iron -| |- Air -|k|- Air -|k|s- Iron -||- Env 
         

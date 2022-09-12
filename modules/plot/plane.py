@@ -59,7 +59,7 @@ class PlanePlot():
                                      edgecolor = edgecolor,
                                      facecolor = facecolor, 
                                      linestyle = "-",
-                                     linewidth = 0.25 * self.fgsz, 
+                                     linewidth = 0.1 * self.fgsz, 
                                      alpha=0.7))
 
     
@@ -138,12 +138,16 @@ class PlanePlot():
         print("INFO: finished contour.")
         
     
-    def quiver(self, dr, dt):
+    def quiver(self, dr, dt, **kwargs):
         fig, ax = self._set_up_plot()
         self._set_plot_dims(ax)
         self._set_machine_dims(ax)
         
-        r = np.linspace(0, self.r_max, dr)
+        scale = kwargs.get("scale", None)
+        width = kwargs.get("width", None)
+        
+        # r = np.linspace(0, self.r_max, dr)
+        r = np.linspace(min(self.m.radii), max(self.m.radii), dr)
         t = np.linspace(0, 2*pi, dt)
         
         print("INFO: computing quiver...")
@@ -152,7 +156,9 @@ class PlanePlot():
         intensity = np.sqrt(d.U**2 + d.V**2)
     
         ax.quiver(d.X, d.Y, d.U, d.V, intensity,
-                  cmap=strp_winter) # color="b")
+                  cmap=flux, 
+                  scale=scale, 
+                  width=width) # color="b")
         print("INFO: finished quiver.")
         
         
