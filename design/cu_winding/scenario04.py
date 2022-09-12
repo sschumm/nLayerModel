@@ -172,5 +172,26 @@ plt_iter.quiver(dr=20, dt=200, scale=100, width = 0.001)
 
 
 
+# lengths = list(np.linspace(1,5,100))
+# diams = list()
+# p_el_out = list()
 
+# for length in lengths:
+#     i_model, diam = iterate_model(length)
+#     P_el_out = gn.w_syn * i_model.Mneg / 1e6
+#     diams.append(diam)
+#     p_el_out.append(P_el_out)
+
+# import matplotlib.pyplot as plt
+# from mpl_toolkits import mplot3d
+
+# plt.figure(figsize=(15, 15))
+# # c = plt.contourf(lengths, poles, p_el_out,
+# #                  levels=100)
+# # plt.colorbar(c)
+# ax = plt.axes(projection="3d")
+# ax.plot3D(lengths, diams, p_el_out)
+# ax.set_xlabel("Generator Length")
+# ax.set_ylabel("Generator Diameter")
+# ax.set_zlabel("Power Output")
 
