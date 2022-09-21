@@ -1,6 +1,7 @@
 import numpy as np
 from modules import Model, MagneticLayer, AirLayer, CurrentLoading
 from modules.plot import PlanePlot
+from analytics import taup
 from data import Generator as gn
 
 
@@ -27,7 +28,7 @@ def create_n_Layer_model(dims, p, l, Ks=False, Kr=False, **kwargs):
                                     mu_r=1.
                                     ))
     else:
-        Kr = None
+        Kr = 0
     if Ks:
         mdl.add_layer(CurrentLoading(K=Ks*np.sqrt(2),
                                     r=r_sA,
@@ -35,7 +36,7 @@ def create_n_Layer_model(dims, p, l, Ks=False, Kr=False, **kwargs):
                                     mu_r=1.
                                     ))
     else:
-        Ks = None
+        Ks = 0
     if is_stator_aircore:
         mdl.add_layer(AirLayer(r=r_si))
     else:
@@ -45,10 +46,12 @@ def create_n_Layer_model(dims, p, l, Ks=False, Kr=False, **kwargs):
     mdl.build()
     mdl.solve()
     mdl.total_torque()
-    p_plt = PlanePlot(mdl)
+    p_plt = PlanePlot(mdl, fgsz=100)
     res = Main_Results(mdl.Mpos, mdl.Mpos*gn.w_syn, Kr, Ks, 
-                       h_wdng_r=r_rF-r_ro, h_wdng_s=r_si-r_sA,
-                       h_yoke_r=r_ro-r_ri, h_yoke_s=r_so-r_si)
+                       h_wdng_r=2*(r_rF-r_ro), 
+                       h_wdng_s=2*(r_si-r_sA),
+                       h_yoke_r=r_ro-r_ri, 
+                       h_yoke_s=r_so-r_si)
     return mdl, p_plt, res
 
 
@@ -63,11 +66,18 @@ class Main_Params():
         self.k_fill_r = k_fill_r
         self.k_fill_s = k_fill_s
         self.B_yoke_max = B_yoke_max
+        self.pole_pitch = taup(d_si = 2 * self.r_si, p = self.p)
         
     def show(self, header="Main_Params"):
         print("---", header, "---")
-        print(f"p   = {self.p}")
+        print(f"p   = {self.p} [-]")
         print(f"l_e = {np.round(self.l_e, 3)} [m]")
+        print(f"r_so = {np.round(self.r_so, 3)} [m]")
+        print(f"r_si = {np.round(self.r_si, 3)} [m]")
+        print(f"k_fill_r = {np.round(self.k_fill_r, 3)} [-]")
+        print(f"k_fill_s = {np.round(self.k_fill_s, 3)} [-]")
+        print(f"B_yoke_max = {np.round(self.B_yoke_max, 3)} [T]")
+        print(f"pole_pitch = {np.round(self.pole_pitch, 3)} [m]")
         
         
 
@@ -83,12 +93,12 @@ class Main_Dims():
      
     def show(self, header="Main_Dims"):
         print("---", header, "---")
-        print(f"r_so = {np.round(self.r_so, 3)} [m]")
-        print(f"r_si = {np.round(self.r_si, 3)} [m]")
-        print(f"r_sA = {np.round(self.r_sA, 3)} [m]")
-        print(f"r_rF = {np.round(self.r_rF, 3)} [m]")
-        print(f"r_ro = {np.round(self.r_ro, 3)} [m]")
-        print(f"r_ri = {np.round(self.r_ri, 3)} [m]")
+        print(f"r_so = {np.round(self.r_so, 4)} [m]")
+        print(f"r_si = {np.round(self.r_si, 4)} [m]")
+        print(f"r_sA = {np.round(self.r_sA, 4)} [m]")
+        print(f"r_rF = {np.round(self.r_rF, 4)} [m]")
+        print(f"r_ro = {np.round(self.r_ro, 4)} [m]")
+        print(f"r_ri = {np.round(self.r_ri, 4)} [m]")
         
         
 class Main_Results():
@@ -98,18 +108,18 @@ class Main_Results():
         self.P = np.round(P, 2)
         self.K_r = np.round(K_r, 2)
         self.K_s = np.round(K_s, 2)
-        self.h_wdng_r = np.round(h_wdng_r, 2)
-        self.h_wdng_s = np.round(h_wdng_s, 2)                 
-        self.h_yoke_r = np.round(h_yoke_r, 2)
-        self.h_yoke_s = np.round(h_yoke_s, 2)
+        self.h_wdng_r = np.round(h_wdng_r, 4)
+        self.h_wdng_s = np.round(h_wdng_s, 4)                 
+        self.h_yoke_r = np.round(h_yoke_r, 4)
+        self.h_yoke_s = np.round(h_yoke_s, 4)
     
          
     def show(self, header="Main_Results"):
         print("---", header, "---")
-        print(f"M = {self.M} [m]")
-        print(f"P = {self.P} [m]")
-        print(f"K_r = {self.K_r} [A/m]")
-        print(f"K_s = {self.K_s} [A/m]")
+        print(f"M = {np.round(self.M * 1e-6, 2)} [MNm]")
+        print(f"P = {np.round(self.P * 1e-6, 2)} [MW]")
+        print(f"K_r = {np.round(self.K_r * 1e-3, 2)} [kA/m]")
+        print(f"K_s = {np.round(self.K_s * 1e-3, 2)} [kA/m]")
         print(f"h_wdng_r = {self.h_wdng_r} [m]")
         print(f"h_wdng_s = {self.h_wdng_s} [m]")
         print(f"h_yoke_r = {self.h_yoke_r} [m]")
