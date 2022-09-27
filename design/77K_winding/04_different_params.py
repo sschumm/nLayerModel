@@ -18,7 +18,7 @@ all_dims, all_models = [], []
 r_si, r_sA, r_rF, r_ro, r_ri = 0,0,0,0,0
 
 p = 20
-l_e = 0.5 # [m]
+l_e = 0.3 # [m]
 r_so = 0.5 * np.sqrt(sw.d2so_L/l_e)
 
 h_yoke_s = 0.02 * r_so
@@ -99,11 +99,11 @@ if False:
 
 #%%
 """ --- select K_r and with that h_yoke_r, h_wndg_r, h_yoke_s --- """
-K_r = 1270.4e3
+K_r = 1600e3
 h_wndg_r = K_r / (init_params.k_fill_r * fw.J_e)
 
-h_yoke_r = 0.0774
-h_yoke_s = 0.0618
+h_yoke_r = 0.1447
+h_yoke_s = 0.1243
 
 update_dimensions()
 """ --- 2. model --- """
@@ -141,7 +141,7 @@ if False:
     
 #%%    
 """ --- select K_s from slightly before tipping point --- """
-K_s = 600e3
+K_s = 400e3
 h_wndg_s = K_s / (init_params.k_fill_s * sw.J_e)
 
 update_dimensions()
@@ -158,7 +158,7 @@ if plot_nth_model:
 #%%
 """ 3. adaption: increase K_r to achieve power goal """
 if False:
-    for i in np.arange(1.4,1.5,0.02):
+    for i in np.arange(1.,1.3,0.04):
         K_ri = K_r * i
         h_wndg_r = K_ri / (init_params.k_fill_r * fw.J_e)
         
@@ -180,7 +180,7 @@ if False:
 
 #%%
 """ --- select K_s from slightly before tipping point --- """
-K_r = 1900e3
+K_r = 1800e3
 h_wndg_r = K_r / (init_params.k_fill_r * fw.J_e)
 
 update_dimensions()
@@ -224,13 +224,15 @@ for idx, mdls in enumerate(all_models):
     
 #%%
 """ fluxplot models """
-for mdls in all_models:
-    mdls[1].fluxplot(dr, dt, lvls=10)
+if plot_nth_model:    
+    for mdls in all_models:
+        mdls[1].fluxplot(dr, dt, lvls=10)
 
 #%%
 """ quiver models """
-for mdls in all_models:
-    mdls[1].quiver(dr=20, dt=200, scale=250, width=0.001)
+if plot_nth_model:
+    for mdls in all_models:
+        mdls[1].quiver(dr=20, dt=200, scale=250, width=0.001)
     
 #%%
 # all_models[-1][1].fluxplot(dr, dt, lvls=10)
