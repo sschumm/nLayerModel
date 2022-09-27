@@ -11,6 +11,8 @@ from data import StatorWinding_77K as sw
 from design import Main_Params, Main_Dims, Main_Results, create_n_Layer_model
 
 plot_nth_model = True
+if not plot_nth_model:
+    print("not plotting models...")
 
 r_so, l_e, dims = None, None, None
 mdl, plt, res = None, None, None
@@ -46,13 +48,14 @@ K_s = init_params.k_fill_s * sw.J_e * h_wndg_s
 K_r = init_params.k_fill_r * fw.J_e * h_wndg_r
 
 """ --- initial model --- """
-if plot_nth_model: all_dims.append(init_dims)
-mdl, plt, res = create_n_Layer_model(dims=init_dims,
-                                     p   =init_params.p, 
-                                     l   =init_params.l_e, 
-                                     Ks  =K_s,
-                                     Kr  =K_r)
-if plot_nth_model: all_models.append((mdl, plt, res))
+if plot_nth_model: 
+    all_dims.append(init_dims)
+    mdl, plt, res = create_n_Layer_model(dims=init_dims,
+                                         p   =init_params.p, 
+                                         l   =init_params.l_e, 
+                                         Ks  =K_s,
+                                         Kr  =K_r)
+    all_models.append((mdl, plt, res))
 
 
 """ --- 1. adaption: vary K_r to get an initial idea --- """
@@ -107,13 +110,14 @@ h_yoke_s = 0.0618
 
 update_dimensions()
 """ --- 2. model --- """
-if plot_nth_model: all_dims.append(Main_Dims(r_so, r_si, r_sA, r_rF, r_ro, r_ri))
-mdl, plt, res = create_n_Layer_model(dims=all_dims[-1], 
-                                      p   =init_params.p, 
-                                      l   =init_params.l_e,
-                                      Ks  =K_s,
-                                      Kr  =K_r)
-if plot_nth_model: all_models.append((mdl, plt, res))
+if plot_nth_model: 
+    all_dims.append(Main_Dims(r_so, r_si, r_sA, r_rF, r_ro, r_ri))
+    mdl, plt, res = create_n_Layer_model(dims=all_dims[-1], 
+                                          p   =init_params.p, 
+                                          l   =init_params.l_e,
+                                          Ks  =K_s,
+                                          Kr  =K_r)
+    all_models.append((mdl, plt, res))
 
 
 """ --- 2. adaption: increase K_s to find tipping point --- """
@@ -145,19 +149,74 @@ h_wndg_s = K_s / (init_params.k_fill_s * sw.J_e)
 
 update_dimensions()
 """ --- 3. model --- """
-if plot_nth_model: all_dims.append(Main_Dims(r_so, r_si, r_sA, r_rF, r_ro, r_ri))
-mdl, plt, res = create_n_Layer_model(dims=all_dims[-1], 
-                                      p   =init_params.p, 
-                                      l   =init_params.l_e,
-                                      Ks  =K_s,
-                                      Kr  =K_r)
-if plot_nth_model: all_models.append((mdl, plt, res))
+if plot_nth_model: 
+    all_dims.append(Main_Dims(r_so, r_si, r_sA, r_rF, r_ro, r_ri))
+    mdl, plt, res = create_n_Layer_model(dims=all_dims[-1], 
+                                          p   =init_params.p, 
+                                          l   =init_params.l_e,
+                                          Ks  =K_s,
+                                          Kr  =K_r)
+    all_models.append((mdl, plt, res))
 
 
 """ 3. adaption: increase K_r to achieve power goal """
+if False:
+    for i in np.arange(1.4,1.5,0.02):
+        K_ri = K_r * i
+        h_wndg_r = K_ri / (init_params.k_fill_r * fw.J_e)
+        
+        update_dimensions()
+        """ --- increase K_r model --- """
+        all_dims.append(Main_Dims(r_so, r_si, r_sA, r_rF, r_ro, r_ri))
+        mdl, plt, res = create_n_Layer_model(dims=all_dims[-1], 
+                                              p   =init_params.p, 
+                                              l   =init_params.l_e,
+                                              Ks  =K_s,
+                                              Kr  =K_ri)
+        all_models.append((mdl, plt, res))
+    pyplt.figure(dpi=1000)
+    pyplt.ticklabel_format(style='plain')
+    pyplt.xlabel("K_r [kA]")
+    pyplt.ylabel("P [MW]")
+    pyplt.scatter([m[2].K_r * 1e-3 for m in all_models],
+                  [m[2].P * 1e-6 for m in all_models]) 
+
+""" --- select K_s from slightly before tipping point --- """
+K_r = 1900e3
+h_wndg_r = K_r / (init_params.k_fill_r * fw.J_e)
+
+update_dimensions()
+""" --- 4. model --- """
+if plot_nth_model: 
+    all_dims.append(Main_Dims(r_so, r_si, r_sA, r_rF, r_ro, r_ri))
+    mdl, plt, res = create_n_Layer_model(dims=all_dims[-1], 
+                                          p   =init_params.p, 
+                                          l   =init_params.l_e,
+                                          Ks  =K_s,
+                                          Kr  =K_r)
+    all_models.append((mdl, plt, res))
 
 
+""" 4. adaption: adjust rotor yoke """
+if plot_nth_model: 
+    flux_data = mdl.get_B_data(r=np.array([r_rF]), 
+                               t=np.linspace(0,taup(2*r_si, init_params.p), 400))
+    flux_at_fw = np.max(np.abs(flux_data.Br))
+    flux_p_pole = Phi_from(flux_at_fw, 
+                           taup=taup(2*r_si, init_params.p), 
+                           l_e=init_params.l_e)
 
+    h_yoke_r = (0.5 * flux_p_pole) / (init_params.l_e * init_params.B_yoke_max)
+
+    update_dimensions()
+    """ --- 4. model --- """
+    all_dims.append(Main_Dims(r_so, r_si, r_sA, r_rF, r_ro, r_ri))
+    mdl, plt, res = create_n_Layer_model(dims=all_dims[-1], 
+                                          p   =init_params.p, 
+                                          l   =init_params.l_e,
+                                          Ks  =K_s,
+                                          Kr  =K_r)
+    all_models.append((mdl, plt, res))
 
 
 for idx, mdls in enumerate(all_models):
