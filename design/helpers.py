@@ -48,11 +48,13 @@ def create_n_Layer_model(dims, p, l, Ks=False, Kr=False, **kwargs):
     mdl.total_torque()
     p_plt = PlanePlot(mdl, fgsz=100)
     
+    airgap = r_ro + 2*(r_rF-r_ro) + 0.5 * ((r_si - 2*(r_si - r_sA)) - (r_ro + 2*(r_rF-r_ro)))
     
-    flux_data = mdl.get_B_data(r=np.array([r_rF, r_sA]), 
+    flux_data = mdl.get_B_data(r=np.array([r_rF, airgap, r_sA]), 
                                 t=np.linspace(0,taup(2*r_si, p), 400))
     B_r = np.max(np.abs(flux_data.Br[:, 0]))
-    B_s = np.max(np.abs(flux_data.Br[:, 1]))
+    B_airgap = np.max(np.abs(flux_data.Br[:, 1]))
+    B_s = np.max(np.abs(flux_data.Br[:, 2]))
     
     res = Main_Results(mdl.Mpos, mdl.Mpos*gn.w_syn, Kr, Ks, 
                        h_wdng_r=2*(r_rF-r_ro), 
@@ -60,6 +62,7 @@ def create_n_Layer_model(dims, p, l, Ks=False, Kr=False, **kwargs):
                        h_yoke_r=r_ro-r_ri, 
                        h_yoke_s=r_so-r_si,
                        B_r=B_r,
+                       B_airgap=B_airgap,
                        B_s=B_s)
     return mdl, p_plt, res
 
@@ -112,7 +115,7 @@ class Main_Dims():
         
 class Main_Results():
     
-    def __init__(self, M, P, K_r, K_s, h_wdng_r, h_wdng_s, h_yoke_r, h_yoke_s, B_r=None, B_s=None):
+    def __init__(self, M, P, K_r, K_s, h_wdng_r, h_wdng_s, h_yoke_r, h_yoke_s, B_r=None, B_airgap=None, B_s=None):
         self.M = np.round(M, 2)
         self.P = np.round(P, 2)
         self.K_r = np.round(K_r, 2)
@@ -122,6 +125,7 @@ class Main_Results():
         self.h_yoke_r = np.round(h_yoke_r, 4)
         self.h_yoke_s = np.round(h_yoke_s, 4)
         self.B_r = np.round(B_r, 4)
+        self.B_airgap = np.round(B_airgap, 4)
         self.B_s = np.round(B_s, 4)
     
          
@@ -136,6 +140,7 @@ class Main_Results():
         print(f"h_yoke_r = {self.h_yoke_r} [m]")
         print(f"h_yoke_s = {self.h_yoke_s} [m]")
         print(f"B_r = {self.B_r} [T]")
+        print(f"B_airgap = {self.B_airgap} [T]")
         print(f"B_s = {self.B_s} [T]")
         
     def show_B_r(self, header="B_r"):
@@ -143,3 +148,6 @@ class Main_Results():
         
     def show_B_s(self, header="B_s"):    
         print(f"B_s = {self.B_s} [T]")
+        
+    def show_B_airgap(self, header="B_airgap"):        
+        print(f"B_airgap = {self.B_airgap} [T]")
