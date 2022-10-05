@@ -19,7 +19,7 @@ dr, dt = 1000, 1000
 all_dims, all_models = [], []
 r_si, r_sA, r_rF, r_ro, r_ri = 0,0,0,0,0
 
-p = 25
+p = 30
 l_e = 0.4 # [m]
 r_so = 0.5 * np.sqrt(sw.d2so_L/l_e)
 
@@ -43,8 +43,8 @@ update_dimensions()
 init_params = Main_Params(p, l_e, r_so, r_si, k_fill_r=0.5, k_fill_s=0.5, B_yoke_max=6)
 init_dims = Main_Dims(r_so, r_si, r_sA, r_rF, r_ro, r_ri)
 
-J_e_s_init = sw.J_e * 0.8 # reduce given vals by factor
-J_e_r_init = fw.J_e * 0.3 # reduce given vals by factor 
+J_e_s_init = sw.J_e * 0.9 # reduce given vals by factor
+J_e_r_init = fw.J_e * 0.2 # reduce given vals by factor 
 
 K_s_init = init_params.k_fill_s * h_wndg_s * J_e_s_init
 K_r_init = init_params.k_fill_r * h_wndg_r * J_e_r_init
@@ -145,52 +145,98 @@ if True:
 K_s_static = K_s
 K_r_static = K_r
 
-""" --- find model with B dependent engineering current density --- """
-if True:
-    # --- find densities and loadings for B_airgap from lift factor ---
-    J_e_s = L(sw.T_HTS, res.B_airgap, 30) * Ic_0/(A_tape*1.7)
-    J_e_r = L(fw.T_HTS, res.B_airgap, 30) * Ic_0/(A_tape*1.7)    
-    K_s_lift = init_params.k_fill_s * J_e_s * h_wndg_s
-    K_r_lift = init_params.k_fill_r * J_e_r * h_wndg_r
-    
-    # --- print differences between init and lift densities and loadings ---
-    if False:
-        print("")
-        print(f"{J_e_s/1e6      = }, \n{J_e_r/1e6      = }")
-        print(f"{J_e_s_init/1e6 = }, \n{J_e_r_init/1e6 = }")
-        print(f"{K_s_lift/1e6   = }, \n{K_r_lift/1e6   = }")
-        print(f"{K_s_static/1e6 = }, \n{K_r_static/1e6 = }")
-    
+""" --- function to find K_s and K_r to fit critical current --- """
+def find_K_with_L(K_s_static, K_r_static, K_s_lift, K_r_lift, verbose = False):
     iter_lift_K_s_history = [K_s_static] * 9 + [K_s_lift]
     iter_lift_K_r_history = [K_r_static] * 9 + [K_r_lift]
     
-    for iter_idx_lift in range(100):
-        
+    for iter_idx_lift in range(100): 
         div = 10
         K_s = sum(iter_lift_K_s_history[-div:]) / div
         K_r = sum(iter_lift_K_r_history[-div:]) / div
-        
-        # print(K_s)
         
         mdl, plt, res = create_n_Layer_model(dims=Main_Dims(r_so, r_si, r_sA, r_rF, r_ro, r_ri), 
                                               p   =init_params.p, 
                                               l   =init_params.l_e,
                                               Ks  =K_s,
                                               Kr  =K_r)
-        
-        J_e_s = L(sw.T_HTS, res.B_airgap, 30) * Ic_0/(A_tape*1.7)
-        J_e_r = L(fw.T_HTS, res.B_airgap, 30) * Ic_0/(A_tape*1.7)    
-        K_s_lift = init_params.k_fill_s * J_e_s * h_wndg_s
-        K_r_lift = init_params.k_fill_r * J_e_r * h_wndg_r
-        
+          
+        K_s_lift = init_params.k_fill_s * L(sw.T_HTS, res.B_airgap, 30) * Ic_0/(A_tape*1.7) * h_wndg_s
+        K_r_lift = init_params.k_fill_r * L(fw.T_HTS, res.B_airgap, 30) * Ic_0/(A_tape*1.7) * h_wndg_r        
         iter_lift_K_s_history.append(K_s_lift)
         iter_lift_K_r_history.append(K_r_lift)
-        
     # --- plot convergence ---
-    if False:    
+    if verbose:    
         pyplt.figure(dpi=1000)
         pyplt.plot([i for i in range(len(iter_lift_K_s_history))], iter_lift_K_s_history)
         pyplt.plot([i for i in range(len(iter_lift_K_r_history))], iter_lift_K_r_history)
+    return K_s, K_r
+
+""" --- find model with B dependent engineering current density --- """
+if True:
+    
+    # --- find densities and loadings for B_airgap from lift factor ---
+    J_e_s = L(sw.T_HTS, res.B_airgap, 30) * Ic_0/(A_tape*1.7)
+    J_e_r = L(fw.T_HTS, res.B_airgap, 30) * Ic_0/(A_tape*1.7)    
+    K_s_lift = init_params.k_fill_s * J_e_s * h_wndg_s
+    K_r_lift = init_params.k_fill_r * J_e_r * h_wndg_r
+    
+    K_s, K_r = find_K_with_L(K_s_static, K_r_static, K_s_lift, K_r_lift)
         
-        
+    mdl, plt, res = create_n_Layer_model(dims=Main_Dims(r_so, r_si, r_sA, r_rF, r_ro, r_ri), 
+                                          p   =init_params.p, 
+                                          l   =init_params.l_e,
+                                          Ks  =K_s,
+                                          Kr  =K_r)
+    res.show("--- model with init dims and K_s, K_r with L(T,B,30°) ---")  
+    # plt.quiver(dr=20, dt=200, scale=250, width=0.001)
+    # plt.fluxplot(dr, dt, lvls=10)
     ...
+
+
+""" --- find model --- """
+if False:
+    for iter_idx_dynamic in range(14):
+        
+        mdl, plt, res = create_n_Layer_model(dims=Main_Dims(r_so, r_si, r_sA, r_rF, r_ro, r_ri), 
+                                              p   =init_params.p, 
+                                              l   =init_params.l_e,
+                                              Ks  =K_s,
+                                              Kr  =K_r)
+        J_e_r = L(fw.T_HTS, res.B_airgap, 30) * Ic_0/(A_tape*1.7) 
+        res.show_P(f"{iter_idx_dynamic = }")
+        
+        # --- adapt rotor current loading ---
+        if res.P < tolerance_upper * Pel_goal and res.P > tolerance_lower * Pel_goal:
+            res.show(f"{iter_idx_dynamic = }")
+            break
+        elif res.P < Pel_goal:
+            h_wndg_r *= 1.15
+            K_r = h_wndg_r * init_params.k_fill_r * J_e_r
+            update_dimensions()
+        else:
+            h_wndg_r *= 0.95
+            K_r = h_wndg_r * init_params.k_fill_r * J_e_r
+            update_dimensions()
+
+        
+    mdl, plt, res = create_n_Layer_model(dims=Main_Dims(r_so, r_si, r_sA, r_rF, r_ro, r_ri), 
+                                          p   =init_params.p, 
+                                          l   =init_params.l_e,
+                                          Ks  =K_s,
+                                          Kr  =K_r)
+    
+    J_e_s = L(sw.T_HTS, res.B_airgap, 30) * Ic_0/(A_tape*1.7)
+    J_e_r = L(fw.T_HTS, res.B_airgap, 30) * Ic_0/(A_tape*1.7)    
+    K_s_lift = init_params.k_fill_s * J_e_s * h_wndg_s
+    K_r_lift = init_params.k_fill_r * J_e_r * h_wndg_r
+    
+    K_s, K_r = find_K_with_L(K_s, K_r, K_s_lift, K_r_lift, verbose=True)
+
+    mdl, plt, res = create_n_Layer_model(dims=Main_Dims(r_so, r_si, r_sA, r_rF, r_ro, r_ri), 
+                                          p   =init_params.p, 
+                                          l   =init_params.l_e,
+                                          Ks  =K_s,
+                                          Kr  =K_r)
+    res.show()
+    
