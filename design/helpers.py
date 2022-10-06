@@ -144,13 +144,13 @@ class Main_Results():
         print(f"B_s = {self.B_s} [T]")
         
     def show_P(self, header="P"):
-        print(f"P = {self.P/1e6} [MW]")
+        print(f"--- {header} --> P = {self.P/1e6} [MW]")
         
     def show_B_r(self, header="B_r"):
-        print(f"B_r = {self.B_r} [T]")
+        print(f"--- {header} --> B_r = {self.B_r} [T]")
         
     def show_B_s(self, header="B_s"):    
-        print(f"B_s = {self.B_s} [T]")
+        print(f"--- {header} --> B_s = {self.B_s} [T]")
         
     def show_B_airgap(self, header="B_airgap"):        
-        print(f"B_airgap = {self.B_airgap} [T]")
+        print(f"--- {header} --> B_airgap = {self.B_airgap} [T]")
