@@ -17,7 +17,7 @@ class Generator():
 class FieldWinding():
     
     T_HTS = 30 # [K] - LNe - Liquid Neon
-    J_e = 11.8e6 # [A/m2] == 20/1.7 ~ 11.8 [A/mm2] - engineering current density
+    J_e = 158.8e6 # [A/m2] == 270/1.7 ~ 158.8 [A/mm2] - engineering current density
     
     
 class StatorWinding_Cu():

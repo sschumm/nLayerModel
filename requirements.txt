@@ -25,6 +25,7 @@ packaging @ file:///home/conda/feedstock_root/build_artifacts/packaging_16372396
 parso @ file:///home/conda/feedstock_root/build_artifacts/parso_1638334955874/work
 pickleshare @ file:///home/conda/feedstock_root/build_artifacts/pickleshare_1602536217715/work
 Pillow==9.2.0
+prettytable==3.4.1
 prompt-toolkit @ file:///home/conda/feedstock_root/build_artifacts/prompt-toolkit_1656332401605/work
 psutil @ file:///D:/bld/psutil_1653089392436/work
 Pygments @ file:///home/conda/feedstock_root/build_artifacts/pygments_1650904496387/work
