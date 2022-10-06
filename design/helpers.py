@@ -154,3 +154,12 @@ class Main_Results():
         
     def show_B_airgap(self, header="B_airgap"):        
         print(f"--- {header} --> B_airgap = {self.B_airgap} [T]")
+        
+    def get_some(self):
+        data = ""
+        data += f"P= {np.round(self.P * 1e-6, 2)} [MW]" + "\n"
+        data += f"B= {self.B_airgap} [T]" + "\n"
+        data += f"K_r= {np.round(self.K_r * 1e-3, 2)} [kA/m]" + "\n"
+        data += f"K_s= {np.round(self.K_s * 1e-3, 2)} [kA/m]" + "\n"
+        return data
+    
