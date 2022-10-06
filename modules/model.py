@@ -5,27 +5,32 @@ Created on Thu Jul 28 11:53:17 2022
 @author: svens
 """
 
-import copy
+import copy, math
 import numpy as np
 
 from scipy.constants import mu_0, pi
-from .continuities import c_Br, c_Ht
 from .layer import Layer, CurrentLoading, Environment
 from .utils import rt_to_xy, BrBt_to_UV
 from .submodel import SubModel
 
 
 class Model():
-    def __init__(self, p: int):
+    def __init__(self, p: int, l: float = 1.0):
         
         self.p = p
+        self.l = l
         
         self.layers = list()
         self.current_loadings = list()
         
+        self.radii = list()
+        self.mu_i_inv = list()
+        self.mu_o_inv = None
+        
         self.submodels = list()
         self.x = None
-        self.M = None
+        self.Mpos = None
+        self.Mneg = None
         
         
         
@@ -52,17 +57,17 @@ class Model():
             layer.idx = idx
             
         # create a submodel for each current loading
-        for idx, layer in enumerate(self.current_loadings):
+        for layer in self.current_loadings:
             layers = copy.deepcopy(self.layers)
             
-            for idx, lay in enumerate(layers):
+            for lay in layers:
                 if isinstance(lay, CurrentLoading) and (lay.idx != layer.idx):
                     lay.alpha = layer.alpha
                     lay.K = 0.
                 else:
                     lay.alpha = layer.alpha
                     
-            new_submodel = SubModel(self.p, layers)
+            new_submodel = SubModel(self.p, layers, layer.alpha)
             self.submodels.append(new_submodel)                   
            
             
@@ -98,7 +103,7 @@ class Model():
             Kt = cl.Kt(self.p, t)
             
             # ... and integrating over it using np.trapz().
-            f = np.trapz(Kt * Br * r[i], t)
+            f = self.l * np.trapz(Kt * Br * r[i], t)
             cl.tangential_force = f
             F.append(f)
         return F, r
@@ -106,8 +111,8 @@ class Model():
     
     def total_torque(self, dt=1000):
         self.tangential_forces(dt)        
-        pos_torque = []
-        neg_torque = []
+        pos_torque = [0.]
+        neg_torque = [0.]
         
         # store the acting forces in either direction multiplied
         # with the respective radius in 2 lists
@@ -118,12 +123,17 @@ class Model():
                 neg_torque.append(cl.tangential_force * cl.r)
         
         # check if the torque in both directions is equal
-        M = sum(pos_torque)
-        if np.allclose(M, -sum(neg_torque)):
-            self.M = M
-            return M
+        # using math.isclose with absolute tolerance because the integration for 
+        # tangential forces yields zero but with tolerances of ~1e-7 but only 
+        # if alpha1 = alpha2 =/= 0
+        Mpos = sum(pos_torque)
+        Mneg = sum(neg_torque)
+        if math.isclose(Mpos, -Mneg, abs_tol=1e-6):
+            self.Mpos = Mpos
+            self.Mneg = Mneg
+            return Mneg
         else:
-            raise Exception("Pos. and neg. torque are NOT np.allclose().")
+            raise Exception("Pos. and neg. torque are NOT math.isclose().")
 
 
     def get_A_data(self, r, t):
@@ -153,7 +163,7 @@ class Model():
                 
                 # this does not add a new layer to the model but is used to compute
                 # the field for the environment, otherwise a_n & b_n would be unused
-                plot_layers = subm.layers + [Environment()]
+                plot_layers = subm.layers + [Environment(subm.alpha)]
                 
                 # sums up the vector potential for all current loadings
                 this_Az += plot_layers[i].Az(self.p, this_R, this_T, 
@@ -168,8 +178,8 @@ class Model():
         R, T = np.hstack(R_tuple), np.hstack(T_tuple)
         Az = np.hstack(Az_tuple)
         X, Y = rt_to_xy(R, T)
-        # data = (X, Y, Az, R, T)
-        return X, Y, Az, R, T
+        data = Data(R, T, X, Y, Az = Az)
+        return data
     
     
     def get_B_data(self, r, t):
@@ -200,7 +210,7 @@ class Model():
                 
                 # this does not add a new layer to the model but is used to compute
                 # the field for the environment, otherwise a_n & b_n would be unused
-                plot_layers = subm.layers + [Environment()]
+                plot_layers = subm.layers + [Environment(subm.alpha)]
                 
                 # sums up the radial flux density for all current loadings
                 this_Br += plot_layers[i].Br(self.p, this_R, this_T, 
@@ -222,8 +232,8 @@ class Model():
         
         X, Y = rt_to_xy(R, T)
         U, V = BrBt_to_UV(Br, Bt, T)
-        # data = (X, Y, U, V, R, T, Br, Bt)
-        return X, Y, U, V, R, T, Br, Bt
+        data = Data(R, T, X, Y, U=U, V=V, Br=Br, Bt=Bt)
+        return data
 
 
     def get_H_data(self, r, t):
@@ -254,7 +264,7 @@ class Model():
                 
                 # this does not add a new layer to the model but is used to compute
                 # the field for the environment, otherwise a_n & b_n would be unused
-                plot_layers = subm.layers + [Environment()]
+                plot_layers = subm.layers + [Environment(subm.alpha)]
                 
                 # sums up the radial flux density for all current loadings
                 this_Hr += plot_layers[i].Hr(self.p, this_R, this_T, 
@@ -278,6 +288,22 @@ class Model():
         
         X, Y = rt_to_xy(R, T)
         U, V = BrBt_to_UV(Hr, Ht, T)
-        # data = (X, Y, U, V, R, T, Hr, Ht)
-        return X, Y, U, V, R, T, Hr, Ht
+        data = Data(R, T, X, Y, U=U, V=V, Hr=Hr, Ht=Ht)
+        return data
     
+
+class Data():
+    
+    def __init__(self, R, T, X, Y, U=None, V=None, Az=None,
+                 Br=None, Bt=None, Hr=None, Ht=None):
+        self.R = R
+        self.T = T
+        self.X = X
+        self.Y = Y 
+        self.U = U
+        self.V = V
+        self.Az = Az
+        self.Br = Br
+        self.Bt = Bt
+        self.Hr = Hr
+        self.Ht = Ht
