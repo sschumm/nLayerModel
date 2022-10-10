@@ -9,7 +9,7 @@ from data import StatorWinding_77K as sw
 from design import Main_Params, Main_Dims, create_n_Layer_model
 from design import get_L_TPL2100 as L
 
-plot_all = False
+plot_all = True
 mdl, plt, res = [None]*3
 r_so, r_si, r_sA, r_rF, r_ro, r_ri = [0]*6
 
@@ -71,10 +71,10 @@ def find_K_with_L(dims: Main_Dims, params: Main_Params, **kwargs):
         
     return K_s_hist[-1], K_r_hist[-1], J_e_s, J_e_r
     
-#%% initialize parameters
+#% initialize parameters
 # --- define global parameters --- 
-p = 40
-l_e = 0.4 # [m]
+p = 32
+l_e = 0.3 # [m]
 r_so = np.sqrt(sw.d2so_L/l_e)/2 # [m]
 k_fill_r, k_fill_s = 0.5, 0.5
 B_yoke_max = 6 # [T]
@@ -93,15 +93,15 @@ K_r = params.k_fill_r * fw.J_e * h_wndg_r
 # --- build initial model ---
 mdl, plt, res = create_n_Layer_model(dims, params.p, params.l_e, Ks=K_s, Kr=K_r)
 res.show("initial model")
-if plot_all: plt.fluxplot(1000, 1000, lvls=10)
+if False or plot_all: plt.fluxplot(1000, 1000, lvls=10)
 
 # --- initial model with lift factor applied ---
 K_s, K_r, J_e_s, J_e_r = find_K_with_L(dims, params, verbose=False or plot_all)
 mdl, plt, res = create_n_Layer_model(dims, params.p, params.l_e, Ks=K_s, Kr=K_r)
 res.show("initial model with L applied")
-if plot_all: plt.fluxplot(1000, 1000, lvls=10)
+if False or plot_all: plt.fluxplot(1000, 1000, lvls=10)
 
-#%% adapt yokes
+#% adapt yokes
 # --- adapt stator yoke ---
 h_yoke_s = yoke_height(params.p, r_si, res.B_s, params.B_yoke_max)
 
@@ -112,14 +112,15 @@ h_yoke_r = yoke_height(params.p, r_si, res.B_r, params.B_yoke_max)
 dims = update_dimensions(h_yoke_s, h_yoke_r, h_wndg_s, h_wndg_r)
 mdl, plt, res = create_n_Layer_model(dims, params.p, params.l_e, Ks=K_s, Kr=K_r)
 res.show("initial model with L applied and adapted yokes")
-if plot_all: plt.fluxplot(1000, 1000, lvls=10)
+if False or plot_all: plt.fluxplot(1000, 1000, lvls=10)
 
 #%% vary the current loading of the stator winding
+""" -------------------- stator current loading -------------------- """
 # --- increase the winding height of the stator in a for loop ---
-increasing_h_by_factor=0.2
+increasing_h_by_factor=0.1
 break_when_P_at_factor=0.5
 
-iter_s_P, iter_s_h = [res.P], [h_wndg_s]
+iter_s_P, iter_s_h = [res.P], [gn.delta_mag]
 for idx_h_wndg_s in range(30):
     h_wndg_s = iter_s_h[-1] + iter_s_h[0] * increasing_h_by_factor
     dims = update_dimensions(h_yoke_s, h_yoke_r, h_wndg_s, h_wndg_r)
@@ -144,15 +145,60 @@ if True or plot_all:
 
 
 #%% select a stator winding height by choosing an index
-idx = 2
-h_wndg_s = iter_s_h[idx]
+idx_s = 7
+h_wndg_s = iter_s_h[idx_s]
+dims = update_dimensions(h_yoke_s, h_yoke_r, h_wndg_s, h_wndg_r)
+K_s, K_r, J_e_s, J_e_r = find_K_with_L(dims, params, verbose=True or plot_all)
+mdl, plt, res = create_n_Layer_model(dims, params.p, params.l_e, Ks=K_s, Kr=K_r)
+res.show("model with adapted stator winding height")
+if False or plot_all: plt.fluxplot(1000, 1000, lvls=10)
+
+#%% vary the current loading of the rotor winding
+""" -------------------- rotor current loading -------------------- """
+# --- increase the winding height of the rotor in a for loop ---
+increasing_h_by_factor=0.1
+break_when_P_at_factor=0.5
+
+iter_r_P, iter_r_h = [res.P], [gn.delta_mag]
+for idx_h_wndg_r in range(60):
+    h_wndg_r = iter_r_h[-1] + iter_r_h[0] * increasing_h_by_factor
+    dims = update_dimensions(h_yoke_s, h_yoke_r, h_wndg_s, h_wndg_r)
+    K_s, K_r, J_e_s, J_e_r = find_K_with_L(dims, params, J_e_s=J_e_s, J_e_r=J_e_r)
+    mdl, plt, res = create_n_Layer_model(dims, params.p, params.l_e, Ks=K_s, Kr=K_r)
+    # res.show_P()
+    iter_r_P.append(res.P)
+    iter_r_h.append(h_wndg_r)
+    if iter_r_P[-1] < iter_r_P[0] * break_when_P_at_factor:
+        break
+
+# --- plot the results ---
+if True or plot_all:
+    fig, ax1 = pyplt.subplots()
+    ax2 = ax1.twinx()
+    fig.tight_layout() 
+    fig.dpi=500
+    ax1.scatter([x for x in range(len(iter_r_P))], [y*1e-6 for y in iter_r_P], marker=".", c="b")
+    ax1.set_ylabel('P [MW]', color="b")
+    ax2.plot([x for x in range(len(iter_r_h))], iter_r_h, c="r")
+    ax2.set_ylabel('h_wndg_r [m]', color="r")
+
+
+#%% select a rotor winding height by choosing an index
+idx_r = 20
+h_wndg_r = iter_r_h[idx_r]
 dims = update_dimensions(h_yoke_s, h_yoke_r, h_wndg_s, h_wndg_r)
 K_s, K_r, J_e_s, J_e_r = find_K_with_L(dims, params, J_e_s=J_e_s, J_e_r=J_e_r, verbose=True or plot_all)
 mdl, plt, res = create_n_Layer_model(dims, params.p, params.l_e, Ks=K_s, Kr=K_r)
-res.show("model with adapted stator winding height")
+res.show("model with adapted rotor winding height")
+if False or plot_all: plt.fluxplot(1000, 1000, lvls=10)
 
+#%% adapt rotor yoke 
+# --- adapt rotor yoke ---
+h_yoke_r = yoke_height(params.p, r_si, res.B_r, params.B_yoke_max)
 
-
-
-
-
+# --- build adapted model ---
+dims = update_dimensions(h_yoke_s, h_yoke_r, h_wndg_s, h_wndg_r)
+mdl, plt, res = create_n_Layer_model(dims, params.p, params.l_e, Ks=K_s, Kr=K_r)
+res.show("model with all heights adapted and L applied")
+if False or plot_all: plt.fluxplot(1000, 1000, lvls=10)
+if False: plt.quiver(dr=20, dt=200, scale=250, width=0.001)
