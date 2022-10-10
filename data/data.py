@@ -12,6 +12,8 @@ class Generator():
     delta_mag = 0.04   # [m] == 40 [mm]
     mu_r_yoke = 1e5    # ferro magnetic
     mu_r_core = 1      # G-10 CR (Fiberglass Epoxy) or Stainless Steel
+    Ic_spec = 650      # [A]
+    A_tape = (12*0.22) * 1e-6 # [m**2]
     
     
 class FieldWinding():
