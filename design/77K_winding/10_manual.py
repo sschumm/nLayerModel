@@ -22,23 +22,26 @@ def update_dimensions(h_yoke_s, h_yoke_r, h_wndg_s, h_wndg_r):
     r_ri = r_ro - h_yoke_r
     return Main_Dims(r_so, r_si, r_sA, r_rF, r_ro, r_ri)
     
-def find_K_with_L(dims: Main_Dims, params: Main_Params, verbose = False):
+def find_K_with_L(dims: Main_Dims, params: Main_Params, **kwargs):
     
     h_wndg_s, h_wndg_r = 2*(dims.r_si-dims.r_sA), 2*(dims.r_rF-dims.r_ro)
     
-    K_s_static = params.k_fill_s * h_wndg_s * sw.J_e
-    K_r_static = params.k_fill_r * h_wndg_r * fw.J_e
+    verbose = kwargs.get("verbose", False)
+    J_e_s_init = kwargs.get("J_e_s", sw.J_e)
+    J_e_r_init = kwargs.get("J_e_r", fw.J_e)
+    K_s_init = params.k_fill_s * h_wndg_s * J_e_s_init
+    K_r_init = params.k_fill_r * h_wndg_r * J_e_r_init
     
     mdl, plt, res = create_n_Layer_model(dims, params.p, params.l_e, 
-                                         Ks=K_s_static, Kr=K_r_static)
+                                         Ks=K_s_init, Kr=K_r_init)
     
     J_e_s = L(sw.T_HTS, res.B_s_c, 30) * gn.Ic_spec/(gn.A_tape*1.7)
     J_e_r = L(fw.T_HTS, res.B_r_c, 30) * gn.Ic_spec/(gn.A_tape*1.7)    
     K_s_lift = params.k_fill_s * J_e_s * h_wndg_s
     K_r_lift = params.k_fill_r * J_e_r * h_wndg_r
     
-    K_s_hist = [K_s_static, K_s_lift]
-    K_r_hist = [K_r_static, K_r_lift]
+    K_s_hist = [K_s_init, K_s_lift]
+    K_r_hist = [K_r_init, K_r_lift]
     
     for idx_lift in range(20): 
         
@@ -56,16 +59,21 @@ def find_K_with_L(dims: Main_Dims, params: Main_Params, verbose = False):
         K_r_hist.append(K_r_lift)
         
     # --- plot convergence ---
-    if verbose:    
-        pyplt.figure(dpi=500)
-        pyplt.plot([i for i in range(len(K_s_hist))], K_s_hist)
-        pyplt.figure(dpi=500)
-        pyplt.plot([i for i in range(len(K_r_hist))], K_r_hist)
-    return K_s, K_r
+    if verbose:            
+        fig, ax1 = pyplt.subplots()
+        ax2 = ax1.twinx()
+        fig.tight_layout() 
+        fig.dpi=500
+        ax1.plot([i for i in range(len(K_s_hist))], [y*1e-3 for y in K_s_hist], c="b")
+        ax1.set_ylabel('K_s [kA/m]', color="b")
+        ax2.plot([i for i in range(len(K_r_hist))], [y*1e-3 for y in K_r_hist], c="r")
+        ax2.set_ylabel('K_r [kA/m]', color="r")
+        
+    return K_s_hist[-1], K_r_hist[-1], J_e_s, J_e_r
     
 #%% initialize parameters
 # --- define global parameters --- 
-p = 20
+p = 40
 l_e = 0.4 # [m]
 r_so = np.sqrt(sw.d2so_L/l_e)/2 # [m]
 k_fill_r, k_fill_s = 0.5, 0.5
@@ -88,7 +96,7 @@ res.show("initial model")
 if plot_all: plt.fluxplot(1000, 1000, lvls=10)
 
 # --- initial model with lift factor applied ---
-K_s, K_r = find_K_with_L(dims, params, False)
+K_s, K_r, J_e_s, J_e_r = find_K_with_L(dims, params, verbose=False or plot_all)
 mdl, plt, res = create_n_Layer_model(dims, params.p, params.l_e, Ks=K_s, Kr=K_r)
 res.show("initial model with L applied")
 if plot_all: plt.fluxplot(1000, 1000, lvls=10)
@@ -103,7 +111,7 @@ h_yoke_r = yoke_height(params.p, r_si, res.B_r, params.B_yoke_max)
 # --- build adapted model ---
 dims = update_dimensions(h_yoke_s, h_yoke_r, h_wndg_s, h_wndg_r)
 mdl, plt, res = create_n_Layer_model(dims, params.p, params.l_e, Ks=K_s, Kr=K_r)
-res.show("initial model with L applied")
+res.show("initial model with L applied and adapted yokes")
 if plot_all: plt.fluxplot(1000, 1000, lvls=10)
 
 #%% vary the current loading of the stator winding
@@ -115,7 +123,7 @@ iter_s_P, iter_s_h = [res.P], [h_wndg_s]
 for idx_h_wndg_s in range(30):
     h_wndg_s = iter_s_h[-1] + iter_s_h[0] * increasing_h_by_factor
     dims = update_dimensions(h_yoke_s, h_yoke_r, h_wndg_s, h_wndg_r)
-    K_s, K_r = find_K_with_L(dims, params, False)
+    K_s, K_r, J_e_s, J_e_r = find_K_with_L(dims, params, J_e_s=J_e_s, J_e_r=J_e_r)
     mdl, plt, res = create_n_Layer_model(dims, params.p, params.l_e, Ks=K_s, Kr=K_r)
     # res.show_P()
     iter_s_P.append(res.P)
@@ -124,7 +132,7 @@ for idx_h_wndg_s in range(30):
         break
 
 # --- plot the results ---
-if True:
+if True or plot_all:
     fig, ax1 = pyplt.subplots()
     ax2 = ax1.twinx()
     fig.tight_layout() 
@@ -135,8 +143,13 @@ if True:
     ax2.set_ylabel('h_wndg_s [m]', color="r")
 
 
-# --- select an index ---
+#%% select a stator winding height by choosing an index
 idx = 2
+h_wndg_s = iter_s_h[idx]
+dims = update_dimensions(h_yoke_s, h_yoke_r, h_wndg_s, h_wndg_r)
+K_s, K_r, J_e_s, J_e_r = find_K_with_L(dims, params, J_e_s=J_e_s, J_e_r=J_e_r, verbose=True or plot_all)
+mdl, plt, res = create_n_Layer_model(dims, params.p, params.l_e, Ks=K_s, Kr=K_r)
+res.show("model with adapted stator winding height")
 
 
 
