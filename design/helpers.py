@@ -142,7 +142,7 @@ class Main_Results():
          
     def show(self, header="Main_Results"):
         print("---", header, "---")
-        print(f"M = {np.round(self.M * 1e-6, 2)} [MNm]")
+        # print(f"M = {np.round(self.M * 1e-6, 2)} [MNm]")
         print(f"P = {np.round(self.P * 1e-6, 2)} [MW]")
         print(f"K_r = {np.round(self.K_r * 1e-3, 2)} [kA/m]")
         print(f"K_s = {np.round(self.K_s * 1e-3, 2)} [kA/m]")
@@ -150,9 +150,9 @@ class Main_Results():
         print(f"h_wdng_s = {self.h_wdng_s} [m]")
         print(f"h_yoke_r = {self.h_yoke_r} [m]")
         print(f"h_yoke_s = {self.h_yoke_s} [m]")
-        print(f"B_r = {self.B_r} [T]")
-        print(f"B_airgap = {self.B_airgap} [T]")
-        print(f"B_s = {self.B_s} [T]")
+        # print(f"B_r = {self.B_r} [T]")
+        # print(f"B_airgap = {self.B_airgap} [T]")
+        # print(f"B_s = {self.B_s} [T]")
         print(f"B_r_c = {self.B_r_c} [T]")
         print(f"B_s_c = {self.B_s_c} [T]")
         
