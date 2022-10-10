@@ -138,6 +138,7 @@ if True:
                                           Ks  =K_s,
                                           Kr  =K_r)
     
+    # print("")
     # res.show("model with adjusted yokes")
     # plt.fluxplot(dr,dt,lvls=10)
     ...
@@ -188,6 +189,8 @@ if True:
                                           l   =init_params.l_e,
                                           Ks  =K_s,
                                           Kr  =K_r)  
+    
+    print("")
     res.show("result after using the lift factor")
     # plt.quiver(dr=20, dt=200, scale=250, width=0.001)
     # plt.fluxplot(dr, dt, lvls=10)
@@ -206,7 +209,7 @@ if True:
     J_e_s = L(sw.T_HTS, res.B_airgap, 30) * Ic_0/(A_tape*1.7)
     J_e_r = L(fw.T_HTS, res.B_airgap, 30) * Ic_0/(A_tape*1.7)   
     
-    for iter_dyn in range(10):
+    for iter_dyn in range(9):
                 
         update_dimensions()
         
@@ -238,6 +241,10 @@ if True:
         
     # res.show_B_airgap("")
     # K_r = init_params.k_fill_r * 
+    print("")
+    res.show("result after increasing h_wndg_r and keeping L")
+    # plt.quiver(dr=20, dt=200, scale=250, width=0.001)
+    # plt.fluxplot(dr, dt, lvls=10)
     ...
 
 
