@@ -91,13 +91,13 @@ K_s = params.k_fill_s * sw.J_e * h_wndg_s
 K_r = params.k_fill_r * fw.J_e * h_wndg_r
 
 # --- build initial model ---
-mdl, plt, res = create_n_Layer_model(dims, params.p, params.l_e, Ks=K_s, Kr=K_r)
+mdl, plt, res = create_n_Layer_model(dims, params.p, params.l_e, Ks=K_s, Kr=K_r, J_e_r=fw.J_e, J_e_s=sw.J_e)
 res.show("initial model")
 if False or plot_all: plt.fluxplot(1000, 1000, lvls=10)
 
 # --- initial model with lift factor applied ---
 K_s, K_r, J_e_s, J_e_r = find_K_with_L(dims, params, verbose=False or plot_all)
-mdl, plt, res = create_n_Layer_model(dims, params.p, params.l_e, Ks=K_s, Kr=K_r)
+mdl, plt, res = create_n_Layer_model(dims, params.p, params.l_e, Ks=K_s, Kr=K_r, J_e_r=J_e_r, J_e_s=J_e_s)
 res.show("initial model with L applied")
 if False or plot_all: plt.fluxplot(1000, 1000, lvls=10)
 
@@ -110,7 +110,7 @@ h_yoke_r = yoke_height(params.p, r_si, res.B_r, params.B_yoke_max)
 
 # --- build adapted model ---
 dims = update_dimensions(h_yoke_s, h_yoke_r, h_wndg_s, h_wndg_r)
-mdl, plt, res = create_n_Layer_model(dims, params.p, params.l_e, Ks=K_s, Kr=K_r)
+mdl, plt, res = create_n_Layer_model(dims, params.p, params.l_e, Ks=K_s, Kr=K_r, J_e_r=J_e_r, J_e_s=J_e_s)
 res.show("initial model with L applied and adapted yokes")
 if False or plot_all: plt.fluxplot(1000, 1000, lvls=10)
 
@@ -125,7 +125,7 @@ for idx_h_wndg_s in range(30):
     h_wndg_s = iter_s_h[-1] + iter_s_h[0] * increasing_h_by_factor
     dims = update_dimensions(h_yoke_s, h_yoke_r, h_wndg_s, h_wndg_r)
     K_s, K_r, J_e_s, J_e_r = find_K_with_L(dims, params, J_e_s=J_e_s, J_e_r=J_e_r)
-    mdl, plt, res = create_n_Layer_model(dims, params.p, params.l_e, Ks=K_s, Kr=K_r)
+    mdl, plt, res = create_n_Layer_model(dims, params.p, params.l_e, Ks=K_s, Kr=K_r, J_e_r=J_e_r, J_e_s=J_e_s)
     # res.show_P()
     iter_s_P.append(res.P)
     iter_s_h.append(h_wndg_s)
@@ -149,7 +149,7 @@ idx_s = 7
 h_wndg_s = iter_s_h[idx_s]
 dims = update_dimensions(h_yoke_s, h_yoke_r, h_wndg_s, h_wndg_r)
 K_s, K_r, J_e_s, J_e_r = find_K_with_L(dims, params, verbose=True or plot_all)
-mdl, plt, res = create_n_Layer_model(dims, params.p, params.l_e, Ks=K_s, Kr=K_r)
+mdl, plt, res = create_n_Layer_model(dims, params.p, params.l_e, Ks=K_s, Kr=K_r, J_e_r=J_e_r, J_e_s=J_e_s)
 res.show("model with adapted stator winding height")
 if False or plot_all: plt.fluxplot(1000, 1000, lvls=10)
 
@@ -164,7 +164,7 @@ for idx_h_wndg_r in range(60):
     h_wndg_r = iter_r_h[-1] + iter_r_h[0] * increasing_h_by_factor
     dims = update_dimensions(h_yoke_s, h_yoke_r, h_wndg_s, h_wndg_r)
     K_s, K_r, J_e_s, J_e_r = find_K_with_L(dims, params, J_e_s=J_e_s, J_e_r=J_e_r)
-    mdl, plt, res = create_n_Layer_model(dims, params.p, params.l_e, Ks=K_s, Kr=K_r)
+    mdl, plt, res = create_n_Layer_model(dims, params.p, params.l_e, Ks=K_s, Kr=K_r, J_e_r=J_e_r, J_e_s=J_e_s)
     # res.show_P()
     iter_r_P.append(res.P)
     iter_r_h.append(h_wndg_r)
@@ -188,7 +188,7 @@ idx_r = 20
 h_wndg_r = iter_r_h[idx_r]
 dims = update_dimensions(h_yoke_s, h_yoke_r, h_wndg_s, h_wndg_r)
 K_s, K_r, J_e_s, J_e_r = find_K_with_L(dims, params, J_e_s=J_e_s, J_e_r=J_e_r, verbose=True or plot_all)
-mdl, plt, res = create_n_Layer_model(dims, params.p, params.l_e, Ks=K_s, Kr=K_r)
+mdl, plt, res = create_n_Layer_model(dims, params.p, params.l_e, Ks=K_s, Kr=K_r, J_e_r=J_e_r, J_e_s=J_e_s)
 res.show("model with adapted rotor winding height")
 if False or plot_all: plt.fluxplot(1000, 1000, lvls=10)
 
@@ -198,7 +198,7 @@ h_yoke_r = yoke_height(params.p, r_si, res.B_r, params.B_yoke_max)
 
 # --- build adapted model ---
 dims = update_dimensions(h_yoke_s, h_yoke_r, h_wndg_s, h_wndg_r)
-mdl, plt, res = create_n_Layer_model(dims, params.p, params.l_e, Ks=K_s, Kr=K_r)
+mdl, plt, res = create_n_Layer_model(dims, params.p, params.l_e, Ks=K_s, Kr=K_r, J_e_r=J_e_r, J_e_s=J_e_s)
 res.show("model with all heights adapted and L applied")
 if False or plot_all: plt.fluxplot(1000, 1000, lvls=10)
 if False: plt.quiver(dr=20, dt=200, scale=250, width=0.001)

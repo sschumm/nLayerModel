@@ -12,6 +12,8 @@ def create_n_Layer_model(dims, p, l, Ks=False, Kr=False, **kwargs):
     ks_d = kwargs.get("ks_d", 1)
     ks_p = kwargs.get("ks_p", 1)
     kr_b = kwargs.get("kr_b", 1)
+    J_e_r = kwargs.get("J_e_r", None)
+    J_e_s = kwargs.get("J_e_s", None)
 
     r_so = dims.r_so
     r_si = dims.r_si
@@ -71,7 +73,9 @@ def create_n_Layer_model(dims, p, l, Ks=False, Kr=False, **kwargs):
                        B_airgap=B_airgap,
                        B_s=B_s,
                        B_r_c=B_r_c,
-                       B_s_c=B_s_c)
+                       B_s_c=B_s_c,
+                       J_e_r=J_e_r,
+                       J_e_s=J_e_s)
     return mdl, p_plt, res
 
 
@@ -124,7 +128,8 @@ class Main_Dims():
 class Main_Results():
     
     def __init__(self, M, P, K_r, K_s, h_wdng_r, h_wdng_s, h_yoke_r, h_yoke_s, 
-                 B_r=None, B_airgap=None, B_s=None, B_r_c=None, B_s_c=None):
+                 B_r=None, B_airgap=None, B_s=None, B_r_c=None, B_s_c=None,
+                 J_e_r=None, J_e_s=None):
         self.M = np.round(M, 2)
         self.P = np.round(P, 2)
         self.K_r = np.round(K_r, 2)
@@ -133,11 +138,13 @@ class Main_Results():
         self.h_wdng_s = np.round(h_wdng_s, 4)                 
         self.h_yoke_r = np.round(h_yoke_r, 4)
         self.h_yoke_s = np.round(h_yoke_s, 4)
-        self.B_r = np.round(B_r, 4)
-        self.B_airgap = np.round(B_airgap, 4)
-        self.B_s = np.round(B_s, 4)
-        self.B_r_c = np.round(B_r_c, 4)
-        self.B_s_c = np.round(B_s_c, 4)
+        self.B_r = B_r
+        self.B_airgap = B_airgap
+        self.B_s = B_s
+        self.B_r_c = B_r_c
+        self.B_s_c = B_s_c
+        self.J_e_r = J_e_r
+        self.J_e_s = J_e_s
     
          
     def show(self, header="Main_Results"):
@@ -153,8 +160,12 @@ class Main_Results():
         # print(f"B_r = {self.B_r} [T]")
         # print(f"B_airgap = {self.B_airgap} [T]")
         # print(f"B_s = {self.B_s} [T]")
-        print(f"B_r_c = {self.B_r_c} [T]")
-        print(f"B_s_c = {self.B_s_c} [T]")
+        print(f"B_r_c = {np.round(self.B_r_c, 4)} [T]")
+        print(f"B_s_c = {np.round(self.B_s_c, 4)} [T]")
+        if self.J_e_r is not None:
+            print(f"J_e_r = {np.round(self.J_e_r * 1e-6, 4)} [A/mm2]")
+        if self.J_e_s is not None:
+            print(f"J_e_s = {np.round(self.J_e_s * 1e-6, 4)} [A/mm2]")
         
         
     def show_P(self, header="P"):
