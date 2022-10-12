@@ -48,11 +48,11 @@ flux_data = mdl.get_B_data(r=np.array([r_sA]), t=np.linspace(0,np.pi/params.p, 4
 flux_using_integration = np.trapz(np.abs(flux_data.Br.flatten())*params.l_e, np.linspace(0,taup(2*r_sA, params.p), 400))
 flux_using_estimation  = Phi_from(np.max(np.abs(flux_data.Br)), taup(2*r_sA, params.p), params.l_e)
 
-print(f"using integration: B = {flux_using_integration} [T]")
-print(f"using estimation:  B = {flux_using_estimation} [T]")
+print(f"using integration: Phi = {flux_using_integration} [Vs]")
+print(f"using estimation:  Phi = {flux_using_estimation} [Vs]")
 
-# pyplt.figure(dpi=1000)
-# pyplt.plot(np.linspace(0,taup(2*r_sA, params.p), 400), np.abs(flux_data.Br.flatten()))
+pyplt.figure(dpi=1000)
+pyplt.plot(np.linspace(0,taup(2*r_sA, params.p), 400), np.abs(flux_data.Br.flatten()))
 
 # plt.fluxplot(1000, 1000, lvls=10)
 # plt.quiver(dr=20, dt=300, scale=250, width=0.002)
