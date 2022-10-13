@@ -6,10 +6,11 @@ from analytics import taup, yoke_height, Phi_from
 from data import Generator as gn
 from data import FieldWinding as fw
 from data import StatorWinding_77K as sw
+from data import save_params_as_txt
 from design import Main_Params, Main_Dims, create_n_Layer_model
 from design import get_L_TPL2100 as L
 
-plot_all = True
+plot_all = False
 mdl, plt, res = [None]*3
 r_so, r_si, r_sA, r_rF, r_ro, r_ri = [0]*6
 
@@ -133,7 +134,7 @@ for idx_h_wndg_s in range(30):
         break
 
 # --- plot the results ---
-if True or plot_all:
+if False or plot_all:
     fig, ax1 = pyplt.subplots()
     ax2 = ax1.twinx()
     fig.tight_layout() 
@@ -148,7 +149,7 @@ if True or plot_all:
 idx_s = 7
 h_wndg_s = iter_s_h[idx_s]
 dims = update_dimensions(h_yoke_s, h_yoke_r, h_wndg_s, h_wndg_r)
-K_s, K_r, J_e_s, J_e_r = find_K_with_L(dims, params, verbose=True or plot_all)
+K_s, K_r, J_e_s, J_e_r = find_K_with_L(dims, params, verbose=False or plot_all)
 mdl, plt, res = create_n_Layer_model(dims, params.p, params.l_e, Ks=K_s, Kr=K_r, J_e_r=J_e_r, J_e_s=J_e_s)
 res.show("model with adapted stator winding height")
 if False or plot_all: plt.fluxplot(1000, 1000, lvls=10)
@@ -172,7 +173,7 @@ for idx_h_wndg_r in range(60):
         break
 
 # --- plot the results ---
-if True or plot_all:
+if False or plot_all:
     fig, ax1 = pyplt.subplots()
     ax2 = ax1.twinx()
     fig.tight_layout() 
@@ -187,7 +188,7 @@ if True or plot_all:
 idx_r = 20
 h_wndg_r = iter_r_h[idx_r]
 dims = update_dimensions(h_yoke_s, h_yoke_r, h_wndg_s, h_wndg_r)
-K_s, K_r, J_e_s, J_e_r = find_K_with_L(dims, params, J_e_s=J_e_s, J_e_r=J_e_r, verbose=True or plot_all)
+K_s, K_r, J_e_s, J_e_r = find_K_with_L(dims, params, J_e_s=J_e_s, J_e_r=J_e_r, verbose=False or plot_all)
 mdl, plt, res = create_n_Layer_model(dims, params.p, params.l_e, Ks=K_s, Kr=K_r, J_e_r=J_e_r, J_e_s=J_e_s)
 res.show("model with adapted rotor winding height")
 if False or plot_all: plt.fluxplot(1000, 1000, lvls=10)
@@ -202,3 +203,8 @@ mdl, plt, res = create_n_Layer_model(dims, params.p, params.l_e, Ks=K_s, Kr=K_r,
 res.show("model with all heights adapted and L applied")
 if False or plot_all: plt.fluxplot(1000, 1000, lvls=10)
 if False: plt.quiver(dr=20, dt=200, scale=250, width=0.001)
+
+
+#%% store results
+if True:
+    save_params_as_txt("param_set_1", dims, params, res)
