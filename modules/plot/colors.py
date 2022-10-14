@@ -15,6 +15,9 @@ flux = cm.get_cmap("jet")
 jet = cm.get_cmap("jet_r")
 rb = cm.get_cmap("gist_rainbow")
 
+colorAccent = "#004E8A"
+colorRed = "#B90F22"
+
 
 # build winter colormap for streamplot and quiver
 strp_sample = winter(np.linspace(0,1,360))

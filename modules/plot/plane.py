@@ -12,6 +12,7 @@ from scipy.interpolate import griddata
 from scipy.constants import pi, mu_0
 from .colors import strp_winter, cntr_winter, cntr_jet, cntr_rb, flux, flux_cutoff
 from .colors import border_default, border_current, layer_default, layer_magnetic
+from .colors import colorAccent, colorRed
 from ..layer import MagneticLayer, CurrentLoading
 from ..model import Model
 
@@ -51,7 +52,7 @@ class PlanePlot():
         if only_borders:
             for layer in self.m.layers:
                 if isinstance(layer, CurrentLoading):
-                    edgecolor="red"
+                    edgecolor=colorRed
                 else:
                     edgecolor="black"
                 ax.add_artist(plt.Circle((0,0),
@@ -59,7 +60,7 @@ class PlanePlot():
                                          fill = False,
                                          edgecolor=edgecolor,
                                          linestyle = "-",
-                                         linewidth = 0.1 * self.fgsz,))
+                                         linewidth = 0.25 * self.fgsz,))
         else:
             for layer in reversed(self.m.layers):
                 edgecolor = border_default

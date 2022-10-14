@@ -60,4 +60,4 @@ plt_plane.fluxplot(dr=100, dt=100, lvls=10, lw=None,
                     transparent=True,
                     padding=0.0,
                     pdf=False, pdf_dpi=300, 
-                    svg=True, svg_dpi=300)
+                    svg=False, svg_dpi=300)
