@@ -189,6 +189,9 @@ class PlanePlot():
         pdf = kwargs.get("pdf", False)
         pdf_dpi = kwargs.get("pdf_dpi", 300)
         pdf_name = kwargs.get("pdf_name", "pdf_fluxplot.pdf")
+        svg = kwargs.get("svg", False)
+        svg_dpi = kwargs.get("svg_dpi", 300)
+        svg_name = kwargs.get("svg_name", "svg_fluxplot.svg")
         
         r = np.linspace(0, self.r_max, dr)
         t = np.linspace(0, 2*pi, dt)
@@ -208,7 +211,7 @@ class PlanePlot():
                             vmax=np.nanmax(B),
                             cmap=flux)
         
-        if pdf: # only when printing pdfs for better performance otherwise
+        if pdf or svg: # only when printing pdfs for better performance otherwise
             # This is the fix for the white lines between contour levels
             for c in cs_cf.collections:
                 c.set_edgecolor("face")
@@ -223,6 +226,9 @@ class PlanePlot():
         
         if pdf:
             plt.savefig(pdf_name, dpi=pdf_dpi, bbox_inches="tight")
+        
+        if svg:
+            plt.savefig(svg_name, dpi=svg_dpi, bbox_inches="tight")
 
         print("INFO: finished fluxplot.")
     

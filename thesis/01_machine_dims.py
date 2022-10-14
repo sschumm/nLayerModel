@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+import numpy as np
+import tikzplotlib as tkz
+import matplotlib.pyplot as plt_mpl
+
 from modules import Model, AirLayer, MagneticLayer, CurrentLoading
 from modules.plot import PlanePlot
 
@@ -17,5 +21,31 @@ model.solve()
 model.total_torque()
 
 
-plt_plane = PlanePlot(model, fgsz=100)
-plt_plane.fluxplot(dr=1000, dt=1000, lvls=10)
+#%%
+
+# x1 = np.linspace(-4, 4, 5000)
+# y1 = x1**2
+
+# fig = plt_mpl.figure(dpi=1000)
+# ax = plt_mpl.subplot()
+
+# ax.plot(x1, y1)
+
+
+# tkz.clean_figure()
+# tkz.save("test1.tex")
+
+
+
+#%%
+plt_plane = PlanePlot(model, fgsz=50)
+# plt_plane.fluxplot(dr=1000, dt=1000, lvls=10)
+# plt_plane.contour(dr=1000, dt=1000, pdf=True, pdf_dpi=300)
+
+#%%
+# plt_plane.quiver(dr=20, dt=200, scale=250, width=0.001, pdf=True, pdf_dpi=300)
+
+#%%
+plt_plane = PlanePlot(model, fgsz=20)
+# plt_plane.fluxplot(dr=200, dt=200, lvls=10, pdf=True, pdf_dpi=300)
+plt_plane.fluxplot(dr=150, dt=150, lvls=10, svg=True, svg_dpi=300)
