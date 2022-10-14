@@ -41,6 +41,12 @@ class PlanePlot():
         ax.tick_params(axis='both', which='minor', labelsize=int(0.8 * self.fgsz))
         
     
+    def _set_plot_dims_custom(self, ax, x0, x1, y0, y1):
+        ax.set_aspect(1)
+        ax.set_xlim(x0, x1)
+        ax.set_ylim(y0, y1)
+        
+    
     def _set_machine_dims(self, ax):
         for layer in reversed(self.m.layers):
             edgecolor = border_default
@@ -182,12 +188,18 @@ class PlanePlot():
         
     def fluxplot(self, dr, dt, **kwargs):
         fig, ax = self._set_up_plot()
-        self._set_plot_dims(ax)
-        # self._set_machine_dims(ax)
         
         # --- detail ---
         lvls = kwargs.get("lvls", 50)
         lw = kwargs.get("lw", None)
+        r_min = kwargs.get("r_min", 0)
+        r_max = kwargs.get("r_max", self.r_max)
+        t_min = kwargs.get("t_min", 0)
+        t_max = kwargs.get("t_max", 2*pi)
+        show_cbar = kwargs.get("show_cbar", True)
+        show_axis = kwargs.get("show_axis", True)
+        transparent = kwargs.get("transparent", False)
+        padding = kwargs.get("padding", 0.1)
         
         # --- file export ---
         pdf = kwargs.get("pdf", False)
@@ -197,8 +209,20 @@ class PlanePlot():
         svg_dpi = kwargs.get("svg_dpi", 300)
         svg_name = kwargs.get("svg_name", "svg_fluxplot.svg")
         
-        r = np.linspace(0, self.r_max, dr)
-        t = np.linspace(0, 2*pi, dt)
+        # --- custom dims ---
+        custom_dims = kwargs.get("custom_dims", False)
+        x0 = kwargs.get("x0", r_min)
+        x1 = kwargs.get("x1", r_max)
+        y0 = kwargs.get("y0", r_min)
+        y1 = kwargs.get("y1", r_max)
+        
+        if custom_dims:
+            self._set_plot_dims_custom(ax, x0, x1, y0, y1)
+        else:
+            self._set_plot_dims(ax)
+        
+        r = np.linspace(r_min, r_max, dr)
+        t = np.linspace(t_min, t_max, dt)
         
         print("INFO: computing fluxplot...")
         
@@ -226,14 +250,23 @@ class PlanePlot():
                           vmax=np.nanmax(A),
                           colors="black",
                           linewidths=lw)
-        cbar = fig.colorbar(cs_cf, shrink = 0.8)
-        cbar.ax.tick_params(labelsize=self.fgsz)
+        
+        if not show_axis:
+            plt.axis('off')
+        
+        if show_cbar:
+            cbar = fig.colorbar(cs_cf, shrink = 0.8)
+            if show_axis: 
+                cbar.ax.tick_params(labelsize=self.fgsz)
+            else:
+                cbar.ax.get_yaxis().set_visible(False)
         
         if pdf:
             plt.savefig(pdf_name, dpi=pdf_dpi, bbox_inches="tight")
         
         if svg:
-            plt.savefig(svg_name, dpi=svg_dpi, bbox_inches="tight")
+            plt.savefig(svg_name, dpi=svg_dpi, bbox_inches="tight", 
+                        transparent=transparent, pad_inches=padding)
 
         print("INFO: finished fluxplot.")
     
