@@ -36,6 +36,7 @@ pyzmq @ file:///D:/bld/pyzmq_1656183664050/work
 scipy @ file:///C:/ci/scipy_1641555170412/work
 six @ file:///home/conda/feedstock_root/build_artifacts/six_1620240208055/work
 spyder-kernels @ file:///D:/bld/spyder-kernels_1657210502152/work
+tikzplot==0.0.2
 tornado @ file:///D:/bld/tornado_1656937934674/work
 traitlets @ file:///home/conda/feedstock_root/build_artifacts/traitlets_1655411388954/work
 wcwidth @ file:///home/conda/feedstock_root/build_artifacts/wcwidth_1600965781394/work
