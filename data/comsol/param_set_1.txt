@@ -1,0 +1,33 @@
+PARAMS_PREDEFINED 1
+mu_r 100000.0 relative permeability of iron
+d2so_L 15[m^3] generator volume
+delta_mag 0.04[m] height magnetic airgap
+n_syn 8.33[rpm] generator speed
+PARAMS_FROM_PYTHON 1
+p 32 pole pair count
+l_e 0.3[m] effective generator length
+h_wdng_r 0.12[m] height winding rotor
+h_wdng_s 0.068[m] height winding stator
+h_yoke_r 0.1532[m] height yoke rotor
+h_yoke_s 0.0843[m] height yoke stator
+PARAMS_DERIVED 1
+r_so sqrt(d2so_L/l_e)/2 radius stator outer
+r_si r_so-h_yoke_s radius stator inner
+r_sA r_si-h_wdng_s/2 radius stator armature winding
+r_rF r_sA-h_wdng_s/2-delta_mag-h_wdng_r/2 radius rotor field winding
+r_ro r_rF-h_wdng_r/2 radius rotor outer
+r_ri r_ro-h_yoke_r radius rotor inner
+tau_p (pi*r_si)/p pole pitch
+angle_tau_p 360[°]/(2*p) pole pitch angle
+angle_sector 2*angle_tau_p sector angle
+PARAMS_YET_TO_DEFINE 1
+w_wdng_r 0.1[m] width winding rotor
+w_wdng_r_pole 0.07[m] width winding rotor pole
+h_wdng_r_margin 0.02[m] margin to yoke and airgap
+w_wdng_s 0.07[m] width winding stator
+w_wdng_s_pole 0.05[m] width winding stator pole
+h_wdng_s_margin 0.02[m] margin to yoke and airgap
+angle_wdng_r_shift (((r_rF*pi)/(2*p)-w_wdng_r_pole/2-w_wdng_r/2)/(2*r_rF*pi))*360[°] angle to shift the rotor windings
+angle_wdng_s_shift ((w_wdng_s_pole/2+w_wdng_s/2)/(2*r_sA*pi))*360[°] angle to shift the stator winding
+N_f 100 number of rotor winding turns
+A_rotor_winding 1e-6[m^2]
