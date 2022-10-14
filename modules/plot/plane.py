@@ -48,7 +48,7 @@ class PlanePlot():
         ax.set_ylim(y0, y1)
         
     
-    def _set_machine_dims(self, ax, only_borders=False):
+    def _set_machine_dims(self, ax, only_borders=False, bw=1):
         if only_borders:
             for layer in self.m.layers:
                 if isinstance(layer, CurrentLoading):
@@ -60,15 +60,15 @@ class PlanePlot():
                                          fill = False,
                                          edgecolor=edgecolor,
                                          linestyle = "-",
-                                         linewidth = 0.25 * self.fgsz,))
+                                         linewidth = bw * 0.25 * self.fgsz,))
         else:
             for layer in reversed(self.m.layers):
                 edgecolor = border_default
-                facecolor = layer_default
+                facecolor = "white" #layer_default
                 if isinstance(layer, CurrentLoading):
                     if not layer.mu == mu_0:
                         facecolor = layer_magnetic
-                    edgecolor = border_current
+                    edgecolor = colorRed
                 elif isinstance(layer, MagneticLayer):
                     facecolor = layer_magnetic
                 else: 
@@ -79,8 +79,8 @@ class PlanePlot():
                                          edgecolor = edgecolor,
                                          facecolor = facecolor, 
                                          linestyle = "-",
-                                         linewidth = 0.1 * self.fgsz, 
-                                         alpha=0.7))
+                                         linewidth = bw * 0.1 * self.fgsz, 
+                                         alpha=1))
 
     
         
@@ -267,7 +267,7 @@ class PlanePlot():
                           linewidths=lw)
         
         if show_borders:
-            self._set_machine_dims(ax, only_borders=(True))
+            self._set_machine_dims(ax, only_borders=True)
         
         if not show_axis:
             plt.axis('off')
@@ -287,7 +287,54 @@ class PlanePlot():
                         transparent=transparent, pad_inches=padding)
 
         print("INFO: finished fluxplot.")
-    
+        
+        
+    def machineplot(self, **kwargs):
+        fig, ax = self._set_up_plot()
+        
+        # --- detail ---
+        r_min = kwargs.get("r_min", 0)
+        r_max = kwargs.get("r_max", self.r_max)
+        t_min = kwargs.get("t_min", 0)
+        t_max = kwargs.get("t_max", 2*pi)
+        show_axis = kwargs.get("show_axis", True)
+        transparent = kwargs.get("transparent", False)
+        padding = kwargs.get("padding", 0.1)
+        show_borders = kwargs.get("show_borders", False)
+        border_width = kwargs.get("border_width", 1)
+        
+        # --- file export ---
+        pdf = kwargs.get("pdf", False)
+        pdf_dpi = kwargs.get("pdf_dpi", 300)
+        pdf_name = kwargs.get("pdf_name", "pdf_fluxplot.pdf")
+        svg = kwargs.get("svg", False)
+        svg_dpi = kwargs.get("svg_dpi", 300)
+        svg_name = kwargs.get("svg_name", "svg_fluxplot.svg")
+        
+        # --- custom dims ---
+        custom_dims = kwargs.get("custom_dims", False)
+        x0 = kwargs.get("x0", r_min)
+        x1 = kwargs.get("x1", r_max)
+        y0 = kwargs.get("y0", r_min)
+        y1 = kwargs.get("y1", r_max)
+        
+        if not show_axis:
+            plt.axis('off')
+        
+        if custom_dims:
+            self._set_plot_dims_custom(ax, x0, x1, y0, y1)
+        else:
+            self._set_plot_dims(ax)
+            
+        self._set_machine_dims(ax, only_borders=False, bw=border_width)
+        
+        if pdf:
+            plt.savefig(pdf_name, dpi=pdf_dpi, bbox_inches="tight")
+        
+        if svg:
+            plt.savefig(svg_name, dpi=svg_dpi, bbox_inches="tight", 
+                        transparent=transparent, pad_inches=padding)
+        
 
 class PlaneDoublePlot(PlanePlot):
     
