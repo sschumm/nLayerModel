@@ -48,4 +48,6 @@ plt_plane = PlanePlot(model, fgsz=50)
 #%%
 plt_plane = PlanePlot(model, fgsz=20)
 # plt_plane.fluxplot(dr=200, dt=200, lvls=10, pdf=True, pdf_dpi=300)
-plt_plane.fluxplot(dr=150, dt=150, lvls=10, svg=True, svg_dpi=300)
+plt_plane.fluxplot(dr=200, dt=200, lvls=10, lw=None, 
+                   pdf=False, pdf_dpi=300, 
+                   svg=False, svg_dpi=300)

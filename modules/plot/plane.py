@@ -185,7 +185,11 @@ class PlanePlot():
         self._set_plot_dims(ax)
         # self._set_machine_dims(ax)
         
+        # --- detail ---
         lvls = kwargs.get("lvls", 50)
+        lw = kwargs.get("lw", None)
+        
+        # --- file export ---
         pdf = kwargs.get("pdf", False)
         pdf_dpi = kwargs.get("pdf_dpi", 300)
         pdf_name = kwargs.get("pdf_name", "pdf_fluxplot.pdf")
@@ -220,7 +224,8 @@ class PlanePlot():
                           levels=lvls,
                           vmin=np.nanmin(A),
                           vmax=np.nanmax(A),
-                          colors="black")
+                          colors="black",
+                          linewidths=lw)
         cbar = fig.colorbar(cs_cf, shrink = 0.8)
         cbar.ax.tick_params(labelsize=self.fgsz)
         
