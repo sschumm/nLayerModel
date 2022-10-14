@@ -106,6 +106,9 @@ class PlanePlot():
         
         lvls = kwargs.get("lvls", 50)
         style = kwargs.get("style", "winter")
+        pdf = kwargs.get("pdf", False)
+        pdf_dpi = kwargs.get("pdf_dpi", 300)
+        pdf_name = kwargs.get("pdf_name", "pdf_contour.pdf")
         
         r = np.linspace(0, self.r_max, dr)
         t = np.linspace(0, 2*pi, dt) 
@@ -125,6 +128,12 @@ class PlanePlot():
                              vmin=np.nanmin(d.Az),
                              vmax=np.nanmax(d.Az),
                              cmap=cmap)
+            
+            if pdf: # only when printing pdfs for better performance otherwise
+                # This is the fix for the white lines between contour levels
+                for c in cs.collections:
+                    c.set_edgecolor("face")
+            
         else: 
             cs = ax.contour(d.X, d.Y, d.Az,
                              levels=lvls,
@@ -134,6 +143,8 @@ class PlanePlot():
             
         #ax.clabel(cs, inline=True, fontsize=self.fgsz)
         # fig.colorbar(cs, shrink = 0.8)
+        if pdf:
+            plt.savefig(pdf_name, dpi=pdf_dpi, bbox_inches="tight")
         
         print("INFO: finished contour.")
         
@@ -145,6 +156,9 @@ class PlanePlot():
         
         scale = kwargs.get("scale", None)
         width = kwargs.get("width", None)
+        pdf = kwargs.get("pdf", False)
+        pdf_dpi = kwargs.get("pdf_dpi", 300)
+        pdf_name = kwargs.get("pdf_name", "pdf_quiver.pdf")
         
         # r = np.linspace(0, self.r_max, dr)
         r = np.linspace(min(self.m.radii), max(self.m.radii), dr)
@@ -159,6 +173,10 @@ class PlanePlot():
                   cmap=flux, 
                   scale=scale, 
                   width=width) # color="b")
+        
+        if pdf:
+            plt.savefig(pdf_name, dpi=pdf_dpi, bbox_inches="tight")
+        
         print("INFO: finished quiver.")
         
         
@@ -168,6 +186,9 @@ class PlanePlot():
         # self._set_machine_dims(ax)
         
         lvls = kwargs.get("lvls", 50)
+        pdf = kwargs.get("pdf", False)
+        pdf_dpi = kwargs.get("pdf_dpi", 300)
+        pdf_name = kwargs.get("pdf_name", "pdf_fluxplot.pdf")
         
         r = np.linspace(0, self.r_max, dr)
         t = np.linspace(0, 2*pi, dt)
@@ -186,6 +207,12 @@ class PlanePlot():
                             vmin=np.nanmin(B),
                             vmax=np.nanmax(B),
                             cmap=flux)
+        
+        if pdf: # only when printing pdfs for better performance otherwise
+            # This is the fix for the white lines between contour levels
+            for c in cs_cf.collections:
+                c.set_edgecolor("face")
+        
         cs_c = ax.contour(dB.X, dB.Y, A,
                           levels=lvls,
                           vmin=np.nanmin(A),
@@ -193,6 +220,9 @@ class PlanePlot():
                           colors="black")
         cbar = fig.colorbar(cs_cf, shrink = 0.8)
         cbar.ax.tick_params(labelsize=self.fgsz)
+        
+        if pdf:
+            plt.savefig(pdf_name, dpi=pdf_dpi, bbox_inches="tight")
 
         print("INFO: finished fluxplot.")
     
