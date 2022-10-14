@@ -48,15 +48,16 @@ plt_plane = PlanePlot(model, fgsz=50)
 #%%
 plt_plane = PlanePlot(model, fgsz=20)
 margin = 0.0001
-plt_plane.fluxplot(dr=200, dt=200, lvls=10)
-# plt_plane.fluxplot(dr=100, dt=100, lvls=10, lw=None,
-#                    r_min=0.4-margin, r_max=1.0+margin,
-#                    t_min=0, t_max=np.pi/2,
-#                    custom_dims=True,
-#                    y0=0, x0=0,
-#                    show_cbar=True, 
-#                    show_axis=False,
-#                    transparent=True,
-#                    padding=0.0,
-#                    pdf=False, pdf_dpi=300, 
-#                    svg=True, svg_dpi=300)
+# plt_plane.fluxplot(dr=200, dt=200, lvls=10, show_borders=True)
+plt_plane.fluxplot(dr=100, dt=100, lvls=10, lw=None,
+                    r_min=0.4-margin, r_max=1.0+margin,
+                    t_min=0, t_max=np.pi/2,
+                    custom_dims=True,
+                    y0=0, x0=0,
+                    show_cbar=True, 
+                    show_axis=False,
+                    show_borders=True,
+                    transparent=True,
+                    padding=0.0,
+                    pdf=False, pdf_dpi=300, 
+                    svg=True, svg_dpi=300)

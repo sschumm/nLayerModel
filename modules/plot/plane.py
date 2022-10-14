@@ -47,26 +47,39 @@ class PlanePlot():
         ax.set_ylim(y0, y1)
         
     
-    def _set_machine_dims(self, ax):
-        for layer in reversed(self.m.layers):
-            edgecolor = border_default
-            facecolor = layer_default
-            if isinstance(layer, CurrentLoading):
-                if not layer.mu == mu_0:
+    def _set_machine_dims(self, ax, only_borders=False):
+        if only_borders:
+            for layer in self.m.layers:
+                if isinstance(layer, CurrentLoading):
+                    edgecolor="red"
+                else:
+                    edgecolor="black"
+                ax.add_artist(plt.Circle((0,0),
+                                         layer.r,
+                                         fill = False,
+                                         edgecolor=edgecolor,
+                                         linestyle = "-",
+                                         linewidth = 0.1 * self.fgsz,))
+        else:
+            for layer in reversed(self.m.layers):
+                edgecolor = border_default
+                facecolor = layer_default
+                if isinstance(layer, CurrentLoading):
+                    if not layer.mu == mu_0:
+                        facecolor = layer_magnetic
+                    edgecolor = border_current
+                elif isinstance(layer, MagneticLayer):
                     facecolor = layer_magnetic
-                edgecolor = border_current
-            elif isinstance(layer, MagneticLayer):
-                facecolor = layer_magnetic
-            else: 
-                pass
-            ax.add_artist(plt.Circle((0, 0), 
-                                     layer.r, 
-                                     fill = True, 
-                                     edgecolor = edgecolor,
-                                     facecolor = facecolor, 
-                                     linestyle = "-",
-                                     linewidth = 0.1 * self.fgsz, 
-                                     alpha=0.7))
+                else: 
+                    pass
+                ax.add_artist(plt.Circle((0, 0), 
+                                         layer.r, 
+                                         fill = True, 
+                                         edgecolor = edgecolor,
+                                         facecolor = facecolor, 
+                                         linestyle = "-",
+                                         linewidth = 0.1 * self.fgsz, 
+                                         alpha=0.7))
 
     
         
@@ -200,6 +213,7 @@ class PlanePlot():
         show_axis = kwargs.get("show_axis", True)
         transparent = kwargs.get("transparent", False)
         padding = kwargs.get("padding", 0.1)
+        show_borders = kwargs.get("show_borders", False)
         
         # --- file export ---
         pdf = kwargs.get("pdf", False)
@@ -250,6 +264,9 @@ class PlanePlot():
                           vmax=np.nanmax(A),
                           colors="black",
                           linewidths=lw)
+        
+        if show_borders:
+            self._set_machine_dims(ax, only_borders=(True))
         
         if not show_axis:
             plt.axis('off')
