@@ -20,6 +20,7 @@ def save_params_as_txt(filename: str, dims: Main_Dims,
             print(f"d2so_L {sw.d2so_L}[m^3] generator volume", file=text_file)
             print(f"delta_mag {gn.delta_mag}[m] height magnetic airgap", file=text_file)
             print(f"n_syn {gn.n_syn}[rpm] generator speed", file=text_file)
+            print(f"n_syn {gn.w_syn}[1/s] generator speed", file=text_file)
             
             print("PARAMS_FROM_PYTHON 1", file=text_file)
             
@@ -64,6 +65,7 @@ def save_params_as_txt(filename: str, dims: Main_Dims,
             print(f"mu_r {gn.mu_r_yoke} relative permeability of iron", file=text_file)
             print("d2so_L 15[m^3] generator volume", file=text_file)
             print(f"delta_mag {gn.delta_mag}[m] height magnetic airgap", file=text_file)
+            print(f"n_syn {gn.w_syn}[1/s] generator speed", file=text_file)
             print(f"n_syn {gn.n_syn}[rpm] generator speed", file=text_file)
             
             print("PARAMS_FROM_PYTHON 1", file=text_file)
