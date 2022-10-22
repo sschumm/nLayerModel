@@ -3,10 +3,10 @@ import numpy as np
 from scipy.constants import pi
 import tikzplotlib as tkz
 import matplotlib.pyplot as plt_mpl
-
+from data import Generator as gn
 from modules import Model, AirLayer, MagneticLayer, CurrentLoading
 
-
+n_syn = gn.n_syn
 
 
 p, l_e = 4, 0.3
@@ -35,14 +35,62 @@ model.build()
 
 
 x1, x2 = model.solve()
-x1.shape
-x2.shape
+x1.shape  # (14,)
+x2.shape  # (14,)
 
+A = model.get_A_data(r=np.linspace(r1, r6, 1000), t=np.linspace(0, 2*pi, 1000))
+A.Az.shape # (1000, 1000)
+
+B = model.get_B_data(r=np.array([r3]), t=np.linspace(0, pi, 1000))
+B.Br.shape # (1000, 1)
+
+H = model.get_H_data(r=np.linspace(r1, r6, 1000), t=np.array([0.25*pi]))
+H.Ht.shape # (1, 1000)
+
+M = model.total_torque()
+P = 2*pi*n_syn*M
+
+#%% angle sweep for torque demo
+
+def angle_sweep(alpha_s):
+    model = Model(p, l_e)
+
+    model.add_layer(AirLayer(r=r1))
+    model.add_layer(MagneticLayer(r=r2, mu_r=mu_r))
+    model.add_layer(CurrentLoading(K=K_r_hat, r=r3, alpha=alpha_r))
+    model.add_layer(CurrentLoading(K=K_s_hat, r=r4, alpha=alpha_s))
+    model.add_layer(AirLayer(r=r5))
+    model.add_layer(MagneticLayer(r=r6, mu_r=mu_r))
+
+    model.build()
+    model.solve()
+    model.total_torque()
+    return model.Mpos
+
+
+x = np.linspace(0, pi, 1000)
+y = []
+for alpha_s in x:
+    y.append(angle_sweep(alpha_s))
+
+# import matplotlib.pyplot as plt
+# plt.figure(dpi=300)
+# plt.plot(x, y)
+
+# tkz.clean_figure()
+# tkz.save("msm_torque_over_angle.tex")
+
+
+#%%
 from modules.plot import PlanePlot
 # PlanePlot(model).fluxplot(dr=1000, dt=1000, lvls=10)
+# PlanePlot(model).quiver(dr=20, dt=50)
+# PlanePlot(model).streamplot(dr=20, dt=20)
+# PlanePlot(model).contour(dr=100, dt=100)
 
 from modules.plot import RadialPlot
-RadialPlot(model).plot_radial_Ht()
+# RadialPlot(model).plot_radial_Ht(t=0*pi, tikz=True)
+# RadialPlot(model).plot_radial_Br(t=0.5*pi)
 
 
 
