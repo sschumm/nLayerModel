@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import numpy as np
+import tikzplotlib as tkz
 import matplotlib.pyplot as plt
 from modules import Model, CurrentLoading
 from analytics.two_regions import analytic_solution
@@ -30,13 +31,13 @@ atol = 1e-15
 
 #%% static print
 
-f(p=3, r=2.0, K=1e6, rtol=rtol, atol=atol, only_b2=False)
+f(p=1, r=2.0, K=5.31e6, rtol=rtol, atol=atol, only_b2=False)
 
 #%% static work
 
-r = 2.0
+r = 0.425
 p = 100
-c, x_num, x_an = f(p=p, r=r, K=1e6, rtol=rtol, atol=atol, only_b2=False)
+c, x_num, x_an = f(p=p, r=r, K=5.31e6, rtol=rtol, atol=atol, only_b2=False)
 
 A_jr_num = np.array([r**p, r**-p]*2) * x_num
 A_jr_an  = np.array([r**p, r**-p]*2) * x_an
@@ -54,31 +55,34 @@ y3 = list()
 y4 = list()
 
 for p in x:
-    n, a = f(p=p, r=2.0, K=1e6, rtol=rtol, atol=atol)
+    n, a = f(p=p, r=2., K=5.31e6, rtol=rtol, atol=atol)
     y1.append(np.abs(n - a))
 
 for p in x:
-    n, a = f(p=p, r=1.5, K=1e6, rtol=rtol, atol=atol)
+    n, a = f(p=p, r=1.5, K=5.31e6, rtol=rtol, atol=atol)
     y2.append(np.abs(n - a))
     
 for p in x:
-    n, a = f(p=p, r=1.1, K=1e6, rtol=rtol, atol=atol)
+    n, a = f(p=p, r=0.425, K=5.31e6, rtol=rtol, atol=atol)
     y3.append(np.abs(n - a))
 
 for p in x:
-    n, a = f(p=p, r=0.8, K=1e6, rtol=rtol, atol=atol)
+    n, a = f(p=p, r=0.8, K=5.31e6, rtol=rtol, atol=atol)
     y4.append(np.abs(n - a))
     
 fig = plt.figure(dpi=300)
 ax = plt.subplot()
+plt.grid(which="both")
 # ax.plot(x, y)
 # ax.semilogy(x, y)
 markersize = 5
 ax.scatter(x, y1, s=markersize)
 ax.scatter(x, y2, s=markersize)
-ax.scatter(x, y3, s=markersize)
+# ax.scatter(x, y3, s=markersize)
 ax.scatter(x, y4, s=markersize)
 ax.set_yscale("log")
+tkz.clean_figure()
+tkz.save("msm_abs_error_diverge.tex")
 
 #%%
 
@@ -89,8 +93,8 @@ y3 = list()
 y4 = list()
 
 for p in x:
-    r=2.0
-    c, x_num, x_an = f(p=p, r=r, K=1e6, rtol=rtol, atol=atol, only_b2=False)
+    r=2.
+    c, x_num, x_an = f(p=p, r=r, K=5.31e6, rtol=rtol, atol=atol, only_b2=False)
 
     A_jr_num = np.array([r**p, r**-p]*2) * x_num
     A_jr_an  = np.array([r**p, r**-p]*2) * x_an
@@ -102,7 +106,7 @@ for p in x:
     
 for p in x:
     r=1.5
-    c, x_num, x_an = f(p=p, r=r, K=1e6, rtol=rtol, atol=atol, only_b2=False)
+    c, x_num, x_an = f(p=p, r=r, K=5.31e6, rtol=rtol, atol=atol, only_b2=False)
 
     A_jr_num = np.array([r**p, r**-p]*2) * x_num
     A_jr_an  = np.array([r**p, r**-p]*2) * x_an
@@ -113,8 +117,8 @@ for p in x:
     y2.append(np.abs(n - a))
     
 for p in x:
-    r=1.1
-    c, x_num, x_an = f(p=p, r=r, K=1e6, rtol=rtol, atol=atol, only_b2=False)
+    r=0.425
+    c, x_num, x_an = f(p=p, r=r, K=5.31e6, rtol=rtol, atol=atol, only_b2=False)
 
     A_jr_num = np.array([r**p, r**-p]*2) * x_num
     A_jr_an  = np.array([r**p, r**-p]*2) * x_an
@@ -125,13 +129,17 @@ for p in x:
 
 for p in x:
     r=0.8
-    c, x_num, x_an = f(p=p, r=r, K=1e6, rtol=rtol, atol=atol, only_b2=False)
+    c, x_num, x_an = f(p=p, r=r, K=5.31e6, rtol=rtol, atol=atol, only_b2=False)
 
     A_jr_num = np.array([r**p, r**-p]*2) * x_num
     A_jr_an  = np.array([r**p, r**-p]*2) * x_an
     
     n = A_jr_num[3]
     a = A_jr_an[3]
+    
+    print(n)
+    print(a)
+    print()
     y4.append(np.abs(n - a))
     
 fig = plt.figure(dpi=300)
@@ -142,6 +150,9 @@ plt.grid(which="both")
 markersize = 5
 ax.scatter(x, y1, s=markersize)
 ax.scatter(x, y2, s=markersize)
-ax.scatter(x, y3, s=markersize)
+# ax.scatter(x, y3, s=markersize)
 ax.scatter(x, y4, s=markersize)
 ax.set_yscale("log")
+
+tkz.clean_figure()
+tkz.save("msm_abs_error_clean.tex")
