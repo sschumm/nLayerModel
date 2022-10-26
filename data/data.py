@@ -12,12 +12,14 @@ class Generator():
     delta_mag = 0.04   # [m] == 40 [mm]
     mu_r_yoke = 1e5    # ferro magnetic
     mu_r_core = 1      # G-10 CR (Fiberglass Epoxy) or Stainless Steel
+    Ic_spec = 650      # [A]
+    A_tape = (12*0.22) * 1e-6 # [m**2]
     
     
 class FieldWinding():
     
     T_HTS = 30 # [K] - LNe - Liquid Neon
-    J_e = 11.8e6 # [A/m2] == 20/1.7 ~ 11.8 [A/mm2] - engineering current density
+    J_e = 158.8e6 # [A/m2] == 270/1.7 ~ 158.8 [A/mm2] - engineering current density
     
     
 class StatorWinding_Cu():

@@ -6,11 +6,13 @@ Created on Tue Jul 26 14:36:32 2022
 """
 
 import numpy as np 
+import tikzplotlib as tp
 import matplotlib.pyplot as plt 
 
 from matplotlib import patches
 from scipy.constants import pi, mu_0
 from .colors import border_default, border_current, layer_default, layer_magnetic
+from .colors import colorAccent, colorRed
 from ..layer import MagneticLayer, CurrentLoading
 from ..model import Model
 
@@ -23,7 +25,7 @@ class RadialPlot():
         self.m = model
         
         self.fgsz_x = fgsz
-        self.fgsz_y = fgsz * 0.6
+        self.fgsz_y = fgsz
         self.machinesz = self.fgsz_y * 0.1
         self.lim = max(model.radii) * 1.2
         self.ymax = 1
@@ -52,68 +54,78 @@ class RadialPlot():
         for layer in reversed(self.m.layers):
             v_color = "black"
             if isinstance(layer, CurrentLoading):
-                v_color = "red"
+                v_color = colorRed
 
-            ax.axvline(layer.r, color=v_color, linewidth=4)
+            ax.axvline(layer.r, color=v_color, linewidth=2)
                     
             
     def _unpack_kwargs(self, ax, **kwargs):
         dr = kwargs.get("dr", self.fgsz_x * 50)
-        dt = kwargs.get("dt", self.fgsz_x * 50)
         r = np.linspace(0, self.lim, dr)
-        t = np.linspace(0, 2*pi, dt)
+        t = kwargs.get("t", 0)/self.m.p
         
         ax.grid(True)
-        if "title" in kwargs: 
-            ax.set_title(kwargs["title"], fontsize=self.fgsz_x*1.4)
+        title = kwargs.get("title", "")
+        ax.set_title(title, fontsize=self.fgsz_x*1.4)
+        tikz = kwargs.get("tikz", False)
 
-        a = kwargs.get("angle", 0)
-        a = (a % 360) / 360
-        return r, t, a
+        return r, t, tikz
                     
         
     def plot_radial_Az(self, **kwargs):
         fig, ax = self._set_up_plot()
-        r, t, a = self._unpack_kwargs(ax, **kwargs)
+        r, t, tikz = self._unpack_kwargs(ax, **kwargs)
         d = self.m.get_A_data(r, t)
         
         
-        this_Az = d.Az[int(len(t) * a)]
+        this_Az = d.Az.flatten() *1e-3
         self.ymax = np.nanmax(this_Az)
         self.ymin = np.nanmin(this_Az)
         self._set_plot_dims(ax)
         self._set_machine_dims(ax)
         fig.tight_layout()
-        ax.plot(r, this_Az)        
+        ax.plot(r, this_Az, linewidth=3, color=colorAccent) 
+        
+        if tikz:
+            tp.clean_figure()
+            tp.save("msm_radial_Ht.tex")
         
 
     def plot_radial_Br(self, **kwargs):
         fig, ax = self._set_up_plot()
-        r, t, a = self._unpack_kwargs(ax, **kwargs)
+        r, t, tikz = self._unpack_kwargs(ax, **kwargs)
         d = self.m.get_B_data(r, t)
         
-        this_Br = d.Br[int(len(t) * a)]
+        this_Br = d.Br.flatten()
         self.ymax = np.nanmax(this_Br)
         self.ymin = np.nanmin(this_Br)        
         self._set_plot_dims(ax)
         self._set_machine_dims(ax)
         fig.tight_layout()
-        ax.plot(r, this_Br) 
+        ax.plot(r, this_Br, linewidth=3, color=colorAccent) 
+        
+        if tikz:
+            tp.clean_figure()
+            tp.save("msm_radial_Ht.tex") 
     
     
     def plot_radial_Ht(self, **kwargs):
         fig, ax = self._set_up_plot()
-        r, t, a = self._unpack_kwargs(ax, **kwargs)
+        r, t, tikz = self._unpack_kwargs(ax, **kwargs)
         d = self.m.get_H_data(r, t)
         
 
-        this_Ht = d.Ht[int(len(t) * a)]
+        this_Ht = d.Ht.flatten() *1e-3
         self.ymax = np.nanmax(this_Ht)
         self.ymin = np.nanmin(this_Ht)
         self._set_plot_dims(ax)
         self._set_machine_dims(ax)
         fig.tight_layout()
-        ax.plot(r, this_Ht) 
+        ax.plot(r, this_Ht, linewidth=3, color=colorAccent) 
+        
+        if tikz:
+            tp.clean_figure()
+            tp.save("msm_radial_Ht.tex")
         
 
 

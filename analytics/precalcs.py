@@ -40,4 +40,7 @@ def Ns(p, q, Nc, a):
     den = a
     return num / den
 
-
+def yoke_height(p, r_si, B, B_max):
+    num = r_si * B
+    den = p * B_max
+    return num / den
