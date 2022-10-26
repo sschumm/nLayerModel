@@ -42,7 +42,7 @@ rso = 2.05
 # breadth factor, params taken from fig. 2
 coil_width = 0.12 # [m]
 coil_side_distance = 0.18 # [m]
-sigma_r = coil_width / (coil_width+coil_side_distance) # maybe better: coil_width*2/(r_f*pi/p)
+sigma_r = coil_width*2/(r_f*pi/p) # (coil_width*2)/(coil_width*2 + coil_side_distance) # coil_width / (coil_width+coil_side_distance) # maybe better: coil_width*2/(r_f*pi/p)
 kr_b = kb(n=1, sigma=sigma_r)
 
 # Stator Winding Factor
@@ -118,10 +118,24 @@ Bmax = np.max(np.sqrt(B.Br**2 + B.Bt**2))
 print(f"{Bmax = } [T]")
 
 #%% -------------------- create plots --------------------
-plt = PlanePlot(model, fgsz=70)
+plt = PlanePlot(model)
 # plt.contour(dr=1000, dt=1000, style="jet")
 plt.fluxplot(dr=1000, dt=1000, lvls=15)
 
 
 
-
+#%%
+# margin = 0.1
+# plt.fluxplot(dr=70, dt=100, lvls=10, lw=None,
+#              r_min=rri-margin, r_max=rso+margin,
+#              t_min=0, t_max=np.pi/12,
+#              custom_dims=True,
+#              y0=0, x0=rri*0.9,
+#              y1=rso*0.28,
+#              show_cbar=True, 
+#              show_axis=False,
+#              show_borders=True,
+#              transparent=True,
+#              padding=0,
+#              pdf=False, pdf_dpi=300, 
+#              svg=False, svg_dpi=300)

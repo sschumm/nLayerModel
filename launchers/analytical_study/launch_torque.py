@@ -65,7 +65,7 @@ rM_plot = RadialMultiPlot(model)
 rM_plot.set_Az_details(title="Az")
 rM_plot.set_Br_details(title="Br")
 rM_plot.set_Ht_details(title="Ht")
-rM_plot.multiplot(["Az", "Br", "Ht"], angle = 45)
+rM_plot.multiplot(["Az", "Br", "Ht"], t=0)
 
 
 #%% angle sweep

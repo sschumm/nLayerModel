@@ -12,6 +12,7 @@ from scipy.interpolate import griddata
 from scipy.constants import pi, mu_0
 from .colors import strp_winter, cntr_winter, cntr_jet, cntr_rb, flux, flux_cutoff
 from .colors import border_default, border_current, layer_default, layer_magnetic
+from .colors import colorAccent, colorRed
 from ..layer import MagneticLayer, CurrentLoading
 from ..model import Model
 
@@ -41,26 +42,45 @@ class PlanePlot():
         ax.tick_params(axis='both', which='minor', labelsize=int(0.8 * self.fgsz))
         
     
-    def _set_machine_dims(self, ax):
-        for layer in reversed(self.m.layers):
-            edgecolor = border_default
-            facecolor = layer_default
-            if isinstance(layer, CurrentLoading):
-                if not layer.mu == mu_0:
+    def _set_plot_dims_custom(self, ax, x0, x1, y0, y1):
+        ax.set_aspect(1)
+        ax.set_xlim(x0, x1)
+        ax.set_ylim(y0, y1)
+        
+    
+    def _set_machine_dims(self, ax, only_borders=False, bw=1):
+        if only_borders:
+            for layer in self.m.layers:
+                if isinstance(layer, CurrentLoading):
+                    edgecolor=colorRed
+                else:
+                    edgecolor="black"
+                ax.add_artist(plt.Circle((0,0),
+                                         layer.r,
+                                         fill = False,
+                                         edgecolor=edgecolor,
+                                         linestyle = "-",
+                                         linewidth = bw * 0.25 * self.fgsz,))
+        else:
+            for layer in reversed(self.m.layers):
+                edgecolor = border_default
+                facecolor = "white" #layer_default
+                if isinstance(layer, CurrentLoading):
+                    if not layer.mu == mu_0:
+                        facecolor = layer_magnetic
+                    edgecolor = colorRed
+                elif isinstance(layer, MagneticLayer):
                     facecolor = layer_magnetic
-                edgecolor = border_current
-            elif isinstance(layer, MagneticLayer):
-                facecolor = layer_magnetic
-            else: 
-                pass
-            ax.add_artist(plt.Circle((0, 0), 
-                                     layer.r, 
-                                     fill = True, 
-                                     edgecolor = edgecolor,
-                                     facecolor = facecolor, 
-                                     linestyle = "-",
-                                     linewidth = 0.1 * self.fgsz, 
-                                     alpha=0.7))
+                else: 
+                    pass
+                ax.add_artist(plt.Circle((0, 0), 
+                                         layer.r, 
+                                         fill = True, 
+                                         edgecolor = edgecolor,
+                                         facecolor = facecolor, 
+                                         linestyle = "-",
+                                         linewidth = bw * 0.1 * self.fgsz, 
+                                         alpha=1))
 
     
         
@@ -106,6 +126,9 @@ class PlanePlot():
         
         lvls = kwargs.get("lvls", 50)
         style = kwargs.get("style", "winter")
+        pdf = kwargs.get("pdf", False)
+        pdf_dpi = kwargs.get("pdf_dpi", 300)
+        pdf_name = kwargs.get("pdf_name", "pdf_contour.pdf")
         
         r = np.linspace(0, self.r_max, dr)
         t = np.linspace(0, 2*pi, dt) 
@@ -125,6 +148,12 @@ class PlanePlot():
                              vmin=np.nanmin(d.Az),
                              vmax=np.nanmax(d.Az),
                              cmap=cmap)
+            
+            if pdf: # only when printing pdfs for better performance otherwise
+                # This is the fix for the white lines between contour levels
+                for c in cs.collections:
+                    c.set_edgecolor("face")
+            
         else: 
             cs = ax.contour(d.X, d.Y, d.Az,
                              levels=lvls,
@@ -134,6 +163,8 @@ class PlanePlot():
             
         #ax.clabel(cs, inline=True, fontsize=self.fgsz)
         # fig.colorbar(cs, shrink = 0.8)
+        if pdf:
+            plt.savefig(pdf_name, dpi=pdf_dpi, bbox_inches="tight")
         
         print("INFO: finished contour.")
         
@@ -145,6 +176,9 @@ class PlanePlot():
         
         scale = kwargs.get("scale", None)
         width = kwargs.get("width", None)
+        pdf = kwargs.get("pdf", False)
+        pdf_dpi = kwargs.get("pdf_dpi", 300)
+        pdf_name = kwargs.get("pdf_name", "pdf_quiver.pdf")
         
         # r = np.linspace(0, self.r_max, dr)
         r = np.linspace(min(self.m.radii), max(self.m.radii), dr)
@@ -159,18 +193,51 @@ class PlanePlot():
                   cmap=flux, 
                   scale=scale, 
                   width=width) # color="b")
+        
+        if pdf:
+            plt.savefig(pdf_name, dpi=pdf_dpi, bbox_inches="tight")
+        
         print("INFO: finished quiver.")
         
         
     def fluxplot(self, dr, dt, **kwargs):
         fig, ax = self._set_up_plot()
-        self._set_plot_dims(ax)
-        # self._set_machine_dims(ax)
         
+        # --- detail ---
         lvls = kwargs.get("lvls", 50)
+        lw = kwargs.get("lw", None)
+        r_min = kwargs.get("r_min", 0)
+        r_max = kwargs.get("r_max", self.r_max)
+        t_min = kwargs.get("t_min", 0)
+        t_max = kwargs.get("t_max", 2*pi)
+        show_cbar = kwargs.get("show_cbar", True)
+        show_axis = kwargs.get("show_axis", True)
+        transparent = kwargs.get("transparent", False)
+        padding = kwargs.get("padding", 0.1)
+        show_borders = kwargs.get("show_borders", False)
         
-        r = np.linspace(0, self.r_max, dr)
-        t = np.linspace(0, 2*pi, dt)
+        # --- file export ---
+        pdf = kwargs.get("pdf", False)
+        pdf_dpi = kwargs.get("pdf_dpi", 300)
+        pdf_name = kwargs.get("pdf_name", "pdf_fluxplot.pdf")
+        svg = kwargs.get("svg", False)
+        svg_dpi = kwargs.get("svg_dpi", 300)
+        svg_name = kwargs.get("svg_name", "svg_fluxplot.svg")
+        
+        # --- custom dims ---
+        custom_dims = kwargs.get("custom_dims", False)
+        x0 = kwargs.get("x0", r_min)
+        x1 = kwargs.get("x1", r_max)
+        y0 = kwargs.get("y0", r_min)
+        y1 = kwargs.get("y1", r_max)
+        
+        if custom_dims:
+            self._set_plot_dims_custom(ax, x0, x1, y0, y1)
+        else:
+            self._set_plot_dims(ax)
+        
+        r = np.linspace(r_min, r_max, dr)
+        t = np.linspace(t_min, t_max, dt)
         
         print("INFO: computing fluxplot...")
         
@@ -186,16 +253,88 @@ class PlanePlot():
                             vmin=np.nanmin(B),
                             vmax=np.nanmax(B),
                             cmap=flux)
+        
+        if pdf or svg: # only when printing pdfs for better performance otherwise
+            # This is the fix for the white lines between contour levels
+            for c in cs_cf.collections:
+                c.set_edgecolor("face")
+        
         cs_c = ax.contour(dB.X, dB.Y, A,
                           levels=lvls,
                           vmin=np.nanmin(A),
                           vmax=np.nanmax(A),
-                          colors="black")
-        cbar = fig.colorbar(cs_cf, shrink = 0.8)
-        cbar.ax.tick_params(labelsize=self.fgsz)
+                          colors="black",
+                          linewidths=lw)
+        
+        if show_borders:
+            self._set_machine_dims(ax, only_borders=True)
+        
+        if not show_axis:
+            plt.axis('off')
+        
+        if show_cbar:
+            cbar = fig.colorbar(cs_cf, shrink = 0.8)
+            if show_axis: 
+                cbar.ax.tick_params(labelsize=self.fgsz)
+            else:
+                cbar.ax.get_yaxis().set_visible(False)
+        
+        if pdf:
+            plt.savefig(pdf_name, dpi=pdf_dpi, bbox_inches="tight")
+        
+        if svg:
+            plt.savefig(svg_name, dpi=svg_dpi, bbox_inches="tight", 
+                        transparent=transparent, pad_inches=padding)
 
         print("INFO: finished fluxplot.")
-    
+        
+        
+    def machineplot(self, **kwargs):
+        fig, ax = self._set_up_plot()
+        
+        # --- detail ---
+        r_min = kwargs.get("r_min", 0)
+        r_max = kwargs.get("r_max", self.r_max)
+        t_min = kwargs.get("t_min", 0)
+        t_max = kwargs.get("t_max", 2*pi)
+        show_axis = kwargs.get("show_axis", True)
+        transparent = kwargs.get("transparent", False)
+        padding = kwargs.get("padding", 0.1)
+        show_borders = kwargs.get("show_borders", False)
+        border_width = kwargs.get("border_width", 1)
+        
+        # --- file export ---
+        pdf = kwargs.get("pdf", False)
+        pdf_dpi = kwargs.get("pdf_dpi", 300)
+        pdf_name = kwargs.get("pdf_name", "pdf_fluxplot.pdf")
+        svg = kwargs.get("svg", False)
+        svg_dpi = kwargs.get("svg_dpi", 300)
+        svg_name = kwargs.get("svg_name", "svg_fluxplot.svg")
+        
+        # --- custom dims ---
+        custom_dims = kwargs.get("custom_dims", False)
+        x0 = kwargs.get("x0", r_min)
+        x1 = kwargs.get("x1", r_max)
+        y0 = kwargs.get("y0", r_min)
+        y1 = kwargs.get("y1", r_max)
+        
+        if not show_axis:
+            plt.axis('off')
+        
+        if custom_dims:
+            self._set_plot_dims_custom(ax, x0, x1, y0, y1)
+        else:
+            self._set_plot_dims(ax)
+            
+        self._set_machine_dims(ax, only_borders=False, bw=border_width)
+        
+        if pdf:
+            plt.savefig(pdf_name, dpi=pdf_dpi, bbox_inches="tight")
+        
+        if svg:
+            plt.savefig(svg_name, dpi=svg_dpi, bbox_inches="tight", 
+                        transparent=transparent, pad_inches=padding)
+        
 
 class PlaneDoublePlot(PlanePlot):
     
