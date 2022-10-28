@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 import numpy as np
+import matplotlib.pyplot as pyplot
 from scipy.constants import pi
 
 from modules import Model, MagneticLayer, AirLayer, CurrentLoading
 from modules.plot import PlanePlot
 
 from data import Generator, FieldWinding, StatorWinding
+
+from design import get_L_TPL2100
 
 
 
@@ -25,6 +28,8 @@ class n7_Model():
         self.gn = gn
         self.fw = fw
         self.sw = sw
+        
+        self.J_e_spec = gn.Ic_spec / (1.7 * gn.A_tape)
         
         self.J_e_s = sw.J_e
         self.J_e_r = fw.J_e
@@ -63,7 +68,7 @@ class n7_Model():
                                     self.gn.delta_mag)
             
     
-    def update_model(self, K_s, K_r, **kwargs):
+    def update_model_by_K(self, K_s, K_r, **kwargs):
         
         self.K_s = K_s
         self.K_r = K_r
@@ -122,8 +127,87 @@ class n7_Model():
         
         self.mdl = this_mdl
         self.plt = this_plt
+    
         
+    
+    def update_model_by_J(self, J_e_s, J_e_r, **kwargs):
+        self.J_e_s = J_e_s
+        self.J_e_r = J_e_r
+        K_s = self.k_fill_s * self.h_wndg_s * self.J_e_s
+        K_r = self.k_fill_r * self.h_wndg_r * self.J_e_r 
+        self.update_model_by_K(K_s, K_r, **kwargs)
+                
         
+    def apply_lift_factor(self, **kwargs):
+        
+        lift_factor_angle = kwargs.get("lift_factor_angle", 30)
+        verbose = kwargs.get("verbose", False)
+        
+        J_s_history = [self.J_e_s]
+        J_r_history = [self.J_e_r]        
+        K_s_history = [self.K_s]
+        K_r_history = [self.K_r]
+        
+        self.update_model_by_K(self.K_s, self.K_r)
+        
+        limit = 50
+        for idx in range(1, limit):
+            
+            J_e_s=get_L_TPL2100(T = self.sw.T_HTS, B = self.B_s_c, 
+                                theta = lift_factor_angle) * self.J_e_spec
+            J_e_r=get_L_TPL2100(T = self.fw.T_HTS, B = self.B_r_c, 
+                                theta = lift_factor_angle) * self.J_e_spec
+            
+            J_s_history.append(J_e_s)
+            J_r_history.append(J_e_r)
+                    
+            self.update_model_by_J(J_e_s=J_s_history[-2] * 0.4 + J_s_history[-1] * 0.6, 
+                                   J_e_r=J_r_history[-2] * 0.3 + J_r_history[-1] * 0.7, 
+                                   **kwargs)
+       
+            K_s_history.append(self.K_s)
+            K_r_history.append(self.K_r)
+            
+            if idx > 5:
+                if np.allclose(np.array(J_s_history[-4:-1]), self.J_e_s) and \
+                    np.allclose(np.array(J_r_history[-4:-1]), self.J_e_r):
+                        break
+            if idx == limit -1:
+                print("\nINFO: no convergence while applying lift factor ...\n")
+        
+            
+        # --- plot convergence ---
+        if verbose:
+            fig, axs = pyplot.subplots(2)            
+            fig.tight_layout() 
+            fig.dpi=500
+            fig.set_figheight(6)
+            fig.set_figwidth(5)
+
+            ax1 = axs[0]
+            ax1.grid()
+            ax2 = ax1.twinx()
+            ax3 = axs[1]
+            ax3.grid()
+            ax4 = ax3.twinx()
+            
+            ax1.set_xticks(range(1,len(K_s_history)+1))
+            ax1.scatter([i+1 for i in range(len(K_s_history))], 
+                        [y*1e-3 for y in K_s_history], c="b")
+            ax1.set_ylabel('K_s [kA/m]', color="b")
+            ax2.scatter([i+1 for i in range(len(K_r_history))], 
+                        [y*1e-3 for y in K_r_history], c="r", marker="x")
+            ax2.set_ylabel('K_r [kA/m]', color="r")
+            
+            ax3.set_xticks(range(1,len(J_s_history)+1))
+            ax3.scatter([i+1 for i in range(len(J_s_history))], 
+                        [y*1e-6 for y in J_s_history], c="b")
+            ax3.set_ylabel('J_e_s [A/mm2]', color="b")
+            ax4.scatter([i+1 for i in range(len(J_r_history))], 
+                        [y*1e-3 for y in K_r_history], c="r", marker="x")
+            ax4.set_ylabel('J_e_r [A/mm2]', color="r")
+        
+    
     def show_results(self, header="n7 - Results"):
         print("---", header, "---")
         print(f"M = {np.round(self.M * 1e-6, 2)} [MNm]")
