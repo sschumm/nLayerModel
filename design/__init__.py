@@ -7,4 +7,4 @@ from .deprecated.helpers import  create_n_Layer_model
 from .lift_factor import get_L_TPL2100
 
 # --- n7 ---
-from .n7_dimensions import n7_Dimensions
+from .n7_model import n7_Model
