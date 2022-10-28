@@ -11,6 +11,16 @@ class n7_Dimensions():
         self.r_rw = r_rw
         self.r_ro = r_ro
         self.r_ri = r_ri
+        
+        
+    def update_dimensions(self, h_yoke_s, h_yoke_r, h_wndg_s, h_wndg_r, delta_mag):
+        self.r_si = self.r_so - h_yoke_s
+        self.r_sw = self.r_si - h_wndg_s/2
+        self.r_ag = self.r_sw - h_wndg_s/2 - delta_mag/2
+        self.r_rw = self.r_ag - delta_mag/2 - h_wndg_r/2
+        self.r_ro = self.r_rw - h_wndg_r/2
+        self.r_ri = self.r_ro - h_yoke_r
+        
      
     def show(self, header="n7_Dimensions"):
         print("---", header, "---")
