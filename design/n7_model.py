@@ -207,7 +207,34 @@ class n7_Model():
                         [y*1e-3 for y in K_r_history], c="r", marker="x")
             ax4.set_ylabel('J_e_r [A/mm2]', color="r")
         
+        
+    def fast_flux(self, **kwargs):
+        
+        margin = kwargs.get("margin", 0.05)
+        
+        export_pdf = kwargs.get("pdf", False)
+        export_svg = kwargs.get("svg", False)
+        
+        r_max = self.dims.r_so * 1.05
+        show_axis=True
+            
+        
+        self.plt.fluxplot(dr=1000, dt=300, lvls=10, lw=None,
+                          t_min=0, t_max=np.pi/2,
+                          custom_dims=True,
+                          y0=0, x0=0,
+                          y1=r_max, x1=r_max,
+                          show_cbar=True, 
+                          show_axis=show_axis,
+                          show_borders=True,
+                          border_width=0.2,
+                          transparent=True,
+                          padding=0,
+                          pdf=export_pdf, pdf_dpi=300, 
+                          svg=export_svg, svg_dpi=300)
     
+        
+        
     def show_results(self, header="n7 - Results"):
         print("---", header, "---")
         print(f"M = {np.round(self.M * 1e-6, 2)} [MNm]")
