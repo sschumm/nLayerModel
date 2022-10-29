@@ -14,6 +14,9 @@ class Generator():
     mu_r_core = 1      # G-10 CR (Fiberglass Epoxy) or Stainless Steel
     Ic_spec = 650      # [A]
     A_tape = (12*0.22) * 1e-6 # [m**2]
+    h_pole_frame = 0.009 # [m] == 9 [mm] due to h_pressure_plate 18 [mm] / 2
+    w_pole_frame = 0.009 # [m] same reasoning as above
+    r_bend_max = 0.02 # [m] == 20 [mm] 
     
     
 class FieldWinding():
