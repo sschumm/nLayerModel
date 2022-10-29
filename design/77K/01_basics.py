@@ -28,7 +28,7 @@ generator = n7_Model(p, l_e, r_so,
 h_yoke_s, h_yoke_r = 0.02 * r_so, 0.02 * r_so
 h_wndg_s, h_wndg_r = 0.5 * gn.delta_mag, 0.5 * gn.delta_mag
 
-generator.update_dimensions(h_yoke_s, h_yoke_r, h_wndg_s, h_wndg_r)
+generator.init_dimensions(h_yoke_s, h_yoke_r, h_wndg_s, h_wndg_r)
 
 
 # --- compute initial current loadings and with it the initial model ---
@@ -54,10 +54,10 @@ h_yoke_s = yoke_height(generator.p, generator.dims.r_si,
 h_yoke_r = yoke_height(generator.p, generator.dims.r_ro, 
                        generator.B_r, generator.B_yoke_max)
 
-generator.update_dimensions(h_yoke_s, h_yoke_r, h_wndg_s, h_wndg_r)
+generator.update_dimensions(h_yoke_s=h_yoke_s, h_yoke_r=h_yoke_r)
 generator.apply_lift_factor(verbose = False)
 generator.show_results("Results with adapted yokes")
-if 1: generator.fast_flux()
+if 0: generator.fast_flux()
 
 #%% --- vary h_wndg_r ---
 if 1:
@@ -66,10 +66,10 @@ if 1:
     
     for idx_h_wndg_r in range(100):
         h_wndg_r = iter_h_wndg_r[-1] + iter_h_wndg_r[0] * increasing_h_by_factor
-        generator.update_dimensions(h_yoke_s, h_yoke_r, h_wndg_s, h_wndg_r)
+        generator.update_dimensions(h_wndg_r=h_wndg_r)
         generator.apply_lift_factor()
         
-        iter_h_wndg_r.append(h_wndg_r)
+        iter_h_wndg_r.append(generator.h_wndg_r)
         iter_P_h_wndg_r.append(generator.P)
         
     
@@ -88,7 +88,7 @@ if 1:
 #%% --- select h_wndg_r ---
 if 1:
     h_wndg_r = 0.1
-    generator.update_dimensions(h_yoke_s, h_yoke_r, h_wndg_s, h_wndg_r)
+    generator.update_dimensions(h_wndg_r=h_wndg_r)
     generator.apply_lift_factor(verbose=True)
     generator.show_results("Results for adapted h_wndg_r")
     if 0: generator.fast_flux()
@@ -102,7 +102,7 @@ if 1:
     
     for idx_h_wndg_s in range(50):
         h_wndg_s = iter_h_wndg_s[-1] + iter_h_wndg_s[0] * increasing_h_by_factor
-        generator.update_dimensions(h_yoke_s, h_yoke_r, h_wndg_s, h_wndg_r)
+        generator.update_dimensions(h_wndg_s=h_wndg_s)
         generator.apply_lift_factor()
         
         iter_h_wndg_s.append(h_wndg_s)
@@ -124,10 +124,10 @@ if 1:
 #%% --- select h_wndg_s ---
 if 1:
     h_wndg_s = 0.05 
-    generator.update_dimensions(h_yoke_s, h_yoke_r, h_wndg_s, h_wndg_r)
+    generator.update_dimensions(h_wndg_s=h_wndg_s)
     generator.apply_lift_factor(verbose=True)
     generator.show_results("Results for adapted h_wndg_s")
-    if 1: generator.fast_flux()
+    if 0: generator.fast_flux()
         
 
 

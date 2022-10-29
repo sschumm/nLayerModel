@@ -66,13 +66,23 @@ class n7_Model():
         
     
               
-    def update_dimensions(self, h_yoke_s, h_yoke_r, h_wndg_s, h_wndg_r):
+    def init_dimensions(self, h_yoke_s, h_yoke_r, h_wndg_s, h_wndg_r):
         self.h_yoke_s = h_yoke_s
         self.h_yoke_r = h_yoke_r
         self.h_wndg_s = h_wndg_s
         self.h_wndg_r = h_wndg_r
         self.dims.update_dimensions(h_yoke_s, h_yoke_r, 
                                     h_wndg_s, h_wndg_r, 
+                                    self.gn.delta_mag)
+        
+        
+    def update_dimensions(self, **kwargs):
+        self.h_yoke_s = kwargs.get("h_yoke_s", self.h_yoke_s)
+        self.h_yoke_r = kwargs.get("h_yoke_r", self.h_yoke_r)
+        self.h_wndg_s = kwargs.get("h_wndg_s", self.h_wndg_s)
+        self.h_wndg_r = kwargs.get("h_wndg_r", self.h_wndg_r)
+        self.dims.update_dimensions(self.h_yoke_s, self.h_yoke_r, 
+                                    self.h_wndg_s, self.h_wndg_r, 
                                     self.gn.delta_mag)
             
     
