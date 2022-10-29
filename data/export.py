@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import pathlib
+import datetime
 from data import Generator as gn
 from data import StatorWinding_77K
 from design import Main_Params, Main_Dims, Main_Results
@@ -66,7 +67,11 @@ def save_params_as_txt(filename: str, dims: Main_Dims,
 
 def save_params(filename: str, model: n7_Model, **kwargs):
     
-    path = pathlib.Path(__file__).parent / "comsol" / (filename + ".txt")
+    now = datetime.datetime.now()
+    timestamp = f"{now.month}{now.day}_{now.hour}{now.minute}_"
+    
+    
+    path = pathlib.Path(__file__).parent / "comsol" / (timestamp + filename + ".txt")
     sw = kwargs.get("sw", StatorWinding_77K)
     
     with open(path, "w") as text_file:
