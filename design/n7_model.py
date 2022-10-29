@@ -285,9 +285,9 @@ class n7_Model():
             print(f"\nConfiguration invalid due to {h_rc = } [m]")
             configuration_valid = False
         else:
-            l_rc = A_rc/h_rc
+            w_rc = A_rc/h_rc
         
-        r_r_bend = 0.5 * (w_rp - 2 * self.gn.w_pole_frame - 2 * l_rc)
+        r_r_bend = 0.5 * (w_rp - 2 * self.gn.w_pole_frame - 2 * w_rc)
         
         # --- stator ---
         w_sp = (2 * pi * (self.dims.r_si - self.h_wndg_s)) / (3 * self.p)
@@ -298,13 +298,13 @@ class n7_Model():
             print(f"\nConfiguration invalid due to {h_sc = } [m]")
             configuration_valid = False
         else:
-            l_sc = A_sc/h_sc
+            w_sc = A_sc/h_sc
         
-        r_s_bend = 0.5 * (w_sp - 2 * self.gn.w_pole_frame - 2 * l_sc)
+        r_s_bend = 0.5 * (w_sp - 2 * self.gn.w_pole_frame - 2 * w_sc)
         
         if configuration_valid:
-            self.coil = coil_Dimensions(w_rp, A_rc, h_rc, l_rc, r_r_bend, 
-                                        w_sp, A_sc, h_sc, l_sc, r_s_bend)
+            self.coil = coil_Dimensions(w_rp, A_rc, h_rc, w_rc, r_r_bend, 
+                                        w_sp, A_sc, h_sc, w_sc, r_s_bend)
         else:
             self.coil = "Invalid Configuration"
         
@@ -327,18 +327,18 @@ class n7_Model():
 
 class coil_Dimensions():
     
-    def __init__(self, w_rp, A_rc, h_rc, l_rc, r_r_bend,
-                       w_sp, A_sc, h_sc, l_sc, r_s_bend):
+    def __init__(self, w_rp, A_rc, h_rc, w_rc, r_r_bend,
+                       w_sp, A_sc, h_sc, w_sc, r_s_bend):
         
         self.w_rp = w_rp 
         self.A_rc = A_rc
         self.h_rc = h_rc
-        self.l_rc = l_rc
+        self.w_rc = w_rc
         self.r_r_bend = r_r_bend
         self.w_sp = w_sp
         self.A_sc = A_sc
         self.h_sc = h_sc
-        self.l_sc = l_sc
+        self.w_sc = w_sc
         self.r_s_bend = r_s_bend
         
     def show(self, header="Coil - Dimensions"):
@@ -346,12 +346,12 @@ class coil_Dimensions():
         print(f"w_rp = {self.w_rp} [m]")
         print(f"A_rc = {self.A_rc} [m]")
         print(f"h_rc = {self.h_rc} [m]")
-        print(f"l_rc = {self.l_rc} [m]")
+        print(f"w_rc = {self.w_rc} [m]")
         print(f"r_r_bend = {self.r_r_bend} [m]")
         print(f"w_sp = {self.w_sp} [m]")
         print(f"A_sc = {self.A_sc} [m]")
         print(f"h_sc = {self.h_sc} [m]")
-        print(f"l_sc = {self.l_sc} [m]")
+        print(f"w_sc = {self.w_sc} [m]")
         print(f"r_s_bend = {self.r_s_bend} [m]")
             
     
