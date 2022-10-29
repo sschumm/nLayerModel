@@ -204,13 +204,11 @@ class n7_Model():
                         [y*1e-6 for y in J_s_history], c="b")
             ax3.set_ylabel('J_e_s [A/mm2]', color="b")
             ax4.scatter([i+1 for i in range(len(J_r_history))], 
-                        [y*1e-3 for y in K_r_history], c="r", marker="x")
+                        [y*1e-6 for y in J_r_history], c="r", marker="x")
             ax4.set_ylabel('J_e_r [A/mm2]', color="r")
         
         
     def fast_flux(self, **kwargs):
-        
-        margin = kwargs.get("margin", 0.05)
         
         export_pdf = kwargs.get("pdf", False)
         export_svg = kwargs.get("svg", False)
