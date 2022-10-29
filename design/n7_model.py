@@ -50,11 +50,19 @@ class n7_Model():
         self.K_s = 0.0
         self.K_r = 0.0
         
+        self.ks_d = 1
+        self.ks_p = 1
+        self.kr_b = 1
+        
+        self.B_s = 0.0
+        self.B_r = 0.0
         self.B_s_c = 0.0
         self.B_r_c = 0.0
         
         self.M = 0.0
         self.P = 0.0
+        
+        self.coil = None
         
     
               
@@ -76,9 +84,9 @@ class n7_Model():
         alpha_r = kwargs.get("alpha_r", pi/2)
         alpha_s = kwargs.get("alpha_s", 0.0)
         
-        ks_d = kwargs.get("ks_d", 1)
-        ks_p = kwargs.get("ks_p", 1)
-        kr_b = kwargs.get("kr_b", 1)
+        self.ks_d = kwargs.get("ks_d", 1)
+        self.ks_p = kwargs.get("ks_p", 1)
+        self.kr_b = kwargs.get("kr_b", 1)
         
         this_mdl = Model(self.p, self.l_e)
         
@@ -86,13 +94,13 @@ class n7_Model():
         this_mdl.add_layer(MagneticLayer(r=self.dims.r_ro, 
                                     mu_r=self.gn.mu_r_yoke))
    
-        this_mdl.add_layer(CurrentLoading(K=K_r*np.sqrt(2)*kr_b, 
+        this_mdl.add_layer(CurrentLoading(K=K_r*np.sqrt(2)*self.kr_b, 
                                     r=self.dims.r_rw, 
                                     alpha=alpha_r,
                                     mu_r=1.
                                     ))
 
-        this_mdl.add_layer(CurrentLoading(K=K_s*np.sqrt(2)*ks_d*ks_p,
+        this_mdl.add_layer(CurrentLoading(K=K_s*np.sqrt(2)*self.ks_d*self.ks_p,
                                     r=self.dims.r_sw,
                                     alpha=alpha_s,
                                     mu_r=1.
@@ -112,6 +120,9 @@ class n7_Model():
                                                     self.dims.r_sw]), 
                                         t=np.linspace(0, np.pi/self.p, 400)
                                         )
+        
+        self.B_r = np.max(np.abs(flux_data.Br[:, 0]))
+        self.B_s = np.max(np.abs(flux_data.Br[:, 1]))
         
         self.B_r_c = np.max(np.abs(np.sin(np.pi/6) * flux_data.Br[:,0] + \
                               np.cos(np.pi/6) * flux_data.Bt[:, 0])
@@ -144,7 +155,11 @@ class n7_Model():
         verbose = kwargs.get("verbose", False)
         
         J_s_history = [self.J_e_s]
-        J_r_history = [self.J_e_r]        
+        J_r_history = [self.J_e_r]   
+        
+        self.K_s = self.k_fill_s * self.h_wndg_s * self.J_e_s
+        self.K_r = self.k_fill_r * self.h_wndg_r * self.J_e_r
+        
         K_s_history = [self.K_s]
         K_r_history = [self.K_r]
         
@@ -152,11 +167,25 @@ class n7_Model():
         
         limit = 50
         for idx in range(1, limit):
+            B_s_c = self.B_s_c
+            B_r_c = self.B_r_c            
             
-            J_e_s=get_L_TPL2100(T = self.sw.T_HTS, B = self.B_s_c, 
+            J_e_s=get_L_TPL2100(T = self.sw.T_HTS, B = B_s_c, 
                                 theta = lift_factor_angle) * self.J_e_spec
-            J_e_r=get_L_TPL2100(T = self.fw.T_HTS, B = self.B_r_c, 
+            J_e_r=get_L_TPL2100(T = self.fw.T_HTS, B = B_r_c, 
                                 theta = lift_factor_angle) * self.J_e_spec
+            
+            while np.isnan(J_e_s):
+                print("\nINFO: lift_factor overflow for J_e_s...")
+                B_s_c *= 0.9
+                J_e_s=get_L_TPL2100(T = self.sw.T_HTS, B = B_s_c, 
+                                    theta = lift_factor_angle) * self.J_e_spec
+                
+            if np.isnan(J_e_r):
+                print("\nINFO: lift_factor overflow for J_e_r...")
+                B_r_c += 0.9
+                J_e_r=get_L_TPL2100(T = self.fw.T_HTS, B = B_r_c, 
+                                    theta = lift_factor_angle) * self.J_e_spec
             
             J_s_history.append(J_e_s)
             J_r_history.append(J_e_r)
@@ -168,9 +197,8 @@ class n7_Model():
             K_s_history.append(self.K_s)
             K_r_history.append(self.K_r)
             
-            if idx > 5:
-                if np.allclose(np.array(J_s_history[-4:-1]), self.J_e_s) and \
-                    np.allclose(np.array(J_r_history[-4:-1]), self.J_e_r):
+            if idx > 20:
+                if np.allclose(np.array(J_s_history[-4:-1]), self.J_e_s) and np.allclose(np.array(J_r_history[-4:-1]), self.J_e_r):
                         break
             if idx == limit -1:
                 print("\nINFO: no convergence while applying lift factor ...\n")
@@ -183,13 +211,17 @@ class n7_Model():
             fig.dpi=500
             fig.set_figheight(6)
             fig.set_figwidth(5)
-
+            
             ax1 = axs[0]
+            ax1.ticklabel_format(useOffset=False)
             ax1.grid()
             ax2 = ax1.twinx()
+            ax2.ticklabel_format(useOffset=False)
             ax3 = axs[1]
+            ax3.ticklabel_format(useOffset=False)
             ax3.grid()
             ax4 = ax3.twinx()
+            ax4.ticklabel_format(useOffset=False)
             
             ax1.set_xticks(range(1,len(K_s_history)+1))
             ax1.scatter([i+1 for i in range(len(K_s_history))], 
@@ -230,11 +262,45 @@ class n7_Model():
                           padding=0,
                           pdf=export_pdf, pdf_dpi=300, 
                           svg=export_svg, svg_dpi=300)
+        
     
+    def coil_shapes(self):
+        configuration_valid = True
+        # --- rotor ---
+        w_rp = pi * self.dims.r_ro/self.p
+        
+        A_rc = self.k_fill_r * (self.h_wndg_r * w_rp)/2
+        h_rc = self.h_wndg_r - 2 * self.gn.h_pole_frame
+        if h_rc <= 0:
+            print(f"\nConfiguration invalid due to {h_rc = } [m]")
+            configuration_valid = False
+        else:
+            l_rc = A_rc/h_rc
+        
+        r_r_bend = 0.5 * (w_rp - 2 * self.gn.w_pole_frame - 2 * l_rc)
+        
+        # --- stator ---
+        w_sp = (2 * pi * (self.dims.r_si - self.h_wndg_s)) / (3 * self.p)
+        
+        A_sc = self.k_fill_s * (self.h_wndg_s * w_sp)/2
+        h_sc = self.h_wndg_s - 2 * self.gn.h_pole_frame
+        if h_sc <= 0:
+            print(f"\nConfiguration invalid due to {h_sc = } [m]")
+            configuration_valid = False
+        else:
+            l_sc = A_sc/h_sc
+        
+        r_s_bend = 0.5 * (w_sp - 2 * self.gn.w_pole_frame - 2 * l_sc)
+        
+        if configuration_valid:
+            self.coil = coil_Dimensions(w_rp, A_rc, h_rc, l_rc, r_r_bend, 
+                                        w_sp, A_sc, h_sc, l_sc, r_s_bend)
+        else:
+            self.coil = "Invalid Configuration"
         
         
     def show_results(self, header="n7 - Results"):
-        print("---", header, "---")
+        print("\n---", header, "---")
         print(f"M = {np.round(self.M * 1e-6, 2)} [MNm]")
         print(f"P = {np.round(self.P * 1e-6, 2)} [MW]")
         print(f"K_r = {np.round(self.K_r * 1e-3, 2)} [kA/m]")
@@ -249,7 +315,35 @@ class n7_Model():
         print(f"J_e_s = {np.round(self.J_e_s * 1e-6, 4)} [A/mm2]")
         
 
+class coil_Dimensions():
     
+    def __init__(self, w_rp, A_rc, h_rc, l_rc, r_r_bend,
+                       w_sp, A_sc, h_sc, l_sc, r_s_bend):
+        
+        self.w_rp = w_rp 
+        self.A_rc = A_rc
+        self.h_rc = h_rc
+        self.l_rc = l_rc
+        self.r_r_bend = r_r_bend
+        self.w_sp = w_sp
+        self.A_sc = A_sc
+        self.h_sc = h_sc
+        self.l_sc = l_sc
+        self.r_s_bend = r_s_bend
+        
+    def show(self, header="Coil - Dimensions"):
+        print("\n---", header, "---")
+        print(f"w_rp = {self.w_rp} [m]")
+        print(f"A_rc = {self.A_rc} [m]")
+        print(f"h_rc = {self.h_rc} [m]")
+        print(f"l_rc = {self.l_rc} [m]")
+        print(f"r_r_bend = {self.r_r_bend} [m]")
+        print(f"w_sp = {self.w_sp} [m]")
+        print(f"A_sc = {self.A_sc} [m]")
+        print(f"h_sc = {self.h_sc} [m]")
+        print(f"l_sc = {self.l_sc} [m]")
+        print(f"r_s_bend = {self.r_s_bend} [m]")
+            
     
 class n7_Dimensions():
     
@@ -273,7 +367,7 @@ class n7_Dimensions():
         
      
     def show(self, header="n7 - Dimensions"):
-        print("---", header, "---")
+        print("\n---", header, "---")
         print(f"r_so = {np.round(self.r_so, 4)} [m]")
         print(f"r_si = {np.round(self.r_si, 4)} [m]")
         print(f"r_sw = {np.round(self.r_sw, 4)} [m]")
