@@ -22,6 +22,8 @@ class n7_Model():
         
         self.p = p
         self.l_e = l_e
+        self.q = 0.5
+        self.f = self.p * gn.n_syn / 60
         
         self.dims = n7_Dimensions(r_so)
         
@@ -40,7 +42,6 @@ class n7_Model():
 
         self.mdl = Model(self.p, self.l_e)
         self.plt = None
-        self.res = None
         
         self.h_yoke_s = 0.0
         self.h_yoke_r = 0.0
@@ -308,7 +309,27 @@ class n7_Model():
         else:
             self.coil = "Invalid Configuration"
         
+    
+    def guess_Ns(self):
+        tau_p = (self.dims.r_si * pi) / self.p
+        flux_data = self.mdl.get_B_data(r=np.array([self.dims.r_ag]), 
+                                        t=np.linspace(0, np.pi/self.p, 400)
+                                        )
+        B_delta_hat = np.max(np.abs(flux_data.Br[:, 0]))
         
+        num = self.gn.U_LL_N / np.sqrt(3)
+        den = np.sqrt(2)*2 * self.f * self.ks_d * self.ks_p * self.l_e * tau_p * B_delta_hat
+        
+        N_s = num / den
+        return N_s
+    
+    
+    def guess_N_c_div_a(self, **kwargs):
+        N_s = kwargs.get("N_s", self.guess_Ns())
+        N_c_div_a = N_s / (2*self.p*self.q)
+        return N_c_div_a
+    
+    
     def show_results(self, header="n7 - Results"):
         print("\n---", header, "---")
         print(f"M = {np.round(self.M * 1e-6, 2)} [MNm]")
