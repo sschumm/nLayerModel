@@ -64,6 +64,7 @@ class n7_Model():
         self.P = 0.0
         
         self.coil = None
+        self.J_s_amplitude = 0.0
         
     
               

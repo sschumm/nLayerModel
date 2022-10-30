@@ -154,11 +154,12 @@ I_s = generator.P / (np.sqrt(3) * generator.gn.U_LL_N)
 ampere_turns_stator = N_c_div_a * I_s
 
 J_s_amplitude = np.sqrt(2) * ampere_turns_stator / generator.coil.A_sc
+generator.J_s_amplitude = J_s_amplitude
 
 print(f"\n{I_s = } [A] \n{ampere_turns_stator = } [A] \n{J_s_amplitude = } [A/m2] \n{J_s_amplitude*1e-6 = }[A_mm2]")
 
 #%%
-# save_params("from_python", generator)
+save_params("from_python", generator)
 
 
 
