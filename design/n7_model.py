@@ -23,7 +23,6 @@ class n7_Model():
         self.p = p
         self.l_e = l_e
         self.q = 0.5
-        self.f = self.p * gn.n_syn / 60
         
         self.dims = n7_Dimensions(r_so)
         
@@ -31,6 +30,7 @@ class n7_Model():
         self.fw = fw
         self.sw = sw
         
+        self.f = self.p * self.gn.n_syn / 60
         self.J_e_spec = gn.Ic_spec / (1.7 * gn.A_tape)
         
         self.J_e_s = sw.J_e

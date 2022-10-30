@@ -58,10 +58,10 @@ h_yoke_r = yoke_height(generator.p, generator.dims.r_ro,
 generator.update_dimensions(h_yoke_s=h_yoke_s, h_yoke_r=h_yoke_r)
 generator.apply_lift_factor(verbose = False)
 generator.show_results("Results with adapted yokes")
-generator.fast_flux()
+# generator.fast_flux()
 
 #%% --- vary h_wndg_s ---
-if 1:
+if 0:
     increasing_h_by_factor=0.01
     iter_P_h_wndg_s, iter_h_wndg_s = [generator.P], [generator.h_wndg_s]
     
@@ -92,7 +92,7 @@ if 1:
 if 1:
     h_wndg_s = 0.029
     generator.update_dimensions(h_wndg_s=h_wndg_s)
-    generator.apply_lift_factor(verbose=True)
+    generator.apply_lift_factor(verbose=False)
     h_yoke_s = yoke_height(generator.p, generator.dims.r_si, 
                            generator.B_s, generator.B_yoke_max)
     generator.update_dimensions(h_yoke_s=h_yoke_s)
@@ -101,7 +101,7 @@ if 1:
     # generator.fast_flux()
 
 #%% --- vary h_wndg_r ---
-if 1:
+if 0:
     increasing_h_by_factor=0.05
     iter_P_h_wndg_r, iter_h_wndg_r = [generator.P], [generator.h_wndg_r*0.8]
     
@@ -132,7 +132,7 @@ if 1:
 if 1:
     h_wndg_r = 0.03
     generator.update_dimensions(h_wndg_r=h_wndg_r)
-    generator.apply_lift_factor(verbose=True)
+    generator.apply_lift_factor(verbose=False)
     h_yoke_r = yoke_height(generator.p, generator.dims.r_ro, 
                            generator.B_r, generator.B_yoke_max)
     generator.update_dimensions(h_yoke_r=h_yoke_r)
@@ -144,9 +144,21 @@ if 1:
 generator.coil_shapes()
 generator.coil.show()
 
+#%%
+N_s = int(generator.guess_Ns())
+N_c_div_a = int(generator.guess_N_c_div_a(N_s = N_s))
+
+print(f"\n{N_s = } \n{N_c_div_a = }")
+
+I_s = generator.P / (np.sqrt(3) * generator.gn.U_LL_N)
+ampere_turns_stator = N_c_div_a * I_s
+
+J_s_amplitude = np.sqrt(2) * ampere_turns_stator / generator.coil.A_sc
+
+print(f"\n{I_s = } [A] \n{ampere_turns_stator = } [A] \n{J_s_amplitude = } [A/m2] \n{J_s_amplitude*1e-6 = }[A_mm2]")
 
 #%%
-save_params("from_python", generator)
+# save_params("from_python", generator)
 
 
 
