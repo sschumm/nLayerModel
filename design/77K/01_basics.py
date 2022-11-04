@@ -36,7 +36,7 @@ generator.init_dimensions(h_yoke_s, h_yoke_r, h_wndg_s, h_wndg_r)
 K_s = generator.k_fill_s * generator.J_e_s * generator.h_wndg_s
 K_r = generator.k_fill_r * generator.J_e_r * generator.h_wndg_r
 
-generator.update_model_by_K(K_s = K_s, K_r = K_r, ks_d=0.9577)
+generator.update_model_by_K(K_s = K_s, K_r = K_r, ks_d=0.9577, kr_b=0.6)
 generator.show_results("Results for the initial model")
 # generator.fast_flux()
 
@@ -154,12 +154,26 @@ I_s = generator.P / (np.sqrt(3) * generator.gn.U_LL_N)
 ampere_turns_stator = N_c_div_a * I_s
 
 J_s_amplitude = np.sqrt(2) * ampere_turns_stator / generator.coil.A_sc
+generator.N_s = N_s
 generator.J_s_amplitude = J_s_amplitude
 
 print(f"\n{I_s = } [A] \n{ampere_turns_stator = } [A] \n{J_s_amplitude = } [A/m2] \n{J_s_amplitude*1e-6 = }[A_mm2]")
 
 #%%
-save_params("from_python", generator)
+# save_params("from_python", generator)
+
+
+#%%
+
+# theta = np.linspace(0, 2*np.pi/generator.p, 400)
+# flux_data = generator.mdl.get_B_data(r=np.array([generator.dims.r_ag]), 
+#                                 t=theta
+#                                 )
+
+# fig = pyplot.figure(dpi=300)
+# ax = pyplot.subplot()
+# ax.plot(theta, np.sqrt(flux_data.Br**2 + flux_data.Bt**2))
+
 
 
 

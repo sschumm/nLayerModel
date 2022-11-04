@@ -64,6 +64,7 @@ class n7_Model():
         self.P = 0.0
         
         self.coil = None
+        self.N_s = 0
         self.J_s_amplitude = 0.0
         
     
@@ -96,9 +97,9 @@ class n7_Model():
         alpha_r = kwargs.get("alpha_r", pi/2)
         alpha_s = kwargs.get("alpha_s", 0.0)
         
-        self.ks_d = kwargs.get("ks_d", 1)
-        self.ks_p = kwargs.get("ks_p", 1)
-        self.kr_b = kwargs.get("kr_b", 1)
+        self.ks_d = kwargs.get("ks_d", self.ks_d)
+        self.ks_p = kwargs.get("ks_p", self.ks_p)
+        self.kr_b = kwargs.get("kr_b", self.kr_b)
         
         this_mdl = Model(self.p, self.l_e)
         
