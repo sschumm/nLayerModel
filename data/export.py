@@ -73,13 +73,16 @@ def save_params(filename: str, model: n7_Model, **kwargs):
         print(f"h_sc {model.coil.h_sc}[m] height of one stator coil per pole pair", file=text_file)
         print(f"w_sc {model.coil.w_sc}[m] width of one stator coil per pole pair", file=text_file)
         
+        print(f"N_s {model.N_s} number of turns per phase", file=text_file)
         print(f"J_s_amplitude {model.J_s_amplitude}[A/m^2] amplitude of the stator current density", file=text_file)
-        print(f"omega 314.16[1/s]", file=text_file)
         
         
         
         print("PARAMS_DERIVED 1", file=text_file)
         
+        print(f"omega 2*pi*n_syn*p electrical angular frequency", file=text_file)
+        print(f"T_el 1/(n_syn*p) electrical period", file=text_file)
+        print(f"T_el_noUnit T_el*1[1/s] electrical period without unit", file=text_file)
         print("tau_p (pi*r_si)/p pole pitch", file=text_file)
         print("phi_tau_p 360[°]/(2*p) pole pitch angle", file=text_file)
         print("phi_sector 2*phi_tau_p sector angle", file=text_file)
@@ -87,6 +90,9 @@ def save_params(filename: str, model: n7_Model, **kwargs):
         print("phi_rw2 phi_tau_p*(3/2) angle for upper rotor winding", file=text_file)
         print("psi_sw_W phi_sector*(1/3) angle for stator winding W", file=text_file)
         print("psi_sw_V phi_sector*(2/3) angle for stator winding V", file=text_file)
+        print("alpha 0 torque generating angle", file=text_file)
+        print("TDC_steps 50 steps in time dependant coarse study", file=text_file)
+        print("TDF_steps 300 steps in time dependant fine study", file=text_file)
         
     print("\nINFO: data export succesfull")
 
