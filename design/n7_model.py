@@ -310,6 +310,14 @@ class n7_Model():
                                         w_sp, A_sc, h_sc, w_sc, r_s_bend)
         else:
             self.coil = "Invalid Configuration"
+            
+            
+    def apply_coil_sizes(self):
+        self.coil_shapes()
+        kr_b = 2 * self.coil.w_rc / self.coil.w_rp
+        self.update_model_by_K(K_s=self.K_s,
+                               K_r=self.K_r,
+                               kr_b=kr_b)
         
     
     def guess_Ns(self):
