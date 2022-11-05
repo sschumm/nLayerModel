@@ -320,6 +320,13 @@ class n7_Model():
                                kr_b=kr_b)
         
     
+    def apply_coil_sizes_and_lift_factor(self, **kwargs):
+        
+        self.apply_coil_sizes()
+        self.apply_lift_factor(**kwargs)
+    
+        
+    
     def guess_Ns(self):
         tau_p = (self.dims.r_si * pi) / self.p
         flux_data = self.mdl.get_B_data(r=np.array([self.dims.r_ag]), 

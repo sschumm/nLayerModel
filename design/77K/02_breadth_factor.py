@@ -41,9 +41,18 @@ generator.update_model_by_K(K_s = K_s, K_r = K_r, ks_d=0.9577)
 # generator.fast_flux()
 
 
-#%% --- apply the lift factor to be self-consistent ---
-generator.apply_lift_factor(verbose = False)
+#% --- apply the lift factor to be self-consistent ---
+# generator.apply_lift_factor(verbose = False)
 # generator.show_results("Results for initial dimensions with applied lift factor")
+# generator.fast_flux()
+
+#% --- apply coil size to use the breadth factor
+# generator.apply_coil_sizes()
+# generator.show_results("Results with coil sizes applied")
+
+#%% --- apply coil sizes and lift factor ---
+generator.apply_coil_sizes_and_lift_factor(verbose = False)
+generator.show_results("Results with coil sizes and lift factor applied")
 # generator.fast_flux()
 
 #%% --- adapt yokes ---
@@ -61,14 +70,8 @@ generator.show_results("Results with adapted yokes")
 # generator.fast_flux()
 
 
-#%%
-generator.apply_coil_sizes()
-generator.show_results("Results with coil sizes applied")
-generator.kr_b
-
-
 #%% --- vary h_wndg_s ---
-if 0:
+if 1:
     increasing_h_by_factor=0.01
     iter_P_h_wndg_s, iter_h_wndg_s = [generator.P], [generator.h_wndg_s]
     
@@ -77,7 +80,8 @@ if 0:
         if h_wndg_s <= 0 or h_wndg_s >= generator.dims.r_ro/2:
             break
         generator.update_dimensions(h_wndg_s=h_wndg_s)
-        generator.apply_lift_factor()
+        # generator.apply_lift_factor()
+        generator.apply_coil_sizes_and_lift_factor()
         
         iter_h_wndg_s.append(generator.h_wndg_s)
         iter_P_h_wndg_s.append(generator.P)
@@ -99,16 +103,18 @@ if 0:
 if 1:
     h_wndg_s = 0.029
     generator.update_dimensions(h_wndg_s=h_wndg_s)
-    generator.apply_lift_factor(verbose=False)
+    # generator.apply_lift_factor(verbose=False)
+    generator.apply_coil_sizes_and_lift_factor(verbose=False)
     h_yoke_s = yoke_height(generator.p, generator.dims.r_si, 
                            generator.B_s, generator.B_yoke_max)
     generator.update_dimensions(h_yoke_s=h_yoke_s)
-    generator.apply_lift_factor()
+    # generator.apply_lift_factor()
+    generator.apply_coil_sizes_and_lift_factor(verbose=False)
     generator.show_results("Results for adapted h_wndg_s")
     # generator.fast_flux()
 
 #%% --- vary h_wndg_r ---
-if 0:
+if 1:
     increasing_h_by_factor=0.05
     iter_P_h_wndg_r, iter_h_wndg_r = [generator.P], [generator.h_wndg_r*0.8]
     
@@ -117,7 +123,8 @@ if 0:
         if h_wndg_r <= 0 or h_wndg_r >= generator.dims.r_ro/2:
             break
         generator.update_dimensions(h_wndg_r=h_wndg_r)
-        generator.apply_lift_factor()
+        # generator.apply_lift_factor()
+        generator.apply_coil_sizes_and_lift_factor()
         
         iter_h_wndg_r.append(generator.h_wndg_r)
         iter_P_h_wndg_r.append(generator.P)
@@ -137,13 +144,15 @@ if 0:
 
 #%% --- select h_wndg_r ---
 if 1:
-    h_wndg_r = 0.03
+    h_wndg_r = 0.027
     generator.update_dimensions(h_wndg_r=h_wndg_r)
-    generator.apply_lift_factor(verbose=False)
+    # generator.apply_lift_factor(verbose=False)
+    generator.apply_coil_sizes_and_lift_factor(verbose=False)
     h_yoke_r = yoke_height(generator.p, generator.dims.r_ro, 
                            generator.B_r, generator.B_yoke_max)
     generator.update_dimensions(h_yoke_r=h_yoke_r)
-    generator.apply_lift_factor()
+    # generator.apply_lift_factor()
+    generator.apply_coil_sizes_and_lift_factor(verbose=False)
     generator.show_results("Results for adapted h_wndg_r")
     # generator.fast_flux()
 
@@ -167,19 +176,19 @@ generator.J_s_amplitude = J_s_amplitude
 print(f"\n{I_s = } [A] \n{ampere_turns_stator = } [A] \n{J_s_amplitude = } [A/m2] \n{J_s_amplitude*1e-6 = }[A_mm2]")
 
 #%%
-# save_params("from_python", generator)
+save_params("from_python", generator)
 
 
 #%%
 
-# theta = np.linspace(0, 2*np.pi/generator.p, 400)
-# flux_data = generator.mdl.get_B_data(r=np.array([generator.dims.r_ag]), 
-#                                 t=theta
-#                                 )
+theta = np.linspace(0, 2*np.pi/generator.p, 400)
+flux_data = generator.mdl.get_B_data(r=np.array([generator.dims.r_ag]), 
+                                t=theta
+                                )
 
-# fig = pyplot.figure(dpi=300)
-# ax = pyplot.subplot()
-# ax.plot(theta, np.sqrt(flux_data.Br**2 + flux_data.Bt**2))
+fig = pyplot.figure(dpi=300)
+ax = pyplot.subplot()
+ax.plot(theta, np.sqrt(flux_data.Br**2 + flux_data.Bt**2))
 
 
 
