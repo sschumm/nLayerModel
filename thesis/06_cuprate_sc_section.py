@@ -84,3 +84,48 @@ ax.legend(loc="upper right")
 
 tkz.clean_figure()
 tkz.save("sc_I_c_ofT_at_const_theta_and_B.tex")
+
+
+#%% plot 3 - I_c(T) at constant theta with some flux densities B
+
+
+T = 30 # [K]
+
+lst_B = [1, 2, 3] # [T]
+lst_theta = [i for i in range(0, 220)] # [°]
+
+lst_L = []
+
+
+for B in lst_B:
+    
+    a = []
+    for theta in lst_theta:  
+        
+        L = get_L_TPL2100(T, B, theta)
+        a.append(L)
+
+    lst_L.append(a)
+    
+
+fig = plt.figure(dpi=300, figsize=(6,5))
+ax = plt.subplot()
+ax.set_xlabel("theta / °")
+ax.set_ylabel("L / -")
+ax.set_xlim(0, 200)
+ax.set_ylim(0, 7)
+ax.set_xticks([i for i in range(0, 220, 15)])
+# ax.set_yticks([i for i in range(0, 2501, 250)])
+plt.grid()
+
+for i in range(len(lst_B)):
+    ax.plot(lst_theta, lst_L[i], label=f"B = {lst_B[i]} / T")
+    
+ax.plot([30, 30], [0, 7])
+# ax.plot([120, 120], [0, 7])
+
+ax.legend(loc="upper right")
+
+
+tkz.clean_figure()
+tkz.save("sc_L_oftheta_at_const_T_and_B.tex")
