@@ -289,8 +289,13 @@ class n7_Model():
             configuration_valid = False
         else:
             w_rc = A_rc/h_rc
+        if 2 * (self.gn.w_pole_frame + w_rc) > w_rp:
+            print(f"\nConfiguration invalid due to {w_rc = } [m], {w_rp = } [m]")
+            w_rc = (w_rp/2) - self.gn.w_pole_frame
         
         r_r_bend = 0.5 * (w_rp - 2 * self.gn.w_pole_frame - 2 * w_rc)
+        if r_r_bend < self.gn.r_bend_max:
+            print(f"\nConfiguration invalid due to {r_r_bend = } [m]")
         
         # --- stator ---
         w_sp = (2 * pi * (self.dims.r_si - self.h_wndg_s)) / (3 * self.p)
@@ -302,8 +307,13 @@ class n7_Model():
             configuration_valid = False
         else:
             w_sc = A_sc/h_sc
+        if 2 * (self.gn.w_pole_frame + w_sc) > w_sp:
+            print(f"\nConfiguration invalid due to {w_sc = } [m], {w_sp = } [m]")
+            w_sc = (w_sp/2) - self.gn.w_pole_frame
         
         r_s_bend = 0.5 * (w_sp - 2 * self.gn.w_pole_frame - 2 * w_sc)
+        if r_s_bend < self.gn.r_bend_max:
+            print(f"\nConfiguration invalid due to {r_s_bend = } [m]")
         
         if configuration_valid:
             self.coil = coil_Dimensions(w_rp, A_rc, h_rc, w_rc, r_r_bend, 
