@@ -77,6 +77,7 @@ class n7_Model():
         self.dims.update_dimensions(h_yoke_s, h_yoke_r, 
                                     h_wndg_s, h_wndg_r, 
                                     self.gn.delta_mag)
+        self.coil_shapes()
         
         
     def update_dimensions(self, **kwargs):
@@ -87,6 +88,9 @@ class n7_Model():
         self.dims.update_dimensions(self.h_yoke_s, self.h_yoke_r, 
                                     self.h_wndg_s, self.h_wndg_r, 
                                     self.gn.delta_mag)
+        self.coil_shapes()
+        if kwargs.get("keep_const_kr_b", False):
+            self.keep_const_kr_b(**kwargs)
             
     
     def update_model_by_K(self, K_s, K_r, **kwargs):
@@ -322,7 +326,12 @@ class n7_Model():
         else:
             self.coil = "Invalid Configuration"
             
-            
+    
+    def keep_const_kr_b(self, **kwargs):
+        kr_b = kwargs.get("kr_b", self.kr_b)
+        self.k_fill_r = kr_b * (1 - (2*self.gn.h_pole_frame) / self.h_wndg_r)
+    
+    
     def apply_coil_sizes(self, **kwargs):
         self.coil_shapes(**kwargs)
         kr_b = 2 * self.coil.w_rc / self.coil.w_rp
