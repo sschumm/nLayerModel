@@ -215,6 +215,7 @@ class PlanePlot():
         transparent = kwargs.get("transparent", False)
         padding = kwargs.get("padding", 0.1)
         show_borders = kwargs.get("show_borders", False)
+        border_width = kwargs.get("border_width", 1)
         
         # --- file export ---
         pdf = kwargs.get("pdf", False)
@@ -267,7 +268,7 @@ class PlanePlot():
                           linewidths=lw)
         
         if show_borders:
-            self._set_machine_dims(ax, only_borders=True)
+            self._set_machine_dims(ax, only_borders=True, bw=border_width)
         
         if not show_axis:
             plt.axis('off')

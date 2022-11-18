@@ -55,13 +55,13 @@ class main_dimensions():
         
 class results():
     
-    def __init__(self, M, P, K_r, K_s, h_wdng_r, h_wdng_s, h_yoke_r):
+    def __init__(self, M, P, K_r, K_s, h_wndg_r, h_wndg_s, h_yoke_r):
         self.M = np.round(M, 2)
         self.P = np.round(P, 2)
         self.K_r = np.round(K_r, 2)
         self.K_s = np.round(K_s, 2)
-        self.h_wdng_r = np.round(h_wdng_r, 2)
-        self.h_wdng_s = np.round(h_wdng_s, 2)                 
+        self.h_wndg_r = np.round(h_wndg_r, 2)
+        self.h_wndg_s = np.round(h_wndg_s, 2)                 
         self.h_yoke_r = np.round(h_yoke_r, 2)
 
 
@@ -115,7 +115,7 @@ def create_n_Layer_model(dims, p, l, Ks=False, Kr=False, **kwargs):
     mdl.total_torque()
     p_plt = PlanePlot(mdl)
     res = results(mdl.Mpos, mdl.Mpos*gn.w_syn, Kr, Ks, 
-                  h_wdng_r=r_rF-r_ro, h_wdng_s=r_si-r_sA,
+                  h_wndg_r=r_rF-r_ro, h_wndg_s=r_si-r_sA,
                   h_yoke_r=r_ro-r_ri)
     return mdl, p_plt, res
     

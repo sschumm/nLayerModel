@@ -1,0 +1,43 @@
+PARAMS_PREDEFINED 1
+mu_r 100000.0 relative permeability of iron
+d2so_L 15[m^3] generator volume
+delta_mag 0.04[m] height magnetic airgap
+n_syn 8.33[rpm] generator speed
+h_pole_frame 0.009[m] height pole frame
+w_pole_frame 0.009[m] width pole frame
+PARAMS_FROM_PYTHON 1
+p 25 pole pair count
+l_e 0.2[m] effective generator length
+h_wdng_r 0.03[m] height winding rotor
+h_wdng_s 0.029[m] height winding stator
+h_yoke_r 0.12830279681857046[m] height yoke rotor
+h_yoke_s 0.11043517990228366[m] height yoke stator
+k_fill_r 0.2 fill factor rotor
+k_fill_s 0.3 fill factor stator
+J_e_r 242.28121893487034[A/mm^2] Engineering Current Density Rotor
+J_e_s 14.527121015880786[A/mm^2] Engineering CUrrent Density Stator
+r_so 4.330127018922194[m] radius stator outer
+r_si 4.21969183901991[m] radius stator inner
+r_sw 4.20519183901991[m] radius stator armature winding
+r_ag 4.17069183901991[m] radius airgap
+r_rw 4.135691839019911[m] radius rotor field winding
+r_ro 4.120691839019911[m] radius rotor outer
+r_ri 3.992389042201341[m] radius rotor inner
+w_rp 0.5178214083668947[m] width of the rotor pole
+A_rc 0.0015534642251006842[m^2] Area of one rotor coil per pole
+h_rc 0.012[m] height of one rotor coil per pole
+w_rc 0.12945535209172368[m] width of one rotor coil per pole
+w_sp 0.3510785785312973[m] width of the stator pole
+A_sc 0.0015271918166111433[m^2] Area of one stator coil per pole pair
+h_sc 0.011000000000000003[m] height of one stator coil per pole pair
+w_sc 0.13883561969192207[m] width of one stator coil per pole pair
+J_s_amplitude 16392579.402137756[A/m^2] amplitude of the stator current density
+omega 314.16[1/s]
+PARAMS_DERIVED 1
+tau_p (pi*r_si)/p pole pitch
+phi_tau_p 360[°]/(2*p) pole pitch angle
+phi_sector 2*phi_tau_p sector angle
+phi_rw1 phi_tau_p/2 angle for lower rotor winding
+phi_rw2 phi_tau_p*(3/2) angle for upper rotor winding
+psi_sw_W phi_sector*(1/3) angle for stator winding W
+psi_sw_V phi_sector*(2/3) angle for stator winding V

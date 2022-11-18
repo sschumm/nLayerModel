@@ -29,7 +29,7 @@ def create_n_Layer_model(dims, p, l, Ks=False, Kr=False, **kwargs):
     if Kr:    
         mdl.add_layer(CurrentLoading(K=Kr*np.sqrt(2)*kr_b, 
                                     r=r_rF, 
-                                    alpha=0.5, 
+                                    alpha=np.pi/2, 
                                     mu_r=1.
                                     ))
     else:
@@ -65,8 +65,8 @@ def create_n_Layer_model(dims, p, l, Ks=False, Kr=False, **kwargs):
     B_s_c = np.max(np.abs(np.sin(np.pi/6) * flux_data.Br[:,2] + np.cos(np.pi/6) * flux_data.Bt[:, 2]))
     
     res = Main_Results(mdl.Mpos, mdl.Mpos*gn.w_syn, Kr, Ks, 
-                       h_wdng_r=2*(r_rF-r_ro), 
-                       h_wdng_s=2*(r_si-r_sA),
+                       h_wndg_r=2*(r_rF-r_ro), 
+                       h_wndg_s=2*(r_si-r_sA),
                        h_yoke_r=r_ro-r_ri, 
                        h_yoke_s=r_so-r_si,
                        B_r=B_r,
@@ -127,15 +127,15 @@ class Main_Dims():
         
 class Main_Results():
     
-    def __init__(self, M, P, K_r, K_s, h_wdng_r, h_wdng_s, h_yoke_r, h_yoke_s, 
+    def __init__(self, M, P, K_r, K_s, h_wndg_r, h_wndg_s, h_yoke_r, h_yoke_s, 
                  B_r=None, B_airgap=None, B_s=None, B_r_c=None, B_s_c=None,
                  J_e_r=None, J_e_s=None):
         self.M = np.round(M, 2)
         self.P = np.round(P, 2)
         self.K_r = np.round(K_r, 2)
         self.K_s = np.round(K_s, 2)
-        self.h_wdng_r = np.round(h_wdng_r, 4)
-        self.h_wdng_s = np.round(h_wdng_s, 4)                 
+        self.h_wndg_r = np.round(h_wndg_r, 4)
+        self.h_wndg_s = np.round(h_wndg_s, 4)                 
         self.h_yoke_r = np.round(h_yoke_r, 4)
         self.h_yoke_s = np.round(h_yoke_s, 4)
         self.B_r = B_r
@@ -153,8 +153,8 @@ class Main_Results():
         print(f"P = {np.round(self.P * 1e-6, 2)} [MW]")
         print(f"K_r = {np.round(self.K_r * 1e-3, 2)} [kA/m]")
         print(f"K_s = {np.round(self.K_s * 1e-3, 2)} [kA/m]")
-        print(f"h_wdng_r = {self.h_wdng_r} [m]")
-        print(f"h_wdng_s = {self.h_wdng_s} [m]")
+        print(f"h_wndg_r = {self.h_wndg_r} [m]")
+        print(f"h_wndg_s = {self.h_wndg_s} [m]")
         print(f"h_yoke_r = {self.h_yoke_r} [m]")
         print(f"h_yoke_s = {self.h_yoke_s} [m]")
         # print(f"B_r = {self.B_r} [T]")
