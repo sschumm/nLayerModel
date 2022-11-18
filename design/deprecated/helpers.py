@@ -29,7 +29,7 @@ def create_n_Layer_model(dims, p, l, Ks=False, Kr=False, **kwargs):
     if Kr:    
         mdl.add_layer(CurrentLoading(K=Kr*np.sqrt(2)*kr_b, 
                                     r=r_rF, 
-                                    alpha=0.5, 
+                                    alpha=np.pi/2, 
                                     mu_r=1.
                                     ))
     else:
