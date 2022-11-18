@@ -22,7 +22,7 @@ class Generator():
 class FieldWinding():
     
     T_HTS = 30 # [K] - LNe - Liquid Neon
-    J_e = 158.8e6 # [A/m2] == 270/1.7 ~ 158.8 [A/mm2] - engineering current density
+    J_e = 154.5e6 # [A/m2] == 270/1.7 ~ 158.8 [A/mm2] - engineering current density
     
 class StatorWinding():
     d2so_L = 5
@@ -46,14 +46,14 @@ class StatorWinding_Cu(StatorWinding):
 class StatorWinding_77K(StatorWinding):
             
     T_HTS = 77 # [K] - LN2 - Liquid Nitrogen
-    J_e = 11.8e6 # [A/m2] == 20/1.7 ~ 11.8 [A/mm2] - engineering current density
-    C_e = 0.5*117*60*1e3 # [VAs/m3] == 0.5 * 117 [kVA min/m3] - Essons Number - electromagnetic utilization
+    J_e = 11.1e6 # [A/m2] == 20/1.7 ~ 11.8 [A/mm2] - engineering current density
+    C_e = 55*60*1e3 # [VAs/m3] == 0.5 * 117 [kVA min/m3] - Essons Number - electromagnetic utilization
     d2so_L = 15 # [m3]
     
     
 class StatorWinding_30K(StatorWinding):
         
     T_HTS = 30 # [K] - LNe - Liquid Neon
-    J_e = 158.8e6 # [A/m2] == 270/1.7 ~ 158.8 [A/mm2] - engineering current density
-    C_e = 0.5*1575.9*60*1e3 # [VAs/m3] == 0.5 * 1575.9 [kVA min/m3] - Essons Number - electromagnetic utilization
+    J_e = 154.5e6 # [A/m2] == 270/1.7 ~ 158.8 [A/mm2] - engineering current density
+    C_e = 766*60*1e3 # [VAs/m3] == 0.5 * 1575.9 [kVA min/m3] - Essons Number - electromagnetic utilization
     d2so_L = 1 # [m3]
