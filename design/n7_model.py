@@ -277,7 +277,8 @@ class n7_Model():
                           svg=export_svg, svg_dpi=300)
         
     
-    def coil_shapes(self):
+    def coil_shapes(self, **kwargs):
+        verbose = kwargs.get("verbose", False)
         configuration_valid = True
         # --- rotor ---
         w_rp = pi * self.dims.r_ro/self.p
@@ -285,17 +286,17 @@ class n7_Model():
         A_rc = self.k_fill_r * (self.h_wndg_r * w_rp)/2
         h_rc = self.h_wndg_r - 2 * self.gn.h_pole_frame
         if h_rc <= 0:
-            print(f"\nConfiguration invalid due to {h_rc = } [m]")
+            if verbose: print(f"\nConfiguration invalid due to {h_rc = } [m]")
             configuration_valid = False
         else:
             w_rc = A_rc/h_rc
         if 2 * (self.gn.w_pole_frame + w_rc) > w_rp:
-            print(f"\nConfiguration invalid due to {w_rc = } [m], {w_rp = } [m]")
+            if verbose: print(f"\nConfiguration invalid due to {w_rc = } [m], {w_rp = } [m]")
             w_rc = (w_rp/2) - self.gn.w_pole_frame
         
         r_r_bend = 0.5 * (w_rp - 2 * self.gn.w_pole_frame - 2 * w_rc)
         if r_r_bend < self.gn.r_bend_max:
-            print(f"\nConfiguration invalid due to {r_r_bend = } [m]")
+            if verbose: print(f"\nConfiguration invalid due to {r_r_bend = } [m]")
         
         # --- stator ---
         w_sp = (2 * pi * (self.dims.r_si - self.h_wndg_s)) / (3 * self.p)
@@ -303,17 +304,17 @@ class n7_Model():
         A_sc = self.k_fill_s * (self.h_wndg_s * w_sp)/2
         h_sc = self.h_wndg_s - 2 * self.gn.h_pole_frame
         if h_sc <= 0:
-            print(f"\nConfiguration invalid due to {h_sc = } [m]")
+            if verbose: print(f"\nConfiguration invalid due to {h_sc = } [m]")
             configuration_valid = False
         else:
             w_sc = A_sc/h_sc
         if 2 * (self.gn.w_pole_frame + w_sc) > w_sp:
-            print(f"\nConfiguration invalid due to {w_sc = } [m], {w_sp = } [m]")
+            if verbose: print(f"\nConfiguration invalid due to {w_sc = } [m], {w_sp = } [m]")
             w_sc = (w_sp/2) - self.gn.w_pole_frame
         
         r_s_bend = 0.5 * (w_sp - 2 * self.gn.w_pole_frame - 2 * w_sc)
         if r_s_bend < self.gn.r_bend_max:
-            print(f"\nConfiguration invalid due to {r_s_bend = } [m]")
+            if verbose: print(f"\nConfiguration invalid due to {r_s_bend = } [m]")
         
         if configuration_valid:
             self.coil = coil_Dimensions(w_rp, A_rc, h_rc, w_rc, r_r_bend, 
@@ -322,8 +323,8 @@ class n7_Model():
             self.coil = "Invalid Configuration"
             
             
-    def apply_coil_sizes(self):
-        self.coil_shapes()
+    def apply_coil_sizes(self, **kwargs):
+        self.coil_shapes(**kwargs)
         kr_b = 2 * self.coil.w_rc / self.coil.w_rp
         self.update_model_by_K(K_s=self.K_s,
                                K_r=self.K_r,
@@ -332,19 +333,20 @@ class n7_Model():
     
     def apply_coil_sizes_and_lift_factor(self, **kwargs):
         
-        self.apply_coil_sizes()
+        self.apply_coil_sizes(**kwargs)
         self.apply_lift_factor(**kwargs)
     
         
     
-    def guess_Ns(self):
+    def guess_Ns(self, **kwargs):
+        U_i = kwargs.get("U_i", self.gn.U_LL_N / np.sqrt(3))
         tau_p = (self.dims.r_si * pi) / self.p
         flux_data = self.mdl.get_B_data(r=np.array([self.dims.r_ag]), 
                                         t=np.linspace(0, np.pi/self.p, 400)
                                         )
         B_delta_hat = np.max(np.abs(flux_data.Br[:, 0]))
         
-        num = self.gn.U_LL_N / np.sqrt(3)
+        num = U_i
         den = np.sqrt(2)*2 * self.f * self.ks_d * self.ks_p * self.l_e * tau_p * B_delta_hat
         
         N_s = num / den
@@ -352,7 +354,7 @@ class n7_Model():
     
     
     def guess_N_c_div_a(self, **kwargs):
-        N_s = kwargs.get("N_s", self.guess_Ns())
+        N_s = kwargs.get("N_s", self.guess_Ns(**kwargs))
         N_c_div_a = N_s / (2*self.p*self.q)
         return N_c_div_a
     
