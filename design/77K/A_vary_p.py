@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
+import copy
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -222,8 +223,10 @@ if 1:
     
     # ============================== Pole Pair Iteration ==============================
     n_pole_pairs = 50
-    lst_pole_pairs = [p for p in range(6, n_pole_pairs+4, 8)]
-    for p in lst_pole_pairs:
+    lst_pole_pairs = []
+    lst_HTS_length = []
+    lst_HTS_volume = []
+    for p in range(8, 51, 1):
 
         generator = n7_Model(p, l_e, r_so, 
                              gn=gn, fw=fw, sw=sw,
@@ -243,10 +246,13 @@ if 1:
         generator.keep_const_kr_b(kr_b = 0.6)
         generator.apply_coil_sizes_and_lift_factor(verbose = False)
         adapt_yokes()
-    
-        lst_P = []
-        lst_h_wndg_s = []
-        lst_h_wndg_r = []
+
+
+        # ============================== Stator Winding Iteration ==============================    
+        # lst_P = []
+        # lst_h_wndg_s = []
+        # lst_h_wndg_r = []
+        lst_generators = []
         
         h_wndg_s_0 = 2 * gn.h_pole_frame * 1.3
         h_wndg_s_1 = h_wndg_s_0 * 2
@@ -254,14 +260,12 @@ if 1:
         h_wndg_r_0 = 2 * gn.h_pole_frame * 1.1
         h_wndg_r_1 = h_wndg_r_0 * 2
         
-        
         n_iters_s = 9
         n_iters_r = 20 
         
         detail = 0.0001
-        verbose = True
+        verbose = False
         
-        # ============================== Stator Winding Iteration ==============================
         for idx_stator, iter_stator in enumerate(np.linspace(0, h_wndg_s_1-h_wndg_s_0, n_iters_s)):
             
             h_wndg_s = h_wndg_s_0 + iter_stator
@@ -289,9 +293,11 @@ if 1:
                     n = 15
                     for i in range(50):
                         if (generator.P >= (1-detail)*gn.Pel_out and generator.P <= (1+detail)*gn.Pel_out):
-                            lst_P.append(generator.P)
-                            lst_h_wndg_s.append(generator.h_wndg_s)
-                            lst_h_wndg_r.append(generator.h_wndg_r)
+                            # lst_P.append(generator.P)
+                            # lst_h_wndg_s.append(generator.h_wndg_s)
+                            # lst_h_wndg_r.append(generator.h_wndg_r)
+                            generator.HTS_usage()
+                            lst_generators.append(copy.deepcopy(generator))
                             break
                         j = min(i, n)
                         fac = 5 * np.abs(gn.Pel_out - generator.P)/gn.Pel_out  
@@ -328,9 +334,36 @@ if 1:
             # ============================== End Rotor Winding Iteration ==============================
             
         # ============================== End Stator Winding Iteration ==============================
+        if lst_generators:
+            mini = min([geno.HTS_length for geno in lst_generators])
+            idx = [geno.HTS_length for geno in lst_generators].index(mini)
+            best = lst_generators[idx]    
+            
+            lst_pole_pairs.append(best.p)
+            lst_HTS_length.append(best.HTS_length)
+            lst_HTS_volume.append(best.HTS_volume)
+        
         total_runs += generator.runs
     # ============================== Pole Pair Iteration ==============================
-    print(f"\n{total_runs = }")
+    sys.stdout.write(f"\rJob finished with {total_runs} solved models." + " "*50)
+    sys.stdout.flush()
+    # print(f"\n{total_runs = }")
+
+#%% ------ plot HTS length over pole pairs ------
+if 1:
+    fig = plt.figure(dpi=300, figsize=(10,7))
+    ax1 = plt.subplot()
+    
+    ax1.set_xlabel("pole pairs")
+    ax1.set_ylabel("HTS length / km")
+    plt.title("Pole Pair Iteration")
+    plt.grid()
+    
+    ax1.scatter(lst_pole_pairs, [l*1e-3 for l in lst_HTS_length])
+    ax1.plot(lst_pole_pairs, [l*1e-3 for l in lst_HTS_length]) #, label=f"{np.round(lst_h_wndg_s[idx],3)}")
+    plt.savefig(fname = "HTSlengthOverPolePairCount.png")
+    plt.show()
+    
 
 
 
