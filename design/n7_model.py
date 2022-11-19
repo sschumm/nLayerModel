@@ -285,7 +285,7 @@ class n7_Model():
     
     def coil_shapes(self, **kwargs):
         verbose = kwargs.get("verbose", False)
-        configuration_valid = True
+
         # --- rotor ---
         w_rp = pi * self.dims.r_ro/self.p
         
@@ -293,7 +293,7 @@ class n7_Model():
         h_rc = self.h_wndg_r - 2 * self.gn.h_pole_frame
         if h_rc <= 0:
             if verbose: print(f"\nConfiguration invalid due to {h_rc = } [m]")
-            configuration_valid = False
+
             h_rc = 0.01
         
         w_rc = A_rc/h_rc
@@ -312,7 +312,7 @@ class n7_Model():
         h_sc = self.h_wndg_s - 2 * self.gn.h_pole_frame
         if h_sc <= 0:
             if verbose: print(f"\nConfiguration invalid due to {h_sc = } [m]")
-            configuration_valid = False
+
             h_sc = 0.01
             
         w_sc = A_sc/h_sc
@@ -324,11 +324,10 @@ class n7_Model():
         if r_s_bend < self.gn.r_bend_max:
             if verbose: print(f"\nConfiguration invalid due to {r_s_bend = } [m]")
         
-        if configuration_valid:
-            self.coil = coil_Dimensions(w_rp, A_rc, h_rc, w_rc, r_r_bend, 
-                                        w_sp, A_sc, h_sc, w_sc, r_s_bend)
-        else:
-            self.coil = "Invalid Configuration"
+
+        self.coil = coil_Dimensions(w_rp, A_rc, h_rc, w_rc, r_r_bend, 
+                                    w_sp, A_sc, h_sc, w_sc, r_s_bend)
+
             
     
     def keep_const_kr_b(self, **kwargs):
