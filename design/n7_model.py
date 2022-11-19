@@ -69,7 +69,7 @@ class n7_Model():
         
     
               
-    def init_dimensions(self, h_yoke_s, h_yoke_r, h_wndg_s, h_wndg_r):
+    def init_dimensions(self, h_yoke_s, h_yoke_r, h_wndg_s, h_wndg_r, **kwargs):
         self.h_yoke_s = h_yoke_s
         self.h_yoke_r = h_yoke_r
         self.h_wndg_s = h_wndg_s
@@ -77,7 +77,8 @@ class n7_Model():
         self.dims.update_dimensions(h_yoke_s, h_yoke_r, 
                                     h_wndg_s, h_wndg_r, 
                                     self.gn.delta_mag)
-        self.coil_shapes()
+        if kwargs.get("coil_shapes", True):
+            self.coil_shapes()
         
         
     def update_dimensions(self, **kwargs):
@@ -88,7 +89,8 @@ class n7_Model():
         self.dims.update_dimensions(self.h_yoke_s, self.h_yoke_r, 
                                     self.h_wndg_s, self.h_wndg_r, 
                                     self.gn.delta_mag)
-        self.coil_shapes()
+        if kwargs.get("coil_shapes", True):
+            self.coil_shapes()
         if kwargs.get("keep_const_kr_b", False):
             self.keep_const_kr_b(**kwargs)
             
@@ -292,8 +294,9 @@ class n7_Model():
         if h_rc <= 0:
             if verbose: print(f"\nConfiguration invalid due to {h_rc = } [m]")
             configuration_valid = False
-        else:
-            w_rc = A_rc/h_rc
+            h_rc = 0.01
+        
+        w_rc = A_rc/h_rc
         if 2 * (self.gn.w_pole_frame + w_rc) > w_rp:
             if verbose: print(f"\nConfiguration invalid due to {w_rc = } [m], {w_rp = } [m]")
             w_rc = (w_rp/2) - self.gn.w_pole_frame
@@ -310,8 +313,9 @@ class n7_Model():
         if h_sc <= 0:
             if verbose: print(f"\nConfiguration invalid due to {h_sc = } [m]")
             configuration_valid = False
-        else:
-            w_sc = A_sc/h_sc
+            h_sc = 0.01
+            
+        w_sc = A_sc/h_sc
         if 2 * (self.gn.w_pole_frame + w_sc) > w_sp:
             if verbose: print(f"\nConfiguration invalid due to {w_sc = } [m], {w_sp = } [m]")
             w_sc = (w_sp/2) - self.gn.w_pole_frame
@@ -330,6 +334,8 @@ class n7_Model():
     def keep_const_kr_b(self, **kwargs):
         kr_b = kwargs.get("kr_b", self.kr_b)
         self.k_fill_r = kr_b * (1 - (2*self.gn.h_pole_frame) / self.h_wndg_r)
+        if self.k_fill_r > 1 or self.k_fill_r < 0:
+            print(f"INFO: {self.k_fill_r = }")
     
     
     def apply_coil_sizes(self, **kwargs):
