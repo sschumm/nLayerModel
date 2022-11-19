@@ -148,13 +148,17 @@ if 1:
     n_iters_s = 9
     n_iters_r = 20 
     
+    detail = 0.0001
     verbose = True
     
+    # ============================== Stator Winding Iteration ==============================
     for idx_stator, iter_stator in enumerate(np.linspace(0, h_wndg_s_1-h_wndg_s_0, n_iters_s)):
         
         h_wndg_s = h_wndg_s_0 + iter_stator
         generator.update_dimensions(h_wndg_s = h_wndg_s, keep_const_kr_b=True)
         
+        
+        # ============================== Rotor Winding Iteration ==============================
         hist_r_P = []
         for idx_rotor, iter_rotor in enumerate(np.linspace(0, h_wndg_r_1-h_wndg_r_0, n_iters_r)):
             
@@ -170,18 +174,21 @@ if 1:
                 
                 x = []
                 y = []
-                find_config = [h_wndg_r, h_wndg_r*0.92]
-                n = 50
-                for i in range(n):
-                    if (generator.P >= 0.999*gn.Pel_out and generator.P <= 1.001*gn.Pel_out):
+                config = [h_wndg_r, h_wndg_r - (h_wndg_r_1-h_wndg_r_0)/n_iters_r, h_wndg_r - 2*(h_wndg_r_1-h_wndg_r_0)/n_iters_r]
+                n = 15
+                for i in range(50):
+                    if (generator.P >= (1-detail)*gn.Pel_out and generator.P <= (1+detail)*gn.Pel_out):
                         lst_P.append(generator.P)
                         lst_h_wndg_s.append(generator.h_wndg_s)
                         lst_h_wndg_r.append(generator.h_wndg_r)
                         break
+                    j = min(i, n)
+                    fac = 5 * np.abs(gn.Pel_out - generator.P)/gn.Pel_out  
                     if generator.P > gn.Pel_out:
-                        h_wndg_r = 0.9*h_wndg_r + 0.1*(((n-i)/n)*find_config[1] + (i/n)*find_config[0])
+                        h_wndg_r= 0.25*h_wndg_r + 0.5*((1-fac)*h_wndg_r + fac*config[1]) + 0.1*(((n-j)/n)*config[1]+(j/n)*h_wndg_r) + 0.1*(((n-j)/n)*config[2]+(j/n)*h_wndg_r) + 0.05*(((n-j)/n)*config[2]+(j/n)*((1-fac)*h_wndg_r + fac*config[2]))
                     else:
-                        h_wndg_r = 0.9*h_wndg_r + 0.1*(((n-i)/n)*find_config[0] + (i/n)*find_config[1])
+                        h_wndg_r= 0.35*h_wndg_r +0.55*((1-fac)*h_wndg_r + fac*config[0]) + 0.1*(((n-j)/n)*config[0]+(j/n)*h_wndg_r)
+                        
                     generator.update_dimensions(h_wndg_r = h_wndg_r, keep_const_kr_b=True)
                     generator.apply_coil_sizes_and_lift_factor()
                     adapt_yokes()
@@ -194,6 +201,7 @@ if 1:
                     ax1 = plt.subplot()
                     ax1.plot(x,y)
                     ax1.scatter(x,y)
+                    plt.grid()
                     plt.show()
                 break
             else:
