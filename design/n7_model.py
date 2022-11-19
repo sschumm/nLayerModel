@@ -68,6 +68,8 @@ class n7_Model():
         self.J_s_amplitude = 0.0
         
         self.runs = 0
+        self.HTS_volume = 0
+        self.HTS_length = 0
         
     
               
@@ -352,8 +354,19 @@ class n7_Model():
         
         self.apply_coil_sizes(**kwargs)
         self.apply_lift_factor(**kwargs)
-    
         
+        
+    def HTS_usage(self, **kwargs):
+        self.coil_shapes()
+        l_rotor = self.l_e + pi * self.coil.r_r_bend
+        l_stator = self.l_e + pi * self.coil.r_s_bend
+        
+        V_rotor = l_rotor * self.p * 4 * self.coil.A_rc
+        V_stator = l_stator * self.p * 6 * self.coil.A_sc
+        self.HTS_volume = V_rotor + V_stator
+        self.HTS_length = self.HTS_volume / self.gn.A_tape
+        return self.HTS_volume, self.HTS_length
+                
     
     def guess_Ns(self, **kwargs):
         U_i = kwargs.get("U_i", self.gn.U_LL_N / np.sqrt(3))
