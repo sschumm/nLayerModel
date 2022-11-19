@@ -67,6 +67,8 @@ class n7_Model():
         self.N_s = 0
         self.J_s_amplitude = 0.0
         
+        self.runs = 0
+        
     
               
     def init_dimensions(self, h_yoke_s, h_yoke_r, h_wndg_s, h_wndg_r, **kwargs):
@@ -132,6 +134,7 @@ class n7_Model():
         this_mdl.build()
         this_mdl.solve()
         this_mdl.total_torque()
+        self.runs += 1
         
         this_plt = PlanePlot(this_mdl, fgsz=100)
         

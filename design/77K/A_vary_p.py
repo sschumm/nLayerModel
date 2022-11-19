@@ -37,7 +37,6 @@ generator.init_dimensions(h_yoke_s, h_yoke_r, h_wndg_s, h_wndg_r)
 # --- compute initial current loadings and with it the initial model ---
 K_s = generator.k_fill_s * generator.J_e_s * generator.h_wndg_s
 K_r = generator.k_fill_r * generator.J_e_r * generator.h_wndg_r
-
 generator.update_model_by_K(K_s = K_s, K_r = K_r, ks_d=0.866)
 generator.keep_const_kr_b(kr_b = 0.6)
 generator.apply_coil_sizes_and_lift_factor(verbose = False)
@@ -133,7 +132,7 @@ if 0:
     pass
     
 #%% ------ break at 7 MW crossing ------
-if 1:
+if 0:
     lst_P = []
     lst_h_wndg_s = []
     lst_h_wndg_r = []
@@ -215,12 +214,123 @@ if 1:
                     sys.stdout.flush()
             
 
+#%% ------ iterating over p ------
+if 1:
+    r_so = 3.75
+    l_e = sw.l_e(sw, r_so) # 0.267
+    total_runs = 0
+    
+    # ============================== Pole Pair Iteration ==============================
+    n_pole_pairs = 50
+    lst_pole_pairs = [p for p in range(6, n_pole_pairs+4, 8)]
+    for p in lst_pole_pairs:
 
+        generator = n7_Model(p, l_e, r_so, 
+                             gn=gn, fw=fw, sw=sw,
+                             k_fill_s=0.3,
+                             k_fill_r=0.3,
+                             B_yoke_max=1.7)
 
-
-
-
-
+        # --- init generator dimension via yoke and winding heights ---
+        h_yoke_s, h_yoke_r = 0.02 * r_so, 0.02 * r_so
+        h_wndg_s, h_wndg_r = [factor * (gn.h_pole_frame*2) for factor in [1.05, 1.05]]
+        generator.init_dimensions(h_yoke_s, h_yoke_r, h_wndg_s, h_wndg_r)
+            
+        # --- compute initial current loadings and with it the initial model ---
+        K_s = generator.k_fill_s * generator.J_e_s * generator.h_wndg_s
+        K_r = generator.k_fill_r * generator.J_e_r * generator.h_wndg_r
+        generator.update_model_by_K(K_s = K_s, K_r = K_r, ks_d=0.866)
+        generator.keep_const_kr_b(kr_b = 0.6)
+        generator.apply_coil_sizes_and_lift_factor(verbose = False)
+        adapt_yokes()
+    
+        lst_P = []
+        lst_h_wndg_s = []
+        lst_h_wndg_r = []
+        
+        h_wndg_s_0 = 2 * gn.h_pole_frame * 1.3
+        h_wndg_s_1 = h_wndg_s_0 * 2
+        
+        h_wndg_r_0 = 2 * gn.h_pole_frame * 1.1
+        h_wndg_r_1 = h_wndg_r_0 * 2
+        
+        
+        n_iters_s = 9
+        n_iters_r = 20 
+        
+        detail = 0.0001
+        verbose = True
+        
+        # ============================== Stator Winding Iteration ==============================
+        for idx_stator, iter_stator in enumerate(np.linspace(0, h_wndg_s_1-h_wndg_s_0, n_iters_s)):
+            
+            h_wndg_s = h_wndg_s_0 + iter_stator
+            generator.update_dimensions(h_wndg_s = h_wndg_s, keep_const_kr_b=True)
+            
+            
+            # ============================== Rotor Winding Iteration ==============================
+            hist_r_P = []
+            for idx_rotor, iter_rotor in enumerate(np.linspace(0, h_wndg_r_1-h_wndg_r_0, n_iters_r)):
+                
+                h_wndg_r = h_wndg_r_0 + iter_rotor
+                
+                generator.update_dimensions(h_wndg_r = h_wndg_r, keep_const_kr_b=True)
+                generator.apply_coil_sizes_and_lift_factor()
+                adapt_yokes()
+                
+                if generator.P >= gn.Pel_out:
+                    sys.stdout.write(f"\rPolePair Iteration: {p} / {n_pole_pairs} - Stator Iteration: {idx_stator+1} / {n_iters_s} - Rotor Iterations: {idx_rotor+1} / {n_iters_r} - Searching config...         ")
+                    sys.stdout.flush()
+                    
+                    # ============================== Find Pel_out Iteration ==============================
+                    x = []
+                    y = []
+                    config = [h_wndg_r, h_wndg_r - (h_wndg_r_1-h_wndg_r_0)/n_iters_r, h_wndg_r - 2*(h_wndg_r_1-h_wndg_r_0)/n_iters_r, h_wndg_r*1.1]
+                    n = 15
+                    for i in range(50):
+                        if (generator.P >= (1-detail)*gn.Pel_out and generator.P <= (1+detail)*gn.Pel_out):
+                            lst_P.append(generator.P)
+                            lst_h_wndg_s.append(generator.h_wndg_s)
+                            lst_h_wndg_r.append(generator.h_wndg_r)
+                            break
+                        j = min(i, n)
+                        fac = 5 * np.abs(gn.Pel_out - generator.P)/gn.Pel_out  
+                        if generator.P > gn.Pel_out:
+                            h_wndg_r= 0.199*h_wndg_r + 0.5*((1-fac)*h_wndg_r + fac*config[1]) + 0.1*(((n-j)/n)*config[1]+(j/n)*h_wndg_r) + 0.2*(((n-j)/n)*config[2]+(j/n)*((1-fac)*h_wndg_r + fac*config[2])) + 0.001*(np.random.randint(2)*config[2])
+                        else:
+                            h_wndg_r= 0.196*h_wndg_r + 0.5*((1-fac)*h_wndg_r + fac*config[0]) + 0.1*(((n-j)/n)*config[0]+(j/n)*h_wndg_r) + 0.2*(((n-j)/n)*config[0]+(j/n)*((1-fac)*h_wndg_r + fac*config[3])) + 0.004*config[3]
+                            
+                        generator.update_dimensions(h_wndg_r = h_wndg_r, keep_const_kr_b=True)
+                        generator.apply_coil_sizes_and_lift_factor()
+                        adapt_yokes()
+                        if verbose:
+                            x.append(i)
+                            y.append(generator.P)
+                        
+                    if verbose:
+                        fig = plt.figure(dpi=300, figsize=(6,7))
+                        ax1 = plt.subplot()
+                        ax1.plot(x,y)
+                        ax1.scatter(x,y)
+                        plt.grid()
+                        plt.show()
+                    break
+                    # ============================== End Pel_out Iteration ==============================
+                else:
+                    hist_r_P.append(generator.P)
+                    if len(hist_r_P)>1 and hist_r_P[-1] < hist_r_P[-2]:
+                        sys.stdout.write(f"\rPolePair Iteration: {p} / {n_pole_pairs} - Stator Iteration: {idx_stator+1} / {n_iters_s} - Rotor Iterations: BREAK                                     ")
+                        sys.stdout.flush()
+                        break
+                    else:
+                        sys.stdout.write(f"\rPolePair Iteration: {p} / {n_pole_pairs} - Stator Iteration: {idx_stator+1} / {n_iters_s} - Rotor Iterations: {idx_rotor+1} / {n_iters_r}                                       ")
+                        sys.stdout.flush()
+            # ============================== End Rotor Winding Iteration ==============================
+            
+        # ============================== End Stator Winding Iteration ==============================
+        total_runs += generator.runs
+    # ============================== Pole Pair Iteration ==============================
+    print(f"\n{total_runs = }")
 
 
 
