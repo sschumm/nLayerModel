@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
 import copy
+import time
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -17,15 +18,15 @@ from design import n7_Model
 
 
 # --- ecoswing ---
-p = 20
+p = 8
 r_so = 3.75
 l_e = sw.l_e(sw, r_so) # 0.267
 
 
 generator = n7_Model(p, l_e, r_so, 
                      gn=gn, fw=fw, sw=sw,
-                     k_fill_s=0.3,
-                     k_fill_r=0.3,
+                     k_fill_s=0.4,
+                     k_fill_r=0.4,
                      B_yoke_max=1.7)
 
 
@@ -217,17 +218,16 @@ if 0:
 
 #%% ------ iterating over p ------
 if 1:
+    job_init_time = time.time()
     r_so = 3.75
     l_e = sw.l_e(sw, r_so) # 0.267
+    # l_e = 1.142 
+    # r_so = sw.r_so(sw, l_e) # 1.812
     total_runs = 0
     
     # ============================== Pole Pair Iteration ==============================
-    n_pole_pairs = 50
-    lst_pole_pairs = []
-    lst_HTS_length = []
-    lst_HTS_volume = []
-    lst_weight = []
-    for p in [20, 30, 40]: #range(8, 51, 1):
+    lst_best_generators = []
+    for p in range(8, 61, 1):
 
         generator = n7_Model(p, l_e, r_so, 
                              gn=gn, fw=fw, sw=sw,
@@ -244,24 +244,21 @@ if 1:
         K_s = generator.k_fill_s * generator.J_e_s * generator.h_wndg_s
         K_r = generator.k_fill_r * generator.J_e_r * generator.h_wndg_r
         generator.update_model_by_K(K_s = K_s, K_r = K_r, ks_d=0.866)
-        generator.keep_const_kr_b(kr_b = 0.6)
+        generator.keep_const_kr_b(kr_b = 0.65)
         generator.apply_coil_sizes_and_lift_factor(verbose = False)
         adapt_yokes()
 
 
         # ============================== Stator Winding Iteration ==============================    
-        # lst_P = []
-        # lst_h_wndg_s = []
-        # lst_h_wndg_r = []
         lst_generators = []
         
-        h_wndg_s_0 = 2 * gn.h_pole_frame * 1.3
-        h_wndg_s_1 = h_wndg_s_0 * 2
+        h_wndg_s_0 = 2 * gn.h_pole_frame * 1.1
+        h_wndg_s_1 = h_wndg_s_0 * 2.5
         
         h_wndg_r_0 = 2 * gn.h_pole_frame * 1.1
         h_wndg_r_1 = h_wndg_r_0 * 2
         
-        n_iters_s = 9
+        n_iters_s = 20
         n_iters_r = 20 
         
         detail = 0.0001
@@ -284,8 +281,6 @@ if 1:
                 adapt_yokes()
                 
                 if generator.P >= gn.Pel_out:
-                    sys.stdout.write(f"\rComputing Pole Pair: {p} - Stator Iteration: {idx_stator+1} / {n_iters_s} - Rotor Iterations: {idx_rotor+1} / {n_iters_r} - Searching config...         ")
-                    sys.stdout.flush()
                     
                     # ============================== Find Pel_out Iteration ==============================
                     x = []
@@ -293,10 +288,13 @@ if 1:
                     config = [h_wndg_r, h_wndg_r - (h_wndg_r_1-h_wndg_r_0)/n_iters_r, h_wndg_r - 2*(h_wndg_r_1-h_wndg_r_0)/n_iters_r, h_wndg_r*1.1]
                     n = 15
                     for i in range(50):
+                        sys.stdout.write(f"\rComputing Pole Pair: {p} - Stator Iteration: {idx_stator+1} / {n_iters_s} - Rotor Iterations: {idx_rotor+1} / {n_iters_r} - Convergence Step {i}         ")
+                        sys.stdout.flush()
+                        
                         if (generator.P >= (1-detail)*gn.Pel_out and generator.P <= (1+detail)*gn.Pel_out):
-                            # lst_P.append(generator.P)
-                            # lst_h_wndg_s.append(generator.h_wndg_s)
-                            # lst_h_wndg_r.append(generator.h_wndg_r)
+                            sys.stdout.write(f"\rComputing Pole Pair: {p} - Stator Iteration: {idx_stator+1} / {n_iters_s} - Rotor Iterations: {idx_rotor+1} / {n_iters_r} - Converged.         ")
+                            sys.stdout.flush()
+
                             generator.HTS_usage()
                             generator.compute_weight()
                             lst_generators.append(copy.deepcopy(generator))
@@ -342,18 +340,21 @@ if 1:
             idx = [geno.HTS_length for geno in lst_generators].index(mini)
             best = lst_generators[idx]    
             
-            lst_pole_pairs.append(best.p)
-            lst_HTS_length.append(best.HTS_length)
-            lst_HTS_volume.append(best.HTS_volume)
-            lst_weight.append(best.weight)
+            lst_best_generators.append(best)
         
         total_runs += generator.runs
     # ============================== Pole Pair Iteration ==============================
-    sys.stdout.write(f"\rJob finished with {total_runs} solved models." + " "*80)
+    job_finish_time = time.time()
+    job_runtime = job_finish_time - job_init_time
+    sys.stdout.write(f"\rJob finished with {total_runs} solved models in {np.round(job_runtime,3)} seconds." + " "*80)
     sys.stdout.flush()
     # print(f"\n{total_runs = }")
 
 #%% ------ plot HTS length over pole pairs ------
+lst_pole_pairs = [gen.p for gen in lst_best_generators]
+lst_HTS_length = [gen.HTS_length for gen in lst_best_generators]
+lst_weight = [gen.weight for gen in lst_best_generators]
+
 if 1:
     fig = plt.figure(dpi=300, figsize=(10,7))
     ax1 = plt.subplot()
@@ -373,7 +374,12 @@ if 1:
     plt.savefig(fname = "HTSlengthOverPolePairCount.png")
     plt.show()
     
+#%%
 
+import tikzplotlib as tkz
+
+tkz.clean_figure()
+tkz.save("aus_LandW_over_p.tex")
 
 
 
