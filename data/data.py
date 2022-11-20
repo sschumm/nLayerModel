@@ -17,6 +17,8 @@ class Generator():
     h_pole_frame = 0.009 # [m] == 9 [mm] due to h_pressure_plate 18 [mm] / 2
     w_pole_frame = 0.009 # [m] same reasoning as above
     r_bend_max = 0.02 # [m] == 20 [mm] 
+    HTS_weight_length_corr = 48 / 500 # [kg/m], guess from Bergen
+    Iron_density = 7760 # [kg/m3], from isovac data sheet
     
     
 class FieldWinding():

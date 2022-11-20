@@ -69,7 +69,14 @@ class n7_Model():
         
         self.runs = 0
         self.HTS_volume = 0
+        self.HTS_volume_rotor = 0
+        self.HTS_volume_stator = 0
         self.HTS_length = 0
+        self.HTS_length_rotor = 0
+        self.HTS_length_stator = 0
+        self.weight = 0
+        self.weight_rotor = 0
+        self.weight_stator = 0
         
     
               
@@ -361,11 +368,26 @@ class n7_Model():
         l_rotor = self.l_e + pi * self.coil.r_r_bend
         l_stator = self.l_e + pi * self.coil.r_s_bend
         
-        V_rotor = l_rotor * self.p * 4 * self.coil.A_rc
-        V_stator = l_stator * self.p * 6 * self.coil.A_sc
-        self.HTS_volume = V_rotor + V_stator
+        self.HTS_volume_rotor = l_rotor * self.p * 4 * self.coil.A_rc
+        self.HTS_volume_stator = l_stator * self.p * 6 * self.coil.A_sc
+        self.HTS_volume = self.HTS_volume_rotor + self.HTS_volume_stator
         self.HTS_length = self.HTS_volume / self.gn.A_tape
+        self.HTS_length_rotor = self.HTS_volume_rotor / self.gn.A_tape
+        self.HTS_length_stator = self.HTS_volume_stator / self.gn.A_tape
         return self.HTS_volume, self.HTS_length
+    
+    
+    def compute_weight(self, **kwargs):
+        
+        weight_HTS_rotor = self.gn.HTS_weight_length_corr * self.HTS_length_rotor
+        weight_HTS_stator = self.gn.HTS_weight_length_corr * self.HTS_length_stator
+        
+        weight_Iron_rotor = self.gn.Iron_density * pi * (self.dims.r_ro**2 - self.dims.r_ri**2)
+        weight_Iron_stator = self.gn.Iron_density * pi * (self.dims.r_so**2 - self.dims.r_si**2)
+        
+        self.weight_rotor = weight_HTS_rotor + weight_Iron_rotor
+        self.weight_stator = weight_HTS_stator + weight_Iron_stator
+        self.weight = self.weight_rotor + self.weight_stator
                 
     
     def guess_Ns(self, **kwargs):

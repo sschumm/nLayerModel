@@ -226,7 +226,8 @@ if 1:
     lst_pole_pairs = []
     lst_HTS_length = []
     lst_HTS_volume = []
-    for p in range(8, 51, 1):
+    lst_weight = []
+    for p in [20, 30, 40]: #range(8, 51, 1):
 
         generator = n7_Model(p, l_e, r_so, 
                              gn=gn, fw=fw, sw=sw,
@@ -283,7 +284,7 @@ if 1:
                 adapt_yokes()
                 
                 if generator.P >= gn.Pel_out:
-                    sys.stdout.write(f"\rPolePair Iteration: {p} / {n_pole_pairs} - Stator Iteration: {idx_stator+1} / {n_iters_s} - Rotor Iterations: {idx_rotor+1} / {n_iters_r} - Searching config...         ")
+                    sys.stdout.write(f"\rComputing Pole Pair: {p} - Stator Iteration: {idx_stator+1} / {n_iters_s} - Rotor Iterations: {idx_rotor+1} / {n_iters_r} - Searching config...         ")
                     sys.stdout.flush()
                     
                     # ============================== Find Pel_out Iteration ==============================
@@ -297,6 +298,7 @@ if 1:
                             # lst_h_wndg_s.append(generator.h_wndg_s)
                             # lst_h_wndg_r.append(generator.h_wndg_r)
                             generator.HTS_usage()
+                            generator.compute_weight()
                             lst_generators.append(copy.deepcopy(generator))
                             break
                         j = min(i, n)
@@ -325,16 +327,17 @@ if 1:
                 else:
                     hist_r_P.append(generator.P)
                     if len(hist_r_P)>1 and hist_r_P[-1] < hist_r_P[-2]:
-                        sys.stdout.write(f"\rPolePair Iteration: {p} / {n_pole_pairs} - Stator Iteration: {idx_stator+1} / {n_iters_s} - Rotor Iterations: BREAK                                     ")
+                        sys.stdout.write(f"\rComputing Pole Pair: {p} - Stator Iteration: {idx_stator+1} / {n_iters_s} - Rotor Iterations: BREAK                                     ")
                         sys.stdout.flush()
                         break
                     else:
-                        sys.stdout.write(f"\rPolePair Iteration: {p} / {n_pole_pairs} - Stator Iteration: {idx_stator+1} / {n_iters_s} - Rotor Iterations: {idx_rotor+1} / {n_iters_r}                                       ")
+                        sys.stdout.write(f"\rComputing Pole Pair: {p} - Stator Iteration: {idx_stator+1} / {n_iters_s} - Rotor Iterations: {idx_rotor+1} / {n_iters_r}                                       ")
                         sys.stdout.flush()
             # ============================== End Rotor Winding Iteration ==============================
             
         # ============================== End Stator Winding Iteration ==============================
         if lst_generators:
+            # pick generator with least HTS length
             mini = min([geno.HTS_length for geno in lst_generators])
             idx = [geno.HTS_length for geno in lst_generators].index(mini)
             best = lst_generators[idx]    
@@ -342,10 +345,11 @@ if 1:
             lst_pole_pairs.append(best.p)
             lst_HTS_length.append(best.HTS_length)
             lst_HTS_volume.append(best.HTS_volume)
+            lst_weight.append(best.weight)
         
         total_runs += generator.runs
     # ============================== Pole Pair Iteration ==============================
-    sys.stdout.write(f"\rJob finished with {total_runs} solved models." + " "*50)
+    sys.stdout.write(f"\rJob finished with {total_runs} solved models." + " "*80)
     sys.stdout.flush()
     # print(f"\n{total_runs = }")
 
@@ -353,14 +357,19 @@ if 1:
 if 1:
     fig = plt.figure(dpi=300, figsize=(10,7))
     ax1 = plt.subplot()
-    
-    ax1.set_xlabel("pole pairs")
-    ax1.set_ylabel("HTS length / km")
     plt.title("Pole Pair Iteration")
     plt.grid()
     
-    ax1.scatter(lst_pole_pairs, [l*1e-3 for l in lst_HTS_length])
-    ax1.plot(lst_pole_pairs, [l*1e-3 for l in lst_HTS_length]) #, label=f"{np.round(lst_h_wndg_s[idx],3)}")
+    ax1.set_xlabel("pole pairs")
+    ax1.set_ylabel("HTS length / km", color = "blue")
+    ax1.scatter(lst_pole_pairs, [l*1e-3 for l in lst_HTS_length], color = "blue")
+    ax1.plot(lst_pole_pairs, [l*1e-3 for l in lst_HTS_length], color = "blue") #, label=f"{np.round(lst_h_wndg_s[idx],3)}")
+    
+    ax2 = ax1.twinx()
+    ax2.scatter(lst_pole_pairs, [w*1e-3 for w in lst_weight], color = "red")    
+    ax2.plot(lst_pole_pairs, [w*1e-3 for w in lst_weight], color = "red")
+    ax2.set_ylabel("Generator Weight / t", color = "red")
+    
     plt.savefig(fname = "HTSlengthOverPolePairCount.png")
     plt.show()
     
