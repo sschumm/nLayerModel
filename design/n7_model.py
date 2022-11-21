@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import numpy as np
+import tikzplotlib as tkz
 import matplotlib.pyplot as pyplot
 from scipy.constants import pi
 
@@ -184,15 +185,30 @@ class n7_Model():
         
         lift_factor_angle = kwargs.get("lift_factor_angle", 30)
         verbose = kwargs.get("verbose", False)
+        pretty = kwargs.get("pretty", False)
         
         J_s_history = [self.J_e_s]
         J_r_history = [self.J_e_r]   
         
+        K_s_history = [self.K_s]
+        K_r_history = [self.K_r]
+        
+        if pretty:
+            B_s_c_history = [self.B_s_c]
+            B_r_c_history = [self.B_r_c]
+        
         self.K_s = self.k_fill_s * self.h_wndg_s * self.J_e_s
         self.K_r = self.k_fill_r * self.h_wndg_r * self.J_e_r
         
-        K_s_history = [self.K_s]
-        K_r_history = [self.K_r]
+        J_s_history.append(self.J_e_s)
+        J_r_history.append(self.J_e_r) 
+        
+        K_s_history.append(self.K_s)
+        K_r_history.append(self.K_r)
+        
+        if pretty:
+            B_s_c_history.append(self.B_s_c)
+            B_r_c_history.append(self.B_r_c)
         
         self.update_model_by_K(self.K_s, self.K_r)
         
@@ -227,6 +243,10 @@ class n7_Model():
        
             K_s_history.append(self.K_s)
             K_r_history.append(self.K_r)
+            
+            if pretty:
+                B_s_c_history.append(self.B_s_c)
+                B_r_c_history.append(self.B_r_c)
             
             if idx > 20:
                 if np.allclose(np.array(J_s_history[-4:-1]), self.J_e_s) and np.allclose(np.array(J_r_history[-4:-1]), self.J_e_r):
@@ -269,6 +289,125 @@ class n7_Model():
             ax4.scatter([i+1 for i in range(len(J_r_history))], 
                         [y*1e-6 for y in J_r_history], c="r", marker="x")
             ax4.set_ylabel('J_e_r [A/mm2]', color="r")
+            
+        # --- plot convergence in single plots ---
+        if pretty:
+            n = 10
+            w = 4
+            h = 6
+            do_tikz = False
+            
+            fig, ax = pyplot.subplots(1)            
+            fig.tight_layout() 
+            fig.dpi=500
+            fig.set_figheight(w)
+            fig.set_figwidth(h)
+            # ax.ticklabel_format(useOffset=False)
+            ax.grid()
+            # ax.set_xticks(range(1,n+1))
+
+            ax.scatter([i+1 for i in range(n)], 
+                        [y*1e-3 for y in K_s_history[:n]], c="b", marker="o")
+            ax.plot([i+1 for i in range(n)], 
+                        [y*1e-3 for y in K_s_history[:n]], c="b", marker="o")
+            ax.set_ylabel('Ks [kA/m]', color="b")
+            if do_tikz:
+                tkz.clean_figure()
+                tkz.save("aus_iterating_Ks.tex")
+            
+            fig, ax = pyplot.subplots(1)            
+            fig.tight_layout() 
+            fig.dpi=500
+            fig.set_figheight(w)
+            fig.set_figwidth(h)
+            # ax.ticklabel_format(useOffset=False)
+            ax.grid()
+            # ax.set_xticks(range(1,n+1))
+            
+            ax.scatter([i+1 for i in range(n)], 
+                        [y*1e-6 for y in J_s_history[:n]], c="r")
+            ax.plot([i+1 for i in range(n)], 
+                        [y*1e-6 for y in J_s_history[:n]], c="r")
+            ax.set_ylabel('J_e_s [A/mm2]', color="r")
+            if do_tikz:
+                tkz.clean_figure()
+                tkz.save("aus_iterating_Jes.tex")
+            
+            fig, ax = pyplot.subplots(1)            
+            fig.tight_layout() 
+            fig.dpi=500
+            fig.set_figheight(w)
+            fig.set_figwidth(h)
+            # ax.ticklabel_format(useOffset=False)
+            ax.grid()
+            # ax.set_xticks(range(1,n+1))
+
+            ax.scatter([i+1 for i in range(n)], 
+                        [y*1 for y in B_s_c_history[:n]], c="g", marker="o")
+            ax.plot([i+1 for i in range(n)], 
+                        [y*1 for y in B_s_c_history[:n]], c="g", marker="o")
+            ax.set_ylabel('B_s_c [T]', color="g")
+            if do_tikz:
+                tkz.clean_figure()
+                tkz.save("aus_iterating_Bsc.tex")
+            
+            # ----------- Rotor -----------
+            fig, ax = pyplot.subplots(1)            
+            fig.tight_layout() 
+            fig.dpi=500
+            fig.set_figheight(w)
+            fig.set_figwidth(h)
+            # ax.ticklabel_format(useOffset=False)
+            ax.grid()
+            # ax.set_xticks(range(1,n+1))
+            
+            ax.scatter([i+1 for i in range(n)], 
+                        [y*1e-3 for y in K_r_history[:n]], c="b", marker="o")
+            ax.plot([i+1 for i in range(n)], 
+                        [y*1e-3 for y in K_r_history[:n]], c="b", marker="o")
+            ax.set_ylabel('Kr [kA/m]', color="b")
+            if do_tikz:
+                tkz.clean_figure()
+                tkz.save("aus_iterating_Kr.tex")
+            
+            fig, ax = pyplot.subplots(1)            
+            fig.tight_layout() 
+            fig.dpi=500
+            fig.set_figheight(w)
+            fig.set_figwidth(h)
+            # ax.ticklabel_format(useOffset=False)
+            ax.grid()
+            # ax.set_xticks(range(1,n+1))
+            
+            ax.scatter([i+1 for i in range(n)], 
+                        [y*1e-6 for y in J_r_history[:n]], c="r")
+            ax.plot([i+1 for i in range(n)], 
+                        [y*1e-6 for y in J_r_history[:n]], c="r")
+            ax.set_ylabel('J_e_r [A/mm2]', color="r")
+            if do_tikz:
+                tkz.clean_figure()
+                tkz.save("aus_iterating_Jer.tex")
+            
+            fig, ax = pyplot.subplots(1)            
+            fig.tight_layout() 
+            fig.dpi=500
+            fig.set_figheight(w)
+            fig.set_figwidth(h)
+            # ax.ticklabel_format(useOffset=False)
+            ax.grid()
+            # ax.set_xticks(range(1,n+1))
+            
+            ax.scatter([i+1 for i in range(n)], 
+                        [y*1 for y in B_r_c_history[:n]], c="g", marker="o")
+            ax.plot([i+1 for i in range(n)], 
+                        [y*1 for y in B_r_c_history[:n]], c="g", marker="o")
+            ax.set_ylabel('B_r_c [T]', color="g")
+            if do_tikz:
+                tkz.clean_figure()
+                tkz.save("aus_iterating_Brc.tex")
+
+            
+
         
         
     def fast_flux(self, **kwargs):
