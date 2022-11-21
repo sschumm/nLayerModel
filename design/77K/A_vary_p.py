@@ -371,16 +371,36 @@ if 1:
     ax2.plot(lst_pole_pairs, [w*1e-3 for w in lst_weight], color = "red")
     ax2.set_ylabel("Generator Weight / t", color = "red")
     
-    plt.savefig(fname = "HTSlengthOverPolePairCount.png")
-    plt.show()
+    # import tikzplotlib as tkz
     
-#%%
+    # tkz.clean_figure()
+    # tkz.save("aus_LandW_over_p.tex")
 
-import tikzplotlib as tkz
+    # plt.savefig(fname = "HTSlengthOverPolePairCount.png")
+    # plt.show()
 
-tkz.clean_figure()
-tkz.save("aus_LandW_over_p.tex")
+#%% ----- select generator and finish setup for export ------
+gen = lst_best_generators[20]
 
+if 1:
+    
+    print(f"{gen.l_e = }, {gen.k_fill_s = }, {gen.k_fill_r = }")
+    
+    N_s = int(np.round(gen.guess_Ns()))
+    N_c_div_a = int(np.round(gen.guess_N_c_div_a(N_s = N_s)))
+    
+    print(f"\n{N_s = } \n{N_c_div_a = }")
+    
+    I_s = gen.P / (np.sqrt(3) * gen.gn.U_LL_N)
+    ampere_turns_stator = N_c_div_a * I_s
+    
+    J_s_amplitude = np.sqrt(2) * ampere_turns_stator / gen.coil.A_sc
+    gen.N_s = N_s
+    gen.J_s_amplitude = J_s_amplitude
+    
+    print(f"\n{I_s = } [A] \n{ampere_turns_stator = } [A] \n{J_s_amplitude = } [A/m2] \n{J_s_amplitude*1e-6 = }[A_mm2]")
 
+#%% ------ export to comsol -----
 
+save_params("from_python", gen) 
 
