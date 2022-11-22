@@ -156,12 +156,29 @@ class n7_Model():
         self.B_r = np.max(np.abs(flux_data.Br[:, 0]))
         self.B_s = np.max(np.abs(flux_data.Br[:, 1]))
         
-        self.B_r_c = np.max(np.abs(np.sin(np.pi/6) * flux_data.Br[:,0] + \
-                              np.cos(np.pi/6) * flux_data.Bt[:, 0])
-                            )
-        self.B_s_c = np.max(np.abs(np.sin(np.pi/6) * flux_data.Br[:,1] + \
-                              np.cos(np.pi/6) * flux_data.Bt[:, 1])
-                            )
+        # self.B_rt = np.max(np.abs(flux_data.Bt[:, 0]))
+        # self.B_st = np.max(np.abs(flux_data.Bt[:, 1]))
+        
+        arctan_r = np.arctan2(flux_data.Br[:,0], flux_data.Bt[:,0])
+        B_r_norm = np.sqrt(flux_data.Br[:,0]**2 + flux_data.Bt[:,0]**2)
+        phi_r = np.abs(pi/6 - arctan_r)
+        self.B_r_c = np.max(B_r_norm * np.cos(phi_r))
+        
+        arctan_s = np.arctan2(flux_data.Br[:,1], flux_data.Bt[:,1])
+        B_s_norm = np.sqrt(flux_data.Br[:,1]**2 + flux_data.Bt[:,1]**2)
+        phi_s = np.abs(pi/6 - arctan_s)
+        self.B_s_c = np.max(B_s_norm * np.cos(phi_s))
+        
+        # self.B_r_c = np.max([np.abs(  np.sin(np.pi/6)*flux_data.Br[:,0] + np.cos(np.pi/6)*flux_data.Bt[:, 0]),
+        #                      np.abs(  np.sin(np.pi/6)*flux_data.Br[:,0] - np.cos(np.pi/6)*flux_data.Bt[:, 0]),
+        #                      np.abs(- np.sin(np.pi/6)*flux_data.Br[:,0] + np.cos(np.pi/6)*flux_data.Bt[:, 0]),
+        #                      np.abs(- np.sin(np.pi/6)*flux_data.Br[:,0] - np.cos(np.pi/6)*flux_data.Bt[:, 0]),
+        #                     ])
+        # self.B_s_c = np.max([np.abs(  np.sin(np.pi/6)*flux_data.Br[:,1] + np.cos(np.pi/6)*flux_data.Bt[:, 1]),
+        #                      np.abs(  np.sin(np.pi/6)*flux_data.Br[:,1] - np.cos(np.pi/6)*flux_data.Bt[:, 1]),
+        #                      np.abs(- np.sin(np.pi/6)*flux_data.Br[:,1] + np.cos(np.pi/6)*flux_data.Bt[:, 1]),
+        #                      np.abs(- np.sin(np.pi/6)*flux_data.Br[:,1] - np.cos(np.pi/6)*flux_data.Bt[:, 1])
+        #                     ])
         
         
         self.M = this_mdl.Mpos
@@ -230,14 +247,14 @@ class n7_Model():
                 
             if np.isnan(J_e_r):
                 print("\nINFO: lift_factor overflow for J_e_r...")
-                B_r_c += 0.9
+                B_r_c *= 0.9
                 J_e_r=get_L_TPL2100(T = self.fw.T_HTS, B = B_r_c, 
                                     theta = lift_factor_angle) * self.J_e_spec
             
             J_s_history.append(J_e_s)
             J_r_history.append(J_e_r)
                     
-            self.update_model_by_J(J_e_s=J_s_history[-2] * 0.4 + J_s_history[-1] * 0.6, 
+            self.update_model_by_J(J_e_s=J_s_history[-2] * 0.3 + J_s_history[-1] * 0.7, 
                                    J_e_r=J_r_history[-2] * 0.3 + J_r_history[-1] * 0.7, 
                                    **kwargs)
        

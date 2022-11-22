@@ -60,7 +60,7 @@ adapt_yokes()
 
 
 #%% ------ visualize correlation of power with h_wndg_s and h_wndg_r ------ 
-if 1:
+if 0:
     lst_P = []
     lst_K = []
     lst_h_wndg_s = []
@@ -105,7 +105,7 @@ if 1:
         lst_h_wndg_s.append(h_wndg_s)
 
 #%% ------ plot ------
-if 1:
+if 0:
     fig = plt.figure(dpi=300, figsize=(6,7))
     ax1 = plt.subplot()
     # ax2 = ax1.twinx()
@@ -370,7 +370,6 @@ if 0:
     job_runtime = job_finish_time - job_init_time
     sys.stdout.write(f"\rJob finished with {total_runs} solved models in {np.round(job_runtime,3)} seconds." + " "*80)
     sys.stdout.flush()
-    # print(f"\n{total_runs = }")
 
 #%% ------ plot HTS length over pole pairs ------
 if 0:
@@ -426,4 +425,6 @@ if 0:
 #%% ------ export to comsol -----
 
 # save_params("from_python", gen) 
+
+
 
