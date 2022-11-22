@@ -18,7 +18,7 @@ from design import n7_Model
 
 
 # --- ecoswing ---
-p = 8
+p = 30
 r_so = 3.75
 l_e = sw.l_e(sw, r_so) # 0.267
 
@@ -60,8 +60,9 @@ adapt_yokes()
 
 
 #%% ------ visualize correlation of power with h_wndg_s and h_wndg_r ------ 
-if 0:
+if 1:
     lst_P = []
+    lst_K = []
     lst_h_wndg_s = []
     lst_h_wndg_r = []
     
@@ -81,6 +82,7 @@ if 0:
         generator.update_dimensions(h_wndg_s = h_wndg_s, keep_const_kr_b=True)
         
         hist_r_P = []
+        hist_r_K = []
         for idx_rotor, iter_rotor in enumerate(np.linspace(0, h_wndg_r_1-h_wndg_r_0, n_iters_r)):
             
             h_wndg_r = h_wndg_r_0 + iter_rotor
@@ -90,6 +92,7 @@ if 0:
             adapt_yokes()
             
             hist_r_P.append(generator.P)
+            hist_r_K.append(generator.K_s)
             
             sys.stdout.write(f"\rStator Iteration: {idx_stator+1} / {n_iters_s} - Rotor Iterations: {idx_rotor+1} / {n_iters_r}    ")
             sys.stdout.flush()
@@ -98,10 +101,11 @@ if 0:
                 lst_h_wndg_r.append(h_wndg_r)
     
         lst_P.append(hist_r_P)
+        lst_K.append(hist_r_K)
         lst_h_wndg_s.append(h_wndg_s)
 
 #%% ------ plot ------
-if 0:
+if 1:
     fig = plt.figure(dpi=300, figsize=(6,7))
     ax1 = plt.subplot()
     # ax2 = ax1.twinx()
@@ -115,8 +119,8 @@ if 0:
     plt.grid()
     
     for idx, val in enumerate(lst_P):
-        ax1.scatter(lst_h_wndg_r, [v*1e-6 for v in val], label=f"{np.round(lst_h_wndg_s[idx],2)}")
-        ax1.plot(lst_h_wndg_r, [v*1e-6 for v in val], label=f"{np.round(lst_h_wndg_s[idx],3)}")
+        ax1.scatter(lst_h_wndg_r, [v*1e-6 for v in val], label=f"{np.round(lst_h_wndg_s[idx],3)}")
+        ax1.plot(lst_h_wndg_r, [v*1e-6 for v in val])#, label=f"{np.round(lst_h_wndg_s[idx],3)}")
         
     ax1.legend(loc="lower right", ncol=3)
     
@@ -131,6 +135,24 @@ if 0:
     # lines2, labels2 = ax2.get_legend_handles_labels()
     # ax2.legend(lines1 + lines2, labels1 + labels2, loc=0)
     plt.show()
+    
+    fig = plt.figure(dpi=300, figsize=(6,7))
+    ax1 = plt.subplot()
+    # ax2 = ax1.twinx()
+    # ax.set_xlabel("B / T")
+    # ax.set_ylabel("J_e / Amm2")
+    # ax.set_xlim(0, 3)
+    # ax.set_ylim(0, 25)
+    # ax.set_xticks([i for i in range(0, 181, 20)])
+    # ax.set_yticks([i for i in range(0, 2501, 250)])
+    plt.title(f"p = {generator.p}")
+    plt.grid()
+    
+    for idx, val in enumerate(lst_K):
+        ax1.scatter(lst_h_wndg_r, [v*1e-3 for v in val], label=f"{np.round(lst_h_wndg_s[idx],3)}")
+        ax1.plot(lst_h_wndg_r, [v*1e-3 for v in val])#, label=f"{np.round(lst_h_wndg_s[idx],3)}")
+        
+    ax1.legend(loc="lower right", ncol=3)
     pass
     
 #%% ------ break at 7 MW crossing ------
@@ -217,7 +239,7 @@ if 0:
             
 
 #%% ------ iterating over p ------
-if 1:
+if 0:
     job_init_time = time.time()
     r_so = 3.75
     l_e = sw.l_e(sw, r_so) # 0.267
@@ -351,11 +373,11 @@ if 1:
     # print(f"\n{total_runs = }")
 
 #%% ------ plot HTS length over pole pairs ------
-lst_pole_pairs = [gen.p for gen in lst_best_generators]
-lst_HTS_length = [gen.HTS_length for gen in lst_best_generators]
-lst_weight = [gen.weight for gen in lst_best_generators]
-
-if 1:
+if 0:
+    lst_pole_pairs = [gen.p for gen in lst_best_generators]
+    lst_HTS_length = [gen.HTS_length for gen in lst_best_generators]
+    lst_weight = [gen.weight for gen in lst_best_generators]
+    
     fig = plt.figure(dpi=300, figsize=(10,7))
     ax1 = plt.subplot()
     plt.title("Pole Pair Iteration")
@@ -370,6 +392,7 @@ if 1:
     ax2.scatter(lst_pole_pairs, [w*1e-3 for w in lst_weight], color = "red")    
     ax2.plot(lst_pole_pairs, [w*1e-3 for w in lst_weight], color = "red")
     ax2.set_ylabel("Generator Weight / t", color = "red")
+
     
     # import tikzplotlib as tkz
     
@@ -378,12 +401,12 @@ if 1:
 
     # plt.savefig(fname = "HTSlengthOverPolePairCount.png")
     # plt.show()
+    pass
 
 #%% ----- select generator and finish setup for export ------
-gen = lst_best_generators[20]
 
-if 1:
-    
+if 0:
+    gen = lst_best_generators[20]
     print(f"{gen.l_e = }, {gen.k_fill_s = }, {gen.k_fill_r = }")
     
     N_s = int(np.round(gen.guess_Ns()))
@@ -402,5 +425,5 @@ if 1:
 
 #%% ------ export to comsol -----
 
-save_params("from_python", gen) 
+# save_params("from_python", gen) 
 
