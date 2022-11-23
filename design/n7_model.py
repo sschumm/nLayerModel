@@ -169,6 +169,9 @@ class n7_Model():
         phi_s = np.abs(pi/6 - arctan_s)
         self.B_s_c = np.max(B_s_norm * np.cos(phi_s))
         
+        self.B_r_c = np.max(np.abs(flux_data.Br[:,0]))
+        self.B_s_c = np.max(np.abs(flux_data.Br[:,1]))
+        
         # self.B_r_c = np.max([np.abs(  np.sin(np.pi/6)*flux_data.Br[:,0] + np.cos(np.pi/6)*flux_data.Bt[:, 0]),
         #                      np.abs(  np.sin(np.pi/6)*flux_data.Br[:,0] - np.cos(np.pi/6)*flux_data.Bt[:, 0]),
         #                      np.abs(- np.sin(np.pi/6)*flux_data.Br[:,0] + np.cos(np.pi/6)*flux_data.Bt[:, 0]),
