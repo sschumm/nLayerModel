@@ -4,6 +4,8 @@ import tikzplotlib as tkz
 import matplotlib.pyplot as pyplot
 from scipy.constants import pi
 
+from analytics import yoke_height
+
 from modules import Model, MagneticLayer, AirLayer, CurrentLoading
 from modules.plot import PlanePlot
 
@@ -593,6 +595,15 @@ class n7_Model():
     def maximize_k_fill(self):
         self.maximize_k_fill_s()
         self.maximize_k_fill_r()
+        
+        
+    def adapt_yokes(self, **kwargs):
+        # --- adapt stator yoke ---
+        h_yoke_s = yoke_height(self.p, self.dims.r_si, self.B_s, self.B_yoke_max)    
+        # --- adapt rotor yoke ---
+        h_yoke_r = yoke_height(self.p, self.dims.r_ro, self.B_r, self.B_yoke_max)
+        # --- apply ---
+        self.update_dimensions(h_yoke_s=h_yoke_s, h_yoke_r=h_yoke_r, **kwargs)
     
     
     def show_results(self, header="n7 - Results"):

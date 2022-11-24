@@ -101,16 +101,7 @@ gen.update_model_by_K(K_s= gen.k_fill_s * gen.J_e_s * gen.h_wndg_s,
 
 gen.apply_lift_factor()
 
-#%% 
-def adapt_yokes():
-    # --- adapt stator yoke ---
-    h_yoke_s = yoke_height(gen.p, gen.dims.r_si, gen.B_s, gen.B_yoke_max)    
-    # --- adapt rotor yoke ---
-    h_yoke_r = yoke_height(gen.p, gen.dims.r_ro, gen.B_r, gen.B_yoke_max)
-
-    gen.update_dimensions(h_yoke_s=h_yoke_s, h_yoke_r=h_yoke_r)
-
-adapt_yokes()
+gen.adapt_yokes()
 
 gen.maximize_k_fill()
 
@@ -150,7 +141,7 @@ for iter_stator in np.linspace(0,3,9):
         #                       ks_d=0.866)
         # gen.apply_lift_factor()
         gen.apply_coil_sizes_and_lift_factor()
-        adapt_yokes()
+        gen.adapt_yokes()
         # gen.apply_lift_factor()
         # gen.apply_coil_sizes_and_lift_factor()
         lst_rotor.append(copy.deepcopy(gen))
@@ -183,7 +174,7 @@ gen.update_model_by_K(K_s= gen.k_fill_s * gen.J_e_s * gen.h_wndg_s,
                       K_r= gen.k_fill_r * gen.J_e_r * gen.h_wndg_r, 
                       ks_d=0.866)
 gen.apply_coil_sizes_and_lift_factor()
-adapt_yokes()
+gen.adapt_yokes()
 gen.apply_coil_sizes_and_lift_factor()
 
 gen.show_results()
