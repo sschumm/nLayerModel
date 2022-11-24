@@ -50,18 +50,7 @@ gen.init_dimensions(h_yoke_s=h_pf, h_yoke_r=h_pf,
                     h_wndg_r=h_pf * 2.1
                     )
 
-def get_k_fill_s(r_si, h_sw, p):
-    nom = (pi*(r_si-h_sw)/(3*p)-gn.w_pole_frame-gn.r_bend_max)*(h_sw-2*gn.h_pole_frame)*3*p
-    den = h_sw * (r_si - h_sw) * pi
-    return nom / den
-
-def get_k_fill_r(r_ro, h_rw, p):
-    nom = 2*p*(((pi * r_ro)/(2 * p)) - gn.w_pole_frame - gn.r_bend_max)*(h_rw - 2*gn.h_pole_frame)
-    den = h_rw * pi * r_ro
-    return nom / den
-
-gen.k_fill_s = get_k_fill_s(r_si= gen.dims.r_si, h_sw= gen.h_wndg_s, p= gen.p)
-gen.k_fill_r = get_k_fill_r(r_ro= gen.dims.r_ro, h_rw= gen.h_wndg_r, p= gen.p)
+gen.maximize_k_fill()
 
 gen.update_model_by_K(K_s= gen.k_fill_s * gen.J_e_s * gen.h_wndg_s, 
                       K_r= gen.k_fill_r * gen.J_e_r * gen.h_wndg_r, 
@@ -76,12 +65,12 @@ h_sw0 = h_pf*2.1
 h_rw0 = h_pf*2.1
 for iter_stator in np.linspace(0,3,9):
     gen.update_dimensions(h_wndg_s= h_sw0 + h_sw0*iter_stator)
-    gen.k_fill_s = get_k_fill_s(r_si= gen.dims.r_si, h_sw= gen.h_wndg_s, p= gen.p)
+    gen.maximize_k_fill_s()
     
     lst_rotor = []
     for iter_rotor in np.linspace(0,3,20):
         gen.update_dimensions(h_wndg_r= h_rw0 + h_rw0*iter_rotor)
-        gen.k_fill_r = get_k_fill_r(r_ro= gen.dims.r_ro, h_rw= gen.h_wndg_r, p= gen.p)
+        gen.maximize_k_fill_r()
         gen.update_model_by_K(K_s= gen.k_fill_s * gen.J_e_s * gen.h_wndg_s, 
                               K_r= gen.k_fill_r * gen.J_e_r * gen.h_wndg_r, 
                               ks_d=0.866)
@@ -104,8 +93,7 @@ plt.show()
 #%% Apply Lift Factor 
 
 gen.update_dimensions(h_yoke_s=h_pf, h_yoke_r=h_pf, h_wndg_s= 0.03, h_wndg_r= 0.03)
-gen.k_fill_s = get_k_fill_s(r_si= gen.dims.r_si, h_sw= gen.h_wndg_s, p= gen.p)
-gen.k_fill_r = get_k_fill_r(r_ro= gen.dims.r_ro, h_rw= gen.h_wndg_r, p= gen.p)
+gen.maximize_k_fill()
 
 gen.update_model_by_K(K_s= gen.k_fill_s * gen.J_e_s * gen.h_wndg_s, 
                       K_r= gen.k_fill_r * gen.J_e_r * gen.h_wndg_r, 
@@ -124,8 +112,7 @@ def adapt_yokes():
 
 adapt_yokes()
 
-gen.k_fill_s = get_k_fill_s(r_si= gen.dims.r_si, h_sw= gen.h_wndg_s, p= gen.p)
-gen.k_fill_r = get_k_fill_r(r_ro= gen.dims.r_ro, h_rw= gen.h_wndg_r, p= gen.p)
+gen.maximize_k_fill()
 
 gen.update_model_by_K(K_s= gen.k_fill_s * gen.J_e_s * gen.h_wndg_s, 
                       K_r= gen.k_fill_r * gen.J_e_r * gen.h_wndg_r, 
@@ -152,12 +139,12 @@ h_sw0 = h_pf*2.1 #0.3
 h_rw0 = h_pf*2.1 #0.3
 for iter_stator in np.linspace(0,3,9):
     gen.update_dimensions(h_wndg_s= h_sw0 + h_sw0*iter_stator)
-    gen.k_fill_s = get_k_fill_s(r_si= gen.dims.r_si, h_sw= gen.h_wndg_s, p= gen.p)
+    gen.maximize_k_fill_s()
     
     lst_rotor = []
     for iter_rotor in np.linspace(0,3,15):
         gen.update_dimensions(h_wndg_r= h_rw0 + h_rw0*iter_rotor)
-        gen.k_fill_r = get_k_fill_r(r_ro= gen.dims.r_ro, h_rw= gen.h_wndg_r, p= gen.p)
+        gen.maximize_k_fill_r()
         # gen.update_model_by_K(K_s= gen.k_fill_s * gen.J_e_s * gen.h_wndg_s, 
         #                       K_r= gen.k_fill_r * gen.J_e_r * gen.h_wndg_r, 
         #                       ks_d=0.866)
@@ -191,8 +178,7 @@ plt.show()
 #%% test configuration
 
 gen.update_dimensions(h_yoke_s=h_pf, h_yoke_r=h_pf, h_wndg_s= 0.047, h_wndg_r= 0.07)
-gen.k_fill_s = get_k_fill_s(r_si= gen.dims.r_si, h_sw= gen.h_wndg_s, p= gen.p)
-gen.k_fill_r = get_k_fill_r(r_ro= gen.dims.r_ro, h_rw= gen.h_wndg_r, p= gen.p)
+gen.maximize_k_fill()
 gen.update_model_by_K(K_s= gen.k_fill_s * gen.J_e_s * gen.h_wndg_s, 
                       K_r= gen.k_fill_r * gen.J_e_r * gen.h_wndg_r, 
                       ks_d=0.866)

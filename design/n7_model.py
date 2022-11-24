@@ -570,6 +570,31 @@ class n7_Model():
         return N_c_div_a
     
     
+    def maximize_k_fill_s(self):
+        r_si = self.dims.r_si
+        h_sw = self.h_wndg_s
+        p = self.p
+        gn = self.gn
+        nom = (pi*(r_si-h_sw)/(3*p)-gn.w_pole_frame-gn.r_bend_max)*(h_sw-2*gn.h_pole_frame)*3*p
+        den = h_sw * (r_si - h_sw) * pi
+        self.k_fill_s = nom / den
+        
+        
+    def maximize_k_fill_r(self):
+        r_ro = self.dims.r_ro
+        h_rw = self.h_wndg_r
+        p = self.p
+        gn = self.gn
+        nom = 2*p*(((pi * r_ro)/(2 * p)) - gn.w_pole_frame - gn.r_bend_max)*(h_rw - 2*gn.h_pole_frame)
+        den = h_rw * pi * r_ro
+        self.k_fill_r = nom / den
+        
+    
+    def maximize_k_fill(self):
+        self.maximize_k_fill_s()
+        self.maximize_k_fill_r()
+    
+    
     def show_results(self, header="n7 - Results"):
         print("\n---", header, "---")
         print(f"M = {np.round(self.M * 1e-6, 2)} [MNm]")
