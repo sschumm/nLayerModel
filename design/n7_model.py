@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import sys
 import numpy as np
 import tikzplotlib as tkz
 import matplotlib.pyplot as pyplot
@@ -619,8 +620,15 @@ class n7_Model():
         # --- adapt rotor yoke ---
         h_yoke_r = yoke_height(self.p, self.dims.r_ro, self.B_r, self.B_yoke_max)
         # --- apply ---
-        self.update_dimensions(h_yoke_s=h_yoke_s, h_yoke_r=h_yoke_r, **kwargs)
-        
+        if h_yoke_s >= self.dims.r_so * 0.6:
+            h_yoke_s = self.dims.r__so * 0.39
+            print("WARNING: Stator Yoke too big.")
+        self.update_dimensions(h_yoke_s=h_yoke_s, **kwargs)
+        if h_yoke_r >= self.dims.r_ro:
+            h_yoke_r = self.dims.r_ro * 0.9
+            print("WARNING: Rotor Yoke too big.")
+        self.update_dimensions(h_yoke_r=h_yoke_r, **kwargs)
+            
         
     def apply_coil_thickness_ratio(self):
         self.maximize_k_fill()

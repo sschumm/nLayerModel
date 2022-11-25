@@ -105,9 +105,9 @@ P_target = gn.Pel_out
 # ============================== Pole Pair Iteration ==============================
 lst_optimize_l = []
 lst_optimize_m = []
-for p in range(6, 40, 4):
+for p in range(6, 50, 1):
 
-    gen = n7_Model(p, l_e, r_so, gn=gn, fw=fw, sw=sw, B_yoke_max=3)
+    gen = n7_Model(p, l_e, r_so, gn=gn, fw=fw, sw=sw, B_yoke_max=2)
     h_pf = gn.h_pole_frame
     gen.init_dimensions(h_yoke_s=h_pf, h_yoke_r=h_pf, 
                         h_wndg_s=h_pf * 2.1, h_wndg_r=h_pf * 2.1)
@@ -117,9 +117,9 @@ for p in range(6, 40, 4):
     lst_stator_iter = []
     h_sw0 = h_pf*2.1 #0.3 
     h_rw0 = h_pf*2.1 #0.3    
-    n_iters_s, n_times_s = 30, 3
-    n_iters_r, n_times_r = 30, 3
-    detail, verbose = 0.0001, True
+    n_iters_s, n_times_s = 70, 4
+    n_iters_r, n_times_r = 70, 4
+    detail, verbose = 0.0001, False
     
     for idx_stator, iter_stator in enumerate(np.linspace(0, n_times_s, n_iters_s)):
         # gen.update_dimensions(h_wndg_s= h_sw0 + h_sw0*iter_stator)
@@ -148,7 +148,7 @@ for p in range(6, 40, 4):
                 old = copy.copy(gen.h_wndg_r)
                 for idx_Pel_out in range(100):
                     if (gen.P >= (1-detail)*P_target and gen.P <= (1+detail)*P_target):
-                        sys.stdout.write(f"\rComputing Pole Pair: {p} - Stator Iteration: {idx_stator+1} / {n_iters_s} - Rotor Iterations: {idx_rotor+1} / {n_iters_r} - Converged.         ")
+                        sys.stdout.write(f"\rComputing p = {p} - Stator Iteration: {idx_stator+1} / {n_iters_s} - Rotor Iterations: {idx_rotor+1} / {n_iters_r} - Converged.         ")
                         sys.stdout.flush()
     
                         gen.HTS_usage()
@@ -156,7 +156,7 @@ for p in range(6, 40, 4):
                         lst_stator_iter.append(copy.deepcopy(gen))
                         break
                     
-                    sys.stdout.write(f"\rComputing Pole Pair: {p} - Stator Iteration: {idx_stator+1} / {n_iters_s} - Rotor Iterations: {idx_rotor+1} / {n_iters_r} - Convergence Step {idx_Pel_out}         ")
+                    sys.stdout.write(f"\rComputing p = {p} - Stator Iteration: {idx_stator+1} / {n_iters_s} - Rotor Iterations: {idx_rotor+1} / {n_iters_r} - Convergence Step {idx_Pel_out}         ")
                     sys.stdout.flush()
                     
                     n0 = (n_Pel_out - min(idx_Pel_out, n_Pel_out))/n_Pel_out
@@ -255,6 +255,10 @@ job_runtime = job_finish_time - job_init_time
 sys.stdout.write(f"\rJob finished with {total_runs} solved models in {int(np.round(job_runtime,3))//60} minutes and {int(np.round(job_runtime,3))%60} seconds." + " "*80)
 sys.stdout.flush()
 
+#%% --- export ? ---
+export_png = True
+preambel = "1102_2116_77K_ctr_"
+
 #%% ------ plot optim HTS length over pole pairs ------
 if 1:
     lst_pole_pairs = [gen.p for gen in lst_optimize_l]
@@ -268,9 +272,9 @@ if 1:
     plt.grid()
     
     ax1.set_xlabel("pole pairs")
-    ax1.set_ylabel("HTS length / km", color = "blue")
+    ax1.set_ylabel("HTS length / km")
     ax1.scatter(lst_pole_pairs, [l*1e-3 for l in lst_HTS_length], color = "blue", label="HTS_length")
-    ax1.plot(lst_pole_pairs, [l*1e-3 for l in lst_HTS_length]) #, label=f"{np.round(lst_h_wndg_s[idx],3)}")
+    ax1.plot(lst_pole_pairs, [l*1e-3 for l in lst_HTS_length], color = "blue") #, label=f"{np.round(lst_h_wndg_s[idx],3)}")
     
     ax2 = ax1.twinx()
     ax2.scatter(lst_pole_pairs, [w*1e-3 for w in lst_weight], color = "red", label="weight new")    
@@ -284,7 +288,7 @@ if 1:
     lines2, labels2 = ax2.get_legend_handles_labels()
     ax2.legend(lines1 + lines2, labels1 + labels2, loc="upper center")
     
-    # plt.savefig(fname = "1125_1521_B_vary_p_optim_l.png")
+    if export_png: plt.savefig(fname = preambel + "vary_p_optim_l.png")
 
 #%% ------ plot optim weight over pole pairs ------
 if 1:
@@ -315,9 +319,9 @@ if 1:
     lines2, labels2 = ax2.get_legend_handles_labels()
     ax2.legend(lines1 + lines2, labels1 + labels2, loc="upper center")
     
-    # plt.savefig(fname = "1125_1521_B_vary_p_optim_m.png")
+    if export_png: plt.savefig(fname = preambel + "vary_p_optim_m.png")
     
-#%% ------ plot optim weight over pole pairs ------
+#%% ------ plot width of coils and poles over pole pairs ------
 if 1:
     lst_pole_pairs = [gen.p for gen in lst_optimize_m]
     lst_w_rc = [gen.coil.w_rc*1e3 for gen in lst_optimize_m]
@@ -353,4 +357,157 @@ if 1:
     lines2, labels2 = ax2.get_legend_handles_labels()
     ax2.legend(lines1 + lines2, labels1 + labels2, loc="upper center")
     
-    # plt.savefig(fname = "1125_1521_B_vary_p_optim_m.png")
+    if export_png: plt.savefig(fname = preambel + "vary_p_optim_m.png")
+    
+#%% ------ plot optim weight and critical Field over pole pairs ------
+if 1:
+    lst_pole_pairs = [gen.p for gen in lst_optimize_m]
+    lst_B_r_c = [gen.B_r_c for gen in lst_optimize_m]
+    lst_B_s_c = [gen.B_s_c for gen in lst_optimize_m]
+    lst_weight = [gen.weight for gen in lst_optimize_m]
+    
+    fig = plt.figure(dpi=300, figsize=(8,5))
+    ax1 = plt.subplot()
+    plt.title("Pole Pair Iteration")
+    plt.grid()
+    
+    ax1.set_xlabel("pole pairs")
+    ax1.set_ylabel("B_c / T")
+    ax1.scatter(lst_pole_pairs, [B for B in lst_B_r_c], color = "blue", label="B_r_c")
+    ax1.plot(lst_pole_pairs, [B for B in lst_B_r_c], color = "blue") #, label=f"{np.round(lst_h_wndg_s[idx],3)}")
+    ax1.scatter(lst_pole_pairs, [B for B in lst_B_s_c], color = "green", label="B_s_c")    
+    ax1.plot(lst_pole_pairs, [B for B in lst_B_s_c], color = "green")
+    
+    ax2 = ax1.twinx()
+    ax2.scatter(lst_pole_pairs, [w*1e-3 for w in lst_weight], color = "red", label="weight new")    
+    ax2.plot(lst_pole_pairs, [w*1e-3 for w in lst_weight], color = "red")
+    ax2.set_ylabel("Generator Weight / t")
+    
+    
+    lines1, labels1 = ax1.get_legend_handles_labels()
+    lines2, labels2 = ax2.get_legend_handles_labels()
+    ax2.legend(lines1 + lines2, labels1 + labels2, loc="upper center")
+    if export_png: plt.savefig(fname = preambel + "vary_p_critical_field.png")
+    
+#%% ------ plot optim weight and rotor and stator weight  over pole pairs ------
+if 1:
+    lst_pole_pairs = [gen.p for gen in lst_optimize_m]
+    lst_m_rotor = [gen.weight_rotor for gen in lst_optimize_m]
+    lst_m_stator = [gen.weight_stator for gen in lst_optimize_m]
+    lst_weight = [gen.weight for gen in lst_optimize_m]
+    
+    fig = plt.figure(dpi=300, figsize=(8,5))
+    ax1 = plt.subplot()
+    plt.title("Pole Pair Iteration")
+    plt.grid()
+    
+    ax1.set_xlabel("pole pairs")
+    ax1.set_ylabel("m / t")
+    ax1.scatter(lst_pole_pairs, [w*1e-3 for w in lst_m_rotor], color = "blue", label="m_r")
+    ax1.plot(lst_pole_pairs, [w*1e-3 for w in lst_m_rotor], color = "blue") #, label=f"{np.round(lst_h_wndg_s[idx],3)}")
+    ax1.scatter(lst_pole_pairs, [w*1e-3 for w in lst_m_stator], color = "green", label="m_s")    
+    ax1.plot(lst_pole_pairs, [w*1e-3 for w in lst_m_stator], color = "green")
+    ax1.scatter(lst_pole_pairs, [w*1e-3 for w in lst_weight], color = "red", label="weight new")    
+    ax1.plot(lst_pole_pairs, [w*1e-3 for w in lst_weight], color = "red")
+    
+    ax1.legend(loc="upper right")
+    if export_png: plt.savefig(fname = preambel + "vary_p_weight_r_and_s.png")
+
+#%% ------ plot optim weight and rotor and breadth factor over pole pairs ------
+if 1:
+    lst_pole_pairs = [gen.p for gen in lst_optimize_m]
+    lst_kr_b = [gen.kr_b for gen in lst_optimize_m]
+    # lst_m_stator = [gen.weight_stator for gen in lst_optimize_m]
+    lst_weight = [gen.weight for gen in lst_optimize_m]
+    
+    fig = plt.figure(dpi=300, figsize=(8,5))
+    ax1 = plt.subplot()
+    plt.title("Pole Pair Iteration")
+    plt.grid()
+    
+    ax1.set_xlabel("pole pairs")
+    ax1.set_ylabel("kr_b / -")
+    ax1.scatter(lst_pole_pairs, [B for B in lst_kr_b], color = "blue", label="kr_b")
+    ax1.plot(lst_pole_pairs, [B for B in lst_kr_b], color = "blue") #, label=f"{np.round(lst_h_wndg_s[idx],3)}")
+    
+    ax2 = ax1.twinx()
+    ax2.scatter(lst_pole_pairs, [w*1e-3 for w in lst_weight], color = "red", label="weight new")    
+    ax2.plot(lst_pole_pairs, [w*1e-3 for w in lst_weight], color = "red")
+    ax2.set_ylabel("Generator Weight / t")
+    
+    
+    lines1, labels1 = ax1.get_legend_handles_labels()
+    lines2, labels2 = ax2.get_legend_handles_labels()
+    ax2.legend(lines1 + lines2, labels1 + labels2, loc="upper center")  
+    if export_png: plt.savefig(fname = preambel + "vary_p_breadth_factor.png")
+    
+    
+#%% ------ plot optim weight and winding height over pole pairs ------
+if 1:
+    lst_pole_pairs = [gen.p for gen in lst_optimize_m]
+    lst_h_rw = [gen.h_wndg_r for gen in lst_optimize_m]
+    lst_h_sw = [gen.h_wndg_s for gen in lst_optimize_m]
+    lst_weight = [gen.weight for gen in lst_optimize_m]
+    
+    fig = plt.figure(dpi=300, figsize=(8,5))
+    ax1 = plt.subplot()
+    plt.title("Pole Pair Iteration")
+    plt.grid()
+    
+    ax1.set_xlabel("pole pairs")
+    ax1.set_ylabel("h / mm")
+    ax1.scatter(lst_pole_pairs, [h*1e3 for h in lst_h_rw], color = "blue", label="h_rw")
+    ax1.plot(lst_pole_pairs, [h*1e3 for h in lst_h_rw], color = "blue") #, label=f"{np.round(lst_h_wndg_s[idx],3)}")
+    ax1.scatter(lst_pole_pairs, [h*1e3 for h in lst_h_sw], color = "green", label="h_sw")    
+    ax1.plot(lst_pole_pairs, [h*1e3 for h in lst_h_sw], color = "green")
+    
+    ax2 = ax1.twinx()
+    ax2.scatter(lst_pole_pairs, [w*1e-3 for w in lst_weight], color = "red", label="weight new")    
+    ax2.plot(lst_pole_pairs, [w*1e-3 for w in lst_weight], color = "red")
+    ax2.set_ylabel("Generator Weight / t")
+    
+    
+    lines1, labels1 = ax1.get_legend_handles_labels()
+    lines2, labels2 = ax2.get_legend_handles_labels()
+    ax2.legend(lines1 + lines2, labels1 + labels2, loc="upper center")
+    if export_png: plt.savefig(fname = preambel + "vary_p_winding_height.png")
+    
+#%% ------ plot optim weight, show different weights over pole pairs ------
+if 1:
+    lst_pole_pairs = [gen.p for gen in lst_optimize_m]
+    lst_HTS_length = [gen.HTS_length for gen in lst_optimize_m]
+    lst_weight = [gen.weight for gen in lst_optimize_m]
+    lst_weight_rotor_yoke = [gen.weight_rotor_yoke for gen in lst_optimize_m]
+    lst_weight_stator_yoke = [gen.weight_stator_yoke for gen in lst_optimize_m]
+    lst_weight_rotor_wndg = [gen.weight_rotor_wndg for gen in lst_optimize_m]
+    lst_weight_stator_wndg = [gen.weight_stator_wndg for gen in lst_optimize_m]
+    
+    fig = plt.figure(dpi=300, figsize=(8,5))
+    ax1 = plt.subplot()
+    plt.title("Pole Pair Iteration")
+    plt.grid()
+    
+    ax1.set_xlabel("pole pairs")
+    ax1.set_ylabel("HTS length / km", color = "blue")
+    ax1.scatter(lst_pole_pairs, [l*1e-3 for l in lst_HTS_length], color = "blue", label="HTS_length")
+    ax1.plot(lst_pole_pairs, [l*1e-3 for l in lst_HTS_length]) #, label=f"{np.round(lst_h_wndg_s[idx],3)}")
+    
+    ax2 = ax1.twinx()
+    ax2.scatter(lst_pole_pairs, [w*1e-3 for w in lst_weight_rotor_yoke], color = "red", label="rotor yoke")    
+    ax2.plot(lst_pole_pairs, [w*1e-3 for w in lst_weight_rotor_yoke], color = "red")
+    ax2.set_ylabel("Weight / t")
+    
+    ax2.scatter(lst_pole_pairs, [w*1e-3 for w in lst_weight_rotor_wndg], color = "green", label="rotor winding")    
+    ax2.plot(lst_pole_pairs, [w*1e-3 for w in lst_weight_rotor_wndg], color = "green")
+    
+    ax2.scatter(lst_pole_pairs, [w*1e-3 for w in lst_weight_stator_wndg], color = "black", label="stator winding")    
+    ax2.plot(lst_pole_pairs, [w*1e-3 for w in lst_weight_stator_wndg], color = "black")
+    
+    ax2.scatter(lst_pole_pairs, [w*1e-3 for w in lst_weight_stator_yoke], color = "purple", label="stator yoke")    
+    ax2.plot(lst_pole_pairs, [w*1e-3 for w in lst_weight_stator_yoke], color = "purple")
+    
+    lines1, labels1 = ax1.get_legend_handles_labels()
+    lines2, labels2 = ax2.get_legend_handles_labels()
+    ax2.legend(lines1 + lines2, labels1 + labels2, loc="upper center")
+    
+    if export_png: plt.savefig(fname = preambel + "vary_p_optim_m.png")
