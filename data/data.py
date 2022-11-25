@@ -19,6 +19,9 @@ class Generator():
     r_bend_max = 0.02 # [m] == 20 [mm] 
     HTS_weight_length_corr = 48 / 500 # [kg/m], guess from Bergen
     Iron_density = 7760 # [kg/m3], from isovac data sheet
+    G10CR_density = 1850 # [kg/m3], from (insert source)
+    HTS_density = 6423 # [kg/m3], from (insert source): 1/3 * (cu + hastelloy + kapton) = 1/3 * (8960 + 8890 + 1420)
+    thickness_ratio = 0.25 # = l_e / d_so
     
     
 class FieldWinding():
