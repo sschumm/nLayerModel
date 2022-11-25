@@ -620,6 +620,38 @@ class n7_Model():
         h_yoke_r = yoke_height(self.p, self.dims.r_ro, self.B_r, self.B_yoke_max)
         # --- apply ---
         self.update_dimensions(h_yoke_s=h_yoke_s, h_yoke_r=h_yoke_r, **kwargs)
+        
+        
+    def apply_coil_thickness_ratio(self):
+        self.maximize_k_fill()
+        self.coil_shapes()
+        # ctr = w_c / h_c = (0.2, 6)
+        ctr_min = 0.2
+        ctr_max = 6
+        
+        ctr_rotor = self.coil.w_rc / self.coil.h_rc
+        if ctr_rotor < ctr_min: self.coil.w_rc = ctr_min * self.coil.h_rc
+        if ctr_rotor > ctr_max: self.coil.w_rc = ctr_max * self.coil.h_rc
+            
+        # self.coil.w_rc = max(ctr_min * self.coil.h_rc, self.coil.w_rc)
+        # self.coil.w_rc = min(ctr_max * self.coil.h_rc, self.coil.w_rc)
+        
+        ctr_stator = self.coil.w_sc / self.coil.h_sc
+        if ctr_stator < ctr_min: self.coil.w_sc = ctr_min * self.coil.h_sc
+        if ctr_stator > ctr_max: self.coil.w_sc = ctr_max * self.coil.h_sc
+        
+        # self.coil.w_sc = max(ctr_min * self.coil.h_sc, self.coil.w_sc)
+        # self.coil.w_sc = min(ctr_max * self.coil.h_sc, self.coil.w_sc)
+        
+        self.coil.A_rc = self.coil.h_rc * self.coil.w_rc
+        self.coil.A_sc = self.coil.h_sc * self.coil.w_sc
+        
+        self.coil.r_r_bend = 0.5 * (self.coil.w_rp - 2 * self.gn.w_pole_frame - 2 * self.coil.w_rc)
+        self.coil.r_s_bend = 0.5 * (self.coil.w_sp - 2 * self.gn.w_pole_frame - 2 * self.coil.w_sc)
+        
+        self.kr_b = 2 * self.coil.w_rc / self.coil.w_rp
+        self.k_fill_r = 2 * self.coil.A_rc / (self.h_wndg_r * self.coil.w_rp)
+        self.k_fill_s = 2 * self.coil.A_sc / (self.h_wndg_s * self.coil.w_sp)
     
     
     def show_results(self, header="n7 - Results"):
