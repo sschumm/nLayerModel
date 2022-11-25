@@ -116,8 +116,8 @@ for p in range(6, 40, 1):
     lst_stator_iter = []
     h_sw0 = h_pf*2.1 #0.3 
     h_rw0 = h_pf*2.1 #0.3    
-    n_iters_s, n_times_s = 40, 4
-    n_iters_r, n_times_r = 40, 4
+    n_iters_s, n_times_s = 70, 3
+    n_iters_r, n_times_r = 40, 3
     detail, verbose = 0.0001, False
     
     for idx_stator, iter_stator in enumerate(np.linspace(0, n_times_s, n_iters_s)):
@@ -284,6 +284,8 @@ if 1:
     lines2, labels2 = ax2.get_legend_handles_labels()
     ax2.legend(lines1 + lines2, labels1 + labels2, loc="upper center")
     
+    # plt.savefig(fname = "1125_1521_B_vary_p_optim_l.png")
+    
     
 #%% ------ plot optim weight over pole pairs ------
 if 1:
@@ -314,6 +316,7 @@ if 1:
     lines2, labels2 = ax2.get_legend_handles_labels()
     ax2.legend(lines1 + lines2, labels1 + labels2, loc="upper center")
     
+    # plt.savefig(fname = "1125_1521_B_vary_p_optim_m.png")
     
 #%% ------ plot optim weight and critical Field over pole pairs ------
 if 1:
@@ -343,6 +346,7 @@ if 1:
     lines1, labels1 = ax1.get_legend_handles_labels()
     lines2, labels2 = ax2.get_legend_handles_labels()
     ax2.legend(lines1 + lines2, labels1 + labels2, loc="upper center")
+    # plt.savefig(fname = "1125_1521_B_vary_p_critical_field.png")
     
 #%% ------ plot optim weight and rotor and stator weight  over pole pairs ------
 if 1:
@@ -366,6 +370,7 @@ if 1:
     ax1.plot(lst_pole_pairs, [w*1e-3 for w in lst_weight], color = "red")
     
     ax1.legend(loc="upper right")
+    # plt.savefig(fname = "1125_1521_B_vary_p_weight_r_and_s.png")
 
 #%% ------ plot optim weight and rotor and breadth factor over pole pairs ------
 if 1:
@@ -392,10 +397,11 @@ if 1:
     
     lines1, labels1 = ax1.get_legend_handles_labels()
     lines2, labels2 = ax2.get_legend_handles_labels()
-    ax2.legend(lines1 + lines2, labels1 + labels2, loc="upper center")    
+    ax2.legend(lines1 + lines2, labels1 + labels2, loc="upper center")  
+    # plt.savefig(fname = "1125_1521_B_vary_p_breadth_factor.png")
     
     
-#%% ------ plot optim weight and critical Field over pole pairs ------
+#%% ------ plot optim weight and winding height over pole pairs ------
 if 1:
     lst_pole_pairs = [gen.p for gen in lst_optimize_m]
     lst_h_rw = [gen.h_wndg_r for gen in lst_optimize_m]
@@ -423,3 +429,4 @@ if 1:
     lines1, labels1 = ax1.get_legend_handles_labels()
     lines2, labels2 = ax2.get_legend_handles_labels()
     ax2.legend(lines1 + lines2, labels1 + labels2, loc="upper center")
+    # plt.savefig(fname = "1125_1521_B_vary_p_winding_height.png")
