@@ -248,11 +248,15 @@ class PlanePlot():
         B = np.sqrt(dB.Br**2 + dB.Bt**2)
         # print(np.nanmin(B))
         # print(np.nanmax(B))
+                
+        # --- customize colorbar ---
+        vmin = kwargs.get("vmin", np.nanmin(B))
+        vmax = kwargs.get("vmax", np.nanmax(B))
         
         cs_cf = ax.contourf(dB.X, dB.Y, B,
                             levels=200,
-                            vmin=np.nanmin(B),
-                            vmax=np.nanmax(B),
+                            vmin=vmin,
+                            vmax=vmax,
                             cmap=flux)
         
         if pdf or svg: # only when printing pdfs for better performance otherwise
