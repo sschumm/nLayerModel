@@ -460,7 +460,7 @@ class n7_Model():
                           transparent=True,
                           padding=0,
                           pdf=export_pdf, pdf_dpi=300, 
-                          svg=export_svg, svg_dpi=300)
+                          svg=export_svg, svg_dpi=300, **kwargs)
         
     
     def coil_shapes(self, **kwargs):

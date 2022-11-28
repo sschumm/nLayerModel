@@ -256,8 +256,8 @@ sys.stdout.write(f"\rJob finished with {total_runs} solved models in {int(np.rou
 sys.stdout.flush()
 
 #%% --- export ? ---
-export_png = False
-preambel = "1102_2116_77K_ctr_"
+export_png = True
+preambel = "1128_1522_30K_ctr_"
 
 #%% ------ plot optim HTS length over pole pairs ------
 if 1:
