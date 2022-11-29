@@ -79,6 +79,8 @@ class n7_Model():
         self.HTS_length_rotor = 0
         self.HTS_length_stator = 0
         self.weight = 0
+        self.weight_rotor = 0
+        self.weight_stator = 0
         self.weight_rotor_yoke = 0
         self.weight_rotor_wndg = 0
         self.weight_stator_yoke = 0
@@ -620,14 +622,15 @@ class n7_Model():
         # --- adapt rotor yoke ---
         h_yoke_r = yoke_height(self.p, self.dims.r_ro, self.B_r, self.B_yoke_max)
         # --- apply ---
-        if h_yoke_s >= self.dims.r_so * 0.6:
-            h_yoke_s = self.dims.r__so * 0.39
-            print("WARNING: Stator Yoke too big.")
+        if h_yoke_s >= self.dims.r_so * 0.4:
+            h_yoke_s = self.dims.r_so * 0.39
+            # print("WARNING: Stator Yoke too big.")
         self.update_dimensions(h_yoke_s=h_yoke_s, **kwargs)
-        if h_yoke_r >= self.dims.r_ro:
-            h_yoke_r = self.dims.r_ro * 0.9
-            print("WARNING: Rotor Yoke too big.")
+        if h_yoke_r >= self.dims.r_ro * 0.6:
+            h_yoke_r = self.dims.r_ro * 0.59
+            # print("WARNING: Rotor Yoke too big.")
         self.update_dimensions(h_yoke_r=h_yoke_r, **kwargs)
+
             
         
     def apply_coil_thickness_ratio(self):
