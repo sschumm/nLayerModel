@@ -66,6 +66,7 @@ plt.grid()
 
 ax1.set_xlabel("Time")
 ax1.set_ylabel("M")
+ax1.set_ylim(0, 9e6)
 ax1.plot(df.Time, df.M, color = "blue", label="M")
 
 filename = "HB_torque_via_maxwell"
