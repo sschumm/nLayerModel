@@ -560,8 +560,8 @@ class n7_Model():
         self.weight_rotor_yoke = self.gn.Iron_density * pi * (self.dims.r_ro**2 - self.dims.r_ri**2)
         self.weight_stator_yoke= self.gn.Iron_density * pi * (self.dims.r_so**2 - self.dims.r_si**2)
         
-        self.weight_rotor_kryo = self.gn.G10CR_density * self.l_e * self.p * 4 * self.coil.A_rc
-        self.weight_stator_kryo = self.gn.G10CR_density * self.l_e * self.p * 6 * self.coil.A_sc
+        self.weight_rotor_kryo = self.gn.G10CR_density * self.l_e * (pi * ((self.dims.r_ro+self.h_wndg_r)**2 - self.dims.r_ro**2) - (self.p * 4 * self.coil.A_rc))
+        self.weight_stator_kryo = self.gn.G10CR_density * self.l_e * (pi *(self.dims.r_si**2 - (self.dims.r_si-self.h_wndg_s)**2) - (self.p * 6 * self.coil.A_sc))
         
         self.weight_rotor = self.weight_rotor_yoke + self.weight_rotor_wndg + self.weight_rotor_kryo
         self.weight_stator= self.weight_stator_yoke+ self.weight_stator_wndg+ self.weight_stator_kryo
