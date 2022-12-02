@@ -157,7 +157,7 @@ geno.apply_coil_thickness_ratio()
 geno.apply_lift_factor()
 geno.show_results()
 
-geno.fast_flux(vmin=0, vmax=4)
+# geno.fast_flux(vmin=0, vmax=4)
 
 #%% ----- select generator and finish setup for export ------
 
@@ -233,3 +233,36 @@ geno.N_s = N_s_new
 geno.J_s_amplitude = J_s_amplitude_new
 
 print(f"\n{I_s = } [A] \n{ampere_turns_stator_new = } [A] \n{J_s_amplitude_new = } [A/m2] \n{J_s_amplitude_new*1e-6 = }[A_mm2]")
+
+#%%
+from scipy.constants import mu_0
+
+def en_dens_trans_curr(H_p, H_m, i_m):
+        
+    e_ih = 2*mu_0*H_p**2 * (
+        ((H_p * (3 + i_m**2)) / (3 * H_m)) -
+        ((2 * H_p**2 * (1-i_m**3)) / (3 * H_m**2)) + 
+        ((6*H_p**3 * i_m**2 * (1-i_m)**2) / (3 * H_m**2 * (H_m - H_p * i_m))) +
+        ((6 * H_p**3 * i_m**2 * (1-i_m)**2) / (3*H_m**2 * (H_m - H_p * i_m))) -
+        ((4 * H_p**4 * i_m**2 * (1-i_m)**3) / (3 * H_m**2 * (H_m - H_p * i_m)**2))
+        )
+    
+    return e_ih
+
+H_m = 2 / mu_0
+H_p = geno.J_e_s * 1.7 * 1e-3 * 6  
+i_m = 63.86 / 181.85 # I_m / I_c
+
+e_ih = en_dens_trans_curr(H_p, H_m, i_m)
+print(f"{e_ih = }")
+
+geno.HTS_usage()
+V_s = geno.HTS_volume_stator
+print(f"{V_s = }")
+
+P_ih = e_ih * geno.p * geno.gn.n_syn/60 * V_s
+print(f"{P_ih = }")
+
+
+
+
