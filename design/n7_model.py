@@ -34,6 +34,9 @@ class n7_Model():
         self.fw = fw
         self.sw = sw
         
+        self.alpha_r = pi/2
+        self.alpha_s = 0
+        
         self.f = self.p * self.gn.n_syn / 60
         self.J_e_spec = gn.Ic_spec / (1.7 * gn.A_tape)
         
@@ -58,6 +61,7 @@ class n7_Model():
         self.ks_d = 1
         self.ks_p = 1
         self.kr_b = 1
+        self.ks_b = 1
         
         self.B_s = 0.0
         self.B_r = 0.0
@@ -123,12 +127,13 @@ class n7_Model():
         self.K_s = K_s
         self.K_r = K_r
                 
-        alpha_r = kwargs.get("alpha_r", pi/2)
-        alpha_s = kwargs.get("alpha_s", 0.0)
+        alpha_r = kwargs.get("alpha_r", self.alpha_r)
+        alpha_s = kwargs.get("alpha_s", self.alpha_s)
         
         self.ks_d = kwargs.get("ks_d", self.ks_d)
         self.ks_p = kwargs.get("ks_p", self.ks_p)
         self.kr_b = kwargs.get("kr_b", self.kr_b)
+        self.ks_b = kwargs.get("ks_b", self.ks_b)
         
         this_mdl = Model(self.p, self.l_e)
         
@@ -142,7 +147,7 @@ class n7_Model():
                                     mu_r=1.
                                     ))
 
-        this_mdl.add_layer(CurrentLoading(K=K_s*np.sqrt(2)*self.ks_d*self.ks_p,
+        this_mdl.add_layer(CurrentLoading(K=K_s*np.sqrt(2)*self.ks_d*self.ks_p*self.ks_b,
                                     r=self.dims.r_sw,
                                     alpha=alpha_s,
                                     mu_r=1.
@@ -522,9 +527,15 @@ class n7_Model():
     def apply_coil_sizes(self, **kwargs):
         self.coil_shapes(**kwargs)
         kr_b = 2 * self.coil.w_rc / self.coil.w_rp
+        ks_b = kwargs.get("ks_b", False)
+        if ks_b:
+            ks_b = 2 * self.coil.w_sc / self.coil.w_sp
+        else:
+            ks_b = 1
         self.update_model_by_K(K_s=self.K_s,
                                K_r=self.K_r,
-                               kr_b=kr_b)
+                               kr_b=kr_b,
+                               ks_b=ks_b)
         
     
     def apply_coil_sizes_and_lift_factor(self, **kwargs):
@@ -633,23 +644,23 @@ class n7_Model():
 
             
         
-    def apply_coil_thickness_ratio(self):
+    def apply_coil_thickness_ratio(self, **kwargs):
         self.maximize_k_fill()
         self.coil_shapes()
         # ctr = w_c / h_c = (0.2, 6)
         ctr_min = 0.2
-        ctr_max = 6
+        ctr_max = 5
         
-        ctr_rotor = self.coil.w_rc / self.coil.h_rc
-        if ctr_rotor < ctr_min: self.coil.w_rc = ctr_min * self.coil.h_rc
-        if ctr_rotor > ctr_max: self.coil.w_rc = ctr_max * self.coil.h_rc
+        ctr_rotor = self.coil.h_rc / self.coil.w_rc
+        if ctr_rotor < ctr_min: self.coil.w_rc = self.coil.h_rc/ctr_min
+        if ctr_rotor > ctr_max: self.coil.w_rc = self.coil.h_rc/ctr_max
             
         # self.coil.w_rc = max(ctr_min * self.coil.h_rc, self.coil.w_rc)
         # self.coil.w_rc = min(ctr_max * self.coil.h_rc, self.coil.w_rc)
         
-        ctr_stator = self.coil.w_sc / self.coil.h_sc
-        if ctr_stator < ctr_min: self.coil.w_sc = ctr_min * self.coil.h_sc
-        if ctr_stator > ctr_max: self.coil.w_sc = ctr_max * self.coil.h_sc
+        ctr_stator = self.coil.h_sc / self.coil.w_sc
+        if ctr_stator < ctr_min: self.coil.w_sc = self.coil.h_sc/ctr_min
+        if ctr_stator > ctr_max: self.coil.w_sc = self.coil.h_sc/ctr_max
         
         # self.coil.w_sc = max(ctr_min * self.coil.h_sc, self.coil.w_sc)
         # self.coil.w_sc = min(ctr_max * self.coil.h_sc, self.coil.w_sc)
@@ -661,6 +672,11 @@ class n7_Model():
         self.coil.r_s_bend = 0.5 * (self.coil.w_sp - 2 * self.gn.w_pole_frame - 2 * self.coil.w_sc)
         
         self.kr_b = 2 * self.coil.w_rc / self.coil.w_rp
+        ks_b = kwargs.get("ks_b", False)
+        if ks_b:
+            self.ks_b = 2 * self.coil.w_sc / self.coil.w_sp
+        else:
+            self.ks_b = 1
         self.k_fill_r = 2 * self.coil.A_rc / (self.h_wndg_r * self.coil.w_rp)
         self.k_fill_s = 2 * self.coil.A_sc / (self.h_wndg_s * self.coil.w_sp)
     
