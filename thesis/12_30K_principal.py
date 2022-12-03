@@ -21,47 +21,37 @@ from modules.plot import PlanePlot
 #%%
 
 if 1:
-    p = 8
+    p = 9
     l_e = 0.5
     r_so = 1 #sw.r_so(sw, l_e)
     
     geno = n7_Model(p, l_e, r_so, gn=gn, fw=fw, sw=sw, B_yoke_max=2)
     h_pf = gn.h_pole_frame
+    
     geno.init_dimensions(h_yoke_s=h_pf, h_yoke_r=h_pf, 
                         h_wndg_s=h_pf * 2.1, h_wndg_r=h_pf * 2.1)
-    # geno.ks_d= 0.866
     
     geno.update_model_by_K(K_s = geno.k_fill_s * geno.h_wndg_s * sw.J_e,
                                 K_r = geno.k_fill_r * geno.h_wndg_r * fw.J_e,
                                 ks_p = 0.866)
     geno.apply_coil_thickness_ratio(ks_b=True)
-    geno.apply_lift_factor()
-    # geno.keep_const_kr_b(kr_b = 0.65)
-    
-    geno.adapt_yokes()
-    
+    geno.apply_lift_factor()    
+    geno.adapt_yokes()    
     geno.apply_coil_thickness_ratio(ks_b=True)
-    geno.apply_lift_factor()
-    
+    geno.apply_lift_factor()    
     geno.show_results()
     
-    # geno.update_dimensions(h_wndg_r = 0.04, h_wndg_s = 0.03)
-    # geno.maximize_k_fill()
-    # geno.apply_coil_sizes_and_lift_factor(verbose = False)
-    # geno.adapt_yokes()
-    # geno.maximize_k_fill()
-    # geno.apply_coil_sizes_and_lift_factor(verbose = False)
-    # geno.show_results()
-    # geno.fast_flux()
     geno.update_dimensions(h_wndg_s = 0.025)
     geno.apply_coil_thickness_ratio(ks_b=True)
     geno.apply_lift_factor()
+    geno.adapt_yokes()    
+    geno.apply_coil_thickness_ratio(ks_b=True)
+    geno.apply_lift_factor()
+    
+
 
 #%% rotor
-
-    # geno.update_dimensions(h_wndg_r = 0.030, keep_const_kr_b=False)
-    # geno.apply_coil_thickness_ratio(ks_b=True)
-    # geno.apply_lift_factor()   
+  
     if 1:
         increasing_h_by_factor=0.04
         break_when_P_at_factor=0.5
@@ -69,7 +59,13 @@ if 1:
         lst_P, lst_h_wndg_r, lst_Brc = [geno.P], [geno.h_wndg_r], [geno.B_r_c]
         for idx_h_wndg_r in range(40):
             h_wndg_r = lst_h_wndg_r[-1] + lst_h_wndg_r[0] * increasing_h_by_factor
-            geno.update_dimensions(h_wndg_r = h_wndg_r, keep_const_kr_b=False)
+            geno.update_dimensions(h_wndg_r = h_wndg_r)
+            geno.apply_coil_thickness_ratio(ks_b=True)
+            geno.apply_lift_factor()
+            geno.adapt_yokes()
+            geno.apply_coil_thickness_ratio(ks_b=True)
+            geno.apply_lift_factor()
+            geno.adapt_yokes()
             geno.apply_coil_thickness_ratio(ks_b=True)
             geno.apply_lift_factor()
             geno.adapt_yokes()
@@ -99,20 +95,27 @@ if 1:
         
         tkz.clean_figure()
         # tkz.save("aus_P_and_hrw_over_iter.tex")
-        
-    # geno.update_dimensions(h_wndg_r = 0.030, keep_const_kr_b=False)
-    # geno.apply_coil_thickness_ratio(ks_b=True)
-    # geno.apply_lift_factor()
-    # geno.show_results("this")
+        pass
+
 #%% stator
 
 geno.update_dimensions(h_wndg_r=0.04, h_wndg_s=h_pf * 2.1)
+# geno.update_dimensions(h_wndg_r=0.07, h_wndg_s=0.037)
 geno.apply_coil_thickness_ratio(ks_b=True)
 geno.apply_lift_factor()
 geno.adapt_yokes()
 geno.apply_coil_thickness_ratio(ks_b=True)
 geno.apply_lift_factor()
+geno.adapt_yokes()    
+geno.apply_coil_thickness_ratio(ks_b=True)
+geno.apply_lift_factor()
+geno.adapt_yokes()    
+geno.apply_coil_thickness_ratio(ks_b=True)
+geno.apply_lift_factor()
+geno.show_results()
 
+
+#%% stator
 
 if 1:
     increasing_h_by_factor=0.08
@@ -121,15 +124,19 @@ if 1:
     lst_P, lst_h_wndg_s, lst_Bsc = [geno.P], [geno.h_wndg_s], [geno.B_s_c]
     for idx_h_wndg_s in range(40):
         h_wndg_s = lst_h_wndg_s[-1] + lst_h_wndg_s[0] * increasing_h_by_factor
-        geno.update_dimensions(h_wndg_s = h_wndg_s, keep_const_kr_b=False)
+        geno.update_dimensions(h_wndg_s = h_wndg_s)
+        geno.apply_coil_thickness_ratio(ks_b=True)
+        geno.apply_lift_factor()
+        geno.adapt_yokes()
+        geno.apply_coil_thickness_ratio(ks_b=True)
+        geno.apply_lift_factor()
+        geno.adapt_yokes()
         geno.apply_coil_thickness_ratio(ks_b=True)
         geno.apply_lift_factor()
         geno.adapt_yokes()
         geno.apply_coil_thickness_ratio(ks_b=True)
         geno.apply_lift_factor()
         
-        # if geno.coil.r_s_bend > geno.gn.r_bend_max: print("Valid") 
-        # else:  print("Invalid")
         lst_P.append(geno.P)
         lst_h_wndg_s.append(h_wndg_s)
         lst_Bsc.append(geno.B_s_c)
@@ -153,22 +160,33 @@ if 1:
     
     tkz.clean_figure()
     # tkz.save("aus_P_and_hsw_over_iter.tex")
+    pass
 
-#%%   
+#%% rotor
 
-geno.update_dimensions(h_wndg_r=0.04, h_wndg_s=0.034)
+geno.update_dimensions(h_wndg_r=0.04, h_wndg_s=0.035)
 geno.apply_coil_thickness_ratio(ks_b=True)
 geno.apply_lift_factor()
 geno.adapt_yokes()
 geno.apply_coil_thickness_ratio(ks_b=True)
 geno.apply_lift_factor()  
-
+geno.adapt_yokes()
+geno.apply_coil_thickness_ratio(ks_b=True)
+geno.apply_lift_factor()  
+geno.adapt_yokes()
+geno.apply_coil_thickness_ratio(ks_b=True)
+geno.apply_lift_factor()  
+geno.adapt_yokes()
+geno.apply_coil_thickness_ratio(ks_b=True)
+geno.apply_lift_factor()  
+geno.adapt_yokes()
+geno.apply_coil_thickness_ratio(ks_b=True)
+geno.apply_lift_factor()  
 geno.show_results()
-#%% rotor
 
-# geno.update_dimensions(h_wndg_s= 0.03, keep_const_kr_b=False)
-# geno.apply_coil_thickness_ratio(ks_b=True)
-# geno.apply_lift_factor()   
+
+#%% rotor
+  
 if 1:
     increasing_h_by_factor=0.04
     break_when_P_at_factor=0.5
@@ -176,12 +194,21 @@ if 1:
     lst_P, lst_h_wndg_r, lst_Brc = [geno.P], [geno.h_wndg_r], [geno.B_r_c]
     for idx_h_wndg_r in range(40):
         h_wndg_r = lst_h_wndg_r[-1] + lst_h_wndg_r[0] * increasing_h_by_factor
-        geno.update_dimensions(h_wndg_r = h_wndg_r, keep_const_kr_b=False)
+        geno.update_dimensions(h_wndg_r = h_wndg_r)
         geno.apply_coil_thickness_ratio(ks_b=True)
         geno.apply_lift_factor()
         geno.adapt_yokes()
         geno.apply_coil_thickness_ratio(ks_b=True)
         geno.apply_lift_factor()
+        geno.adapt_yokes()
+        geno.apply_coil_thickness_ratio(ks_b=True)
+        geno.apply_lift_factor() 
+        geno.adapt_yokes()
+        geno.apply_coil_thickness_ratio(ks_b=True)
+        geno.apply_lift_factor() 
+        geno.adapt_yokes()
+        geno.apply_coil_thickness_ratio(ks_b=True)
+        geno.apply_lift_factor() 
         
         lst_P.append(geno.P)
         lst_h_wndg_r.append(h_wndg_r)
@@ -206,20 +233,25 @@ if 1:
     
     tkz.clean_figure()
     # tkz.save("aus_P_and_hrw_over_iter.tex")
+    pass
     
-# geno.update_dimensions(h_wndg_r = 0.030, keep_const_kr_b=False)
-# geno.apply_coil_thickness_ratio(ks_b=True)
-# geno.apply_lift_factor()
-# geno.show_results("this")    
-
     
 #%%    
-geno.update_dimensions(h_wndg_r = 0.045, h_wndg_s = 0.034)
+geno.update_dimensions(h_wndg_r = 0.07, h_wndg_s = 0.045)
 geno.apply_coil_thickness_ratio(ks_b=True)
 geno.apply_lift_factor()
 geno.adapt_yokes()
 geno.apply_coil_thickness_ratio(ks_b=True)
 geno.apply_lift_factor()
+geno.adapt_yokes()
+geno.apply_coil_thickness_ratio(ks_b=True)
+geno.apply_lift_factor()  
+geno.adapt_yokes()
+geno.apply_coil_thickness_ratio(ks_b=True)
+geno.apply_lift_factor()  
+geno.adapt_yokes()
+geno.apply_coil_thickness_ratio(ks_b=True)
+geno.apply_lift_factor()  
 geno.show_results()
 # geno.fast_flux()
 
@@ -275,7 +307,7 @@ N_c_div_a_new = int(np.round(N_c / a_new, 2))
 N_s_new = int(2 * geno.p * geno.q * N_c / a_new)
 print(f"{N_c_div_a_new = }, {N_s_new = }, {geno.N_s = }")
 
-cosPhi = 0.94
+cosPhi = 0.8
 I_s_new = geno.P / (np.sqrt(3) * 690 * cosPhi)
 I_c_with_J = geno.J_e_s * gn.A_tape * 1.7
 I_max = I_s_new / a_new
