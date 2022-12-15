@@ -58,7 +58,7 @@ if 1:
     geno.apply_lift_factor()
 
 #%%        
-    if 0:
+    if 1:
         increasing_h_by_factor=0.03
         break_when_P_at_factor=0.5
     
@@ -75,7 +75,8 @@ if 1:
             lst_P.append(geno.P)
             lst_h_wndg_r.append(h_wndg_r)
             lst_Brc.append(geno.B_r_c)
-                    
+            # print(geno.kr_b)        
+            
             if lst_P[-1] < lst_P[0] * break_when_P_at_factor:
                 break
         
@@ -107,7 +108,7 @@ geno.apply_coil_thickness_ratio()
 geno.apply_lift_factor()
 
 
-if 0:
+if 1:
     increasing_h_by_factor=0.08
     break_when_P_at_factor=0.5
 
@@ -126,6 +127,7 @@ if 0:
         lst_P.append(geno.P)
         lst_h_wndg_s.append(h_wndg_s)
         lst_Bsc.append(geno.B_s_c)
+        # print(geno.kr_b)        
                 
         if lst_P[-1] < lst_P[0] * break_when_P_at_factor:
             break
@@ -180,88 +182,88 @@ if 1:
 
 #%% ------ export to comsol -----
 
-save_params("from_python", geno) 
+# save_params("from_python", geno) 
 
 #%%
 
-if 1:
+# if 1:
 
-    margin = 0.00
-    # geno.fast_flux()
-    geno.plt.fluxplot(dr=100, dt=80, lvls=10, lw=1,
-                      r_min=geno.dims.r_ri-margin, r_max=geno.dims.r_so+margin,
-                      t_min=0, t_max=np.pi/15,
-                      vmin=0, vmax=4,
-                      custom_dims=True,
-                      y0=0, x0=0,
-                      border_width=0.2,
-                      show_cbar=False, 
-                      show_axis=False,
-                      show_borders=True,
-                      transparent=True,
-                      padding=0,
-                      pdf=False, pdf_dpi=300, 
-                      svg=True, svg_dpi=300)
+#     margin = 0.00
+#     # geno.fast_flux()
+#     geno.plt.fluxplot(dr=100, dt=80, lvls=10, lw=1,
+#                       r_min=geno.dims.r_ri-margin, r_max=geno.dims.r_so+margin,
+#                       t_min=0, t_max=np.pi/15,
+#                       vmin=0, vmax=4,
+#                       custom_dims=True,
+#                       y0=0, x0=0,
+#                       border_width=0.2,
+#                       show_cbar=False, 
+#                       show_axis=False,
+#                       show_borders=True,
+#                       transparent=True,
+#                       padding=0,
+#                       pdf=False, pdf_dpi=300, 
+#                       svg=True, svg_dpi=300)
     
     
-#%% adapt N_s
+# #%% adapt N_s
 
-N_c = geno.coil.A_sc / gn.A_tape
-a = N_c / N_c_div_a
+# N_c = geno.coil.A_sc / gn.A_tape
+# a = N_c / N_c_div_a
 
-print(f"{N_c = }, {a = }, {N_c_div_a = }, {N_c/a = }")
+# print(f"{N_c = }, {a = }, {N_c_div_a = }, {N_c/a = }")
 
-I_c_with_J = geno.J_e_s * gn.A_tape * 1.7
-I_c_with_N = I_s / a
+# I_c_with_J = geno.J_e_s * gn.A_tape * 1.7
+# I_c_with_N = I_s / a
 
-print(f"{I_c_with_J = }, {I_c_with_N = }")
-#%%
+# print(f"{I_c_with_J = }, {I_c_with_N = }")
+# #%%
 
-a_new = 60
-N_c_div_a_new = int(np.round(N_c / a_new, 2))
-N_s_new = int(2 * geno.p * geno.q * N_c / a_new)
-print(f"{N_c_div_a_new = }, {N_s_new = }")
+# a_new = 60
+# N_c_div_a_new = int(np.round(N_c / a_new, 2))
+# N_s_new = int(2 * geno.p * geno.q * N_c / a_new)
+# print(f"{N_c_div_a_new = }, {N_s_new = }")
 
-I_c_with_J = geno.J_e_s * gn.A_tape * 1.7
-I_c_with_N = I_s / a_new
-print(f"{I_c_with_J = }, {I_c_with_N = }")
+# I_c_with_J = geno.J_e_s * gn.A_tape * 1.7
+# I_c_with_N = I_s / a_new
+# print(f"{I_c_with_J = }, {I_c_with_N = }")
 
-ampere_turns_stator_new = N_c_div_a_new * I_s * 1.1
+# ampere_turns_stator_new = N_c_div_a_new * I_s * 1.1
 
-J_s_amplitude_new = np.sqrt(2) * ampere_turns_stator_new / geno.coil.A_sc
-geno.N_s = N_s_new
-geno.J_s_amplitude = J_s_amplitude_new
+# J_s_amplitude_new = np.sqrt(2) * ampere_turns_stator_new / geno.coil.A_sc
+# geno.N_s = N_s_new
+# geno.J_s_amplitude = J_s_amplitude_new
 
-print(f"\n{I_s = } [A] \n{ampere_turns_stator_new = } [A] \n{J_s_amplitude_new = } [A/m2] \n{J_s_amplitude_new*1e-6 = }[A_mm2]")
+# print(f"\n{I_s = } [A] \n{ampere_turns_stator_new = } [A] \n{J_s_amplitude_new = } [A/m2] \n{J_s_amplitude_new*1e-6 = }[A_mm2]")
 
-#%%
-from scipy.constants import mu_0
+# #%%
+# from scipy.constants import mu_0
 
-def en_dens_trans_curr(H_p, H_m, i_m):
+# def en_dens_trans_curr(H_p, H_m, i_m):
         
-    e_ih = 2*mu_0*H_p**2 * (
-        ((H_p * (3 + i_m**2)) / (3 * H_m)) -
-        ((2 * H_p**2 * (1-i_m**3)) / (3 * H_m**2)) + 
-        ((6*H_p**3 * i_m**2 * (1-i_m)**2) / (3 * H_m**2 * (H_m - H_p * i_m))) +
-        ((6 * H_p**3 * i_m**2 * (1-i_m)**2) / (3*H_m**2 * (H_m - H_p * i_m))) -
-        ((4 * H_p**4 * i_m**2 * (1-i_m)**3) / (3 * H_m**2 * (H_m - H_p * i_m)**2))
-        )
+#     e_ih = 2*mu_0*H_p**2 * (
+#         ((H_p * (3 + i_m**2)) / (3 * H_m)) -
+#         ((2 * H_p**2 * (1-i_m**3)) / (3 * H_m**2)) + 
+#         ((6*H_p**3 * i_m**2 * (1-i_m)**2) / (3 * H_m**2 * (H_m - H_p * i_m))) +
+#         ((6 * H_p**3 * i_m**2 * (1-i_m)**2) / (3*H_m**2 * (H_m - H_p * i_m))) -
+#         ((4 * H_p**4 * i_m**2 * (1-i_m)**3) / (3 * H_m**2 * (H_m - H_p * i_m)**2))
+#         )
     
-    return e_ih
+#     return e_ih
 
-H_m = 2 / mu_0
-H_p = geno.J_e_s * 1.7 * 1e-3 * 6  
-i_m = 63.86 / 181.85 # I_m / I_c
+# H_m = 2 / mu_0
+# H_p = geno.J_e_s * 1.7 * 1e-3 * 6  
+# i_m = 63.86 / 181.85 # I_m / I_c
 
-e_ih = en_dens_trans_curr(H_p, H_m, i_m)
-print(f"{e_ih = }")
+# e_ih = en_dens_trans_curr(H_p, H_m, i_m)
+# print(f"{e_ih = }")
 
-geno.HTS_usage()
-V_s = geno.HTS_volume_stator
-print(f"{V_s = }")
+# geno.HTS_usage()
+# V_s = geno.HTS_volume_stator
+# print(f"{V_s = }")
 
-P_ih = e_ih * geno.p * geno.gn.n_syn/60 * V_s
-print(f"{P_ih = }")
+# P_ih = e_ih * geno.p * geno.gn.n_syn/60 * V_s
+# print(f"{P_ih = }")
 
 
 
