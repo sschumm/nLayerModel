@@ -6,6 +6,7 @@ import matplotlib.pyplot as pyplot
 from scipy.constants import pi
 
 from analytics import yoke_height
+from analytics.precalcs import kb
 
 from modules import Model, MagneticLayer, AirLayer, CurrentLoading
 from modules.plot import PlanePlot
@@ -526,7 +527,9 @@ class n7_Model():
     
     def apply_coil_sizes(self, **kwargs):
         self.coil_shapes(**kwargs)
-        kr_b = 2 * self.coil.w_rc / self.coil.w_rp
+        sigma = 2 * self.coil.w_rc / self.coil.w_rp
+        kr_b = kb(1, sigma)
+        # kr_b = 2 * self.coil.w_rc / self.coil.w_rp
         ks_b = kwargs.get("ks_b", False)
         if ks_b:
             ks_b = 2 * self.coil.w_sc / self.coil.w_sp
@@ -671,7 +674,8 @@ class n7_Model():
         self.coil.r_r_bend = 0.5 * (self.coil.w_rp - 2 * self.gn.w_pole_frame - 2 * self.coil.w_rc)
         self.coil.r_s_bend = 0.5 * (self.coil.w_sp - 2 * self.gn.w_pole_frame - 2 * self.coil.w_sc)
         
-        self.kr_b = 2 * self.coil.w_rc / self.coil.w_rp
+        sigma = 2 * self.coil.w_rc / self.coil.w_rp
+        self.kr_b = kb(1, sigma)
         ks_b = kwargs.get("ks_b", False)
         if ks_b:
             self.ks_b = 2 * self.coil.w_sc / self.coil.w_sp

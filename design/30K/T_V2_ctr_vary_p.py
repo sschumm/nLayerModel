@@ -27,7 +27,7 @@ r_so = 1 # 0.8
 l_e = 0.5 #0.4
 
 #%% Prior Data Analysis
-if 0:
+if 1:
     # ============================== Initialize Iteration ==============================
     p = 13
     job_init_time = time.time()

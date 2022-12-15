@@ -39,7 +39,7 @@ r_so = 1.0
 l_e = 0.5
 
 #%% Prior Data Analysis
-if 1:
+if 0:
     # ============================== Initialize Iteration ==============================
     p = 12
     job_init_time = time.time()
@@ -134,14 +134,14 @@ if 1:
     lst_optimize_m = []
     for p in range(6, 20, 1):
     
-        gen = n7_Model(p, l_e, r_so, gn=gn, fw=fw, sw=sw, B_yoke_max=6)
+        gen = n7_Model(p, l_e, r_so, gn=gn, fw=fw, sw=sw, B_yoke_max=3)
         h_pf = gn.h_pole_frame
         gen.init_dimensions(h_yoke_s=h_pf, h_yoke_r=h_pf, 
                             h_wndg_s=h_pf * 2.1, h_wndg_r=h_pf * 2.1)
         gen.ks_d= 0.866
         # gen.kr_b= 0.65
-        gen.k_fill_r = 0.8
-        gen.k_fill_s = 0.8
+        gen.k_fill_r = 0.7
+        gen.k_fill_s = 0.7
     
         # ============================== Stator Winding Iteration ==============================    
         lst_stator_iter = []
@@ -305,9 +305,9 @@ export_png = False
 export_tkz = False
 
 #%% --- export ? ---
-# export_png = True
-# export_tkz = True
-preambel = "1129_1920_77K_kfill_"
+export_png = True
+export_tkz = True
+preambel = "1208_1107_30K_kfill_"
 
 #%% ------ plot optim HTS length over pole pairs ------
 if 1:
