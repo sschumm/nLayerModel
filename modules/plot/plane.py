@@ -215,6 +215,7 @@ class PlanePlot():
         transparent = kwargs.get("transparent", False)
         padding = kwargs.get("padding", 0.1)
         show_borders = kwargs.get("show_borders", False)
+        border_width = kwargs.get("border_width", 1)
         
         # --- file export ---
         pdf = kwargs.get("pdf", False)
@@ -247,11 +248,15 @@ class PlanePlot():
         B = np.sqrt(dB.Br**2 + dB.Bt**2)
         # print(np.nanmin(B))
         # print(np.nanmax(B))
+                
+        # --- customize colorbar ---
+        vmin = kwargs.get("vmin", np.nanmin(B))
+        vmax = kwargs.get("vmax", np.nanmax(B))
         
         cs_cf = ax.contourf(dB.X, dB.Y, B,
                             levels=200,
-                            vmin=np.nanmin(B),
-                            vmax=np.nanmax(B),
+                            vmin=vmin,
+                            vmax=vmax,
                             cmap=flux)
         
         if pdf or svg: # only when printing pdfs for better performance otherwise
@@ -267,7 +272,7 @@ class PlanePlot():
                           linewidths=lw)
         
         if show_borders:
-            self._set_machine_dims(ax, only_borders=True)
+            self._set_machine_dims(ax, only_borders=True, bw=border_width)
         
         if not show_axis:
             plt.axis('off')

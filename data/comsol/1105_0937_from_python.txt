@@ -1,0 +1,49 @@
+PARAMS_PREDEFINED 1
+mu_r 100000.0 relative permeability of iron
+d2so_L 15[m^3] generator volume
+delta_mag 0.04[m] height magnetic airgap
+n_syn 8.33[rpm] generator speed
+h_pole_frame 0.009[m] height pole frame
+w_pole_frame 0.009[m] width pole frame
+PARAMS_FROM_PYTHON 1
+p 25 pole pair count
+l_e 0.2[m] effective generator length
+h_wdng_r 0.027[m] height winding rotor
+h_wdng_s 0.029[m] height winding stator
+h_yoke_r 0.08981568303013115[m] height yoke rotor
+h_yoke_s 0.08141624062475926[m] height yoke stator
+k_fill_r 0.2 fill factor rotor
+k_fill_s 0.3 fill factor stator
+J_e_r 297.4082817355729[A/mm^2] Engineering Current Density Rotor
+J_e_s 21.58725564691656[A/mm^2] Engineering CUrrent Density Stator
+r_so 4.330127018922194[m] radius stator outer
+r_si 4.2487107782974345[m] radius stator inner
+r_sw 4.2342107782974345[m] radius stator armature winding
+r_ag 4.199710778297435[m] radius airgap
+r_rw 4.166210778297436[m] radius rotor field winding
+r_ro 4.152710778297436[m] radius rotor outer
+r_ri 4.062895095267305[m] radius rotor inner
+w_rp 0.521845026943295[m] width of the rotor pole
+A_rc 0.0014089815727468967[m^2] Area of one rotor coil per pole
+h_rc 0.009000000000000001[m] height of one rotor coil per pole
+w_rc 0.1565535080829885[m] width of one rotor coil per pole
+w_sp 0.35350966350327706[m] width of the stator pole
+A_sc 0.0015377670362392553[m^2] Area of one stator coil per pole pair
+h_sc 0.011000000000000003[m] height of one stator coil per pole pair
+w_sc 0.13979700329447772[m] width of one stator coil per pole pair
+N_s 132 number of turns per phase
+J_s_amplitude 27059615.828013636[A/m^2] amplitude of the stator current density
+PARAMS_DERIVED 1
+omega 2*pi*n_syn*p electrical angular frequency
+T_el 1/(n_syn*p) electrical period
+T_el_noUnit T_el*1[1/s] electrical period without unit
+tau_p (pi*r_si)/p pole pitch
+phi_tau_p 360[°]/(2*p) pole pitch angle
+phi_sector 2*phi_tau_p sector angle
+phi_rw1 phi_tau_p/2 angle for lower rotor winding
+phi_rw2 phi_tau_p*(3/2) angle for upper rotor winding
+psi_sw_W phi_sector*(1/3) angle for stator winding W
+psi_sw_V phi_sector*(2/3) angle for stator winding V
+alpha 0 torque generating angle
+TDC_steps 50 steps in time dependant coarse study
+TDF_steps 300 steps in time dependant fine study

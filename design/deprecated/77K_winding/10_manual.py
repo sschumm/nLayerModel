@@ -6,7 +6,7 @@ from analytics import taup, yoke_height, Phi_from
 from data import Generator as gn
 from data import FieldWinding as fw
 from data import StatorWinding_77K as sw
-from data import save_params_as_txt
+from data.export import save_params_as_txt
 from design import Main_Params, Main_Dims, create_n_Layer_model
 from design import get_L_TPL2100 as L
 
